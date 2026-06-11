@@ -106,8 +106,8 @@
 
   /* Personatge — imatge real */
   .hero {
-    width: 200px;
-    height: 200px;
+    width: 260px;
+    height: 260px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -117,11 +117,12 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 8px 16px rgba(255,107,157,0.3));
+    filter: drop-shadow(0 8px 20px rgba(255,107,157,0.4));
+    mix-blend-mode: multiply;
   }
   @keyframes heroFloat {
     0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-10px); }
+    50%      { transform: translateY(-12px); }
   }
 
   /* Títol */
@@ -307,7 +308,7 @@
   <div class="lang-label">Tria l'idioma · Elige idioma</div>
   <div class="lang-selector">
     <button class="lang-btn active" onclick="setLang(this,'ca')">
-      <span class="flag">🏴󠁥󠁳󠁣󠁴󠁿</span>Català
+      <span class="flag">🐷</span>Català
     </button>
     <button class="lang-btn" onclick="setLang(this,'es')">
       <span class="flag">🇪🇸</span>Castellano
