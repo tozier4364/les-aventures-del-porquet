@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Les Aventures del Porquet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --rosa:     #FF6B9D;
+    --rosa-clar:#FFB3CF;
+    --groc:     #FFD93D;
+    --blau:     #4ECDC4;
+    --blau-fosc:#2B7A6F;
+    --verd:     #95E77E;
+    --taronja:  #FF8C42;
+    --blanc:    #FFFDF7;
+    --fons:     #FFF0F7;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--fons);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Núvols de fons */
+  .clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.6;
+    animation: floatCloud linear infinite;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+  .c1 { width:120px; height:40px; top:8%; left:-140px; animation-duration:22s; }
+  .c1::before { width:60px; height:60px; top:-30px; left:15px; }
+  .c1::after  { width:45px; height:45px; top:-22px; left:50px; }
+  .c2 { width:90px; height:30px; top:20%; left:-120px; animation-duration:28s; animation-delay:5s; }
+  .c2::before { width:44px; height:44px; top:-22px; left:10px; }
+  .c2::after  { width:34px; height:34px; top:-17px; left:38px; }
+  .c3 { width:150px; height:50px; top:65%; left:-180px; animation-duration:18s; animation-delay:2s; }
+  .c3::before { width:70px; height:70px; top:-35px; left:20px; }
+  .c3::after  { width:55px; height:55px; top:-28px; left:65px; }
+  .c4 { width:80px; height:28px; top:80%; left:-110px; animation-duration:32s; animation-delay:8s; }
+  .c4::before { width:40px; height:40px; top:-20px; left:8px; }
+  .c4::after  { width:30px; height:30px; top:-15px; left:35px; }
+  @keyframes floatCloud {
+    from { transform: translateX(0); }
+    to   { transform: translateX(calc(100vw + 250px)); }
+  }
+
+  /* Estrelles */
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star {
+    position: absolute;
+    font-size: 1.4rem;
+    animation: twinkle 2.5s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%,100% { transform: scale(1) rotate(0deg); opacity:.7; }
+    50%      { transform: scale(1.3) rotate(20deg); opacity:1; }
+  }
+
+  /* Contenidor principal */
+  .screen {
+    position: relative;
+    z-index: 10;
+    width: min(420px, 95vw);
+    background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
+    border-radius: 40px;
+    border: 4px solid var(--rosa-clar);
+    box-shadow: 0 20px 60px rgba(255,107,157,0.25), 0 4px 15px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 28px 24px 24px;
+  }
+
+  /* Cinta decorativa */
+  .ribbon { display: flex; gap: 8px; margin-bottom: 12px; font-size: 1.5rem; }
+  .ribbon span { animation: bounce 1.2s ease-in-out infinite; }
+  .ribbon span:nth-child(2) { animation-delay:.15s; }
+  .ribbon span:nth-child(3) { animation-delay:.30s; }
+  .ribbon span:nth-child(4) { animation-delay:.45s; }
+  .ribbon span:nth-child(5) { animation-delay:.60s; }
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-8px); }
+  }
+
+  /* Personatge — imatge real */
+  .hero {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: heroFloat 3s ease-in-out infinite;
+  }
+  .hero img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(255,107,157,0.3));
+  }
+  @keyframes heroFloat {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-10px); }
+  }
+
+  /* Títol */
+  .title-wrap { text-align: center; margin: 8px 0 4px; }
+  .title-sub {
+    font-family: 'Baloo 2', cursive;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--blau-fosc);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 2px;
+  }
+  .title-main {
+    font-family: 'Baloo 2', cursive;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.05;
+    background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 2px 4px rgba(255,107,157,0.3));
+  }
+  .title-del { font-size: 1.3rem; font-weight: 600; }
+
+  /* Selector idioma */
+  .lang-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #aaa;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 12px 0 8px;
+  }
+  .lang-selector { display: flex; gap: 14px; margin-bottom: 16px; }
+  .lang-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: white;
+    border: 3px solid transparent;
+    border-radius: 20px;
+    padding: 10px 20px 8px;
+    cursor: pointer;
+    transition: all .2s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    font-family: 'Baloo 2', cursive;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #555;
+    position: relative;
+  }
+  .lang-btn .flag { font-size: 1.8rem; }
+  .lang-btn:hover, .lang-btn.active {
+    border-color: var(--rosa);
+    background: #FFF0F7;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255,107,157,0.25);
+    color: var(--rosa);
+  }
+  .lang-btn.active::after {
+    content: '✓';
+    position: absolute;
+    top: -10px; right: -8px;
+    background: var(--rosa);
+    color: white;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+  }
+
+  /* Botó jugar */
+  .play-btn {
+    width: 100%;
+    max-width: 280px;
+    padding: 16px 0;
+    background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%);
+    border: none;
+    border-radius: 50px;
+    font-family: 'Baloo 2', cursive;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070;
+    transition: all .15s ease;
+    letter-spacing: 1px;
+    animation: pulseBtn 2.5s ease-in-out infinite;
+  }
+  @keyframes pulseBtn {
+    0%,100% { transform: scale(1); }
+    50%      { transform: scale(1.04); }
+  }
+  .play-btn:active { transform: scale(0.97) !important; }
+
+  /* Mini menú */
+  .mini-menu {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .mini-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    background: white;
+    border: 2.5px solid #eee;
+    border-radius: 16px;
+    padding: 8px 10px 6px;
+    cursor: pointer;
+    transition: all .2s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #888;
+    min-width: 68px;
+  }
+  .mini-btn .ico { width: 40px; height: 40px; object-fit: contain; }
+  .mini-btn:hover {
+    border-color: var(--blau);
+    color: var(--blau-fosc);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(78,205,196,0.25);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 14px;
+    font-size: 0.7rem;
+    color: #ccc;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<div class="clouds">
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
+  <div class="cloud c4"></div>
+</div>
+
+<div class="stars">
+  <div class="star" style="top:5%;left:8%;animation-delay:0s">⭐</div>
+  <div class="star" style="top:12%;right:10%;animation-delay:.6s">✨</div>
+  <div class="star" style="top:30%;left:4%;animation-delay:1.2s">⭐</div>
+  <div class="star" style="top:55%;right:5%;animation-delay:.3s">✨</div>
+  <div class="star" style="bottom:18%;left:6%;animation-delay:.9s">⭐</div>
+  <div class="star" style="bottom:8%;right:8%;animation-delay:1.5s">✨</div>
+</div>
+
+<div class="screen">
+
+  <div class="ribbon">
+    <span>🎨</span><span>🎮</span><span>🐷</span><span>📚</span><span>🌟</span>
+  </div>
+
+  <!-- Porquet real -->
+  <div class="hero">
+    <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_dab.png" alt="Porquet">
+  </div>
+
+  <!-- Títol -->
+  <div class="title-wrap">
+    <div class="title-sub">🌟 Benvingut a 🌟</div>
+    <div class="title-main">Les Aventures<br><span class="title-del">del</span> Porquet</div>
+  </div>
+
+  <!-- Selector idioma -->
+  <div class="lang-label">Tria l'idioma · Elige idioma</div>
+  <div class="lang-selector">
+    <button class="lang-btn active" onclick="setLang(this,'ca')">
+      <span class="flag">🏴󠁥󠁳󠁣󠁴󠁿</span>Català
+    </button>
+    <button class="lang-btn" onclick="setLang(this,'es')">
+      <span class="flag">🇪🇸</span>Castellano
+    </button>
+  </div>
+
+  <!-- Botó principal -->
+  <button class="play-btn" id="playBtn">🐷 Juguem! ✨</button>
+
+  <!-- Mini menú amb imatges -->
+  <div class="mini-menu">
+    <div class="mini-btn">
+      <span class="ico">🎨</span>
+      <span id="l-color">Coloreja</span>
+    </div>
+    <div class="mini-btn">
+      <img class="ico" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_tiburon.png" alt="Contes">
+      <span id="l-contes">Contes</span>
+    </div>
+    <div class="mini-btn">
+      <img class="ico" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Jocs">
+      <span id="l-jocs">Jocs</span>
+    </div>
+    <div class="mini-btn">
+      <img class="ico" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Reptes">
+      <span id="l-reptes">Reptes</span>
+    </div>
+  </div>
+
+  <div class="footer" id="footer-txt">© Les Aventures del Porquet · Sense publicitat</div>
+
+</div>
+
+<script>
+  const texts = {
+    ca: {
+      play: '🐷 Juguem! ✨',
+      color: 'Coloreja',
+      contes: 'Contes',
+      jocs: 'Jocs',
+      reptes: 'Reptes',
+      footer: '© Les Aventures del Porquet · Sense publicitat'
+    },
+    es: {
+      play: '🐷 ¡Jugamos! ✨',
+      color: 'Colorear',
+      contes: 'Cuentos',
+      jocs: 'Juegos',
+      reptes: 'Retos',
+      footer: '© Les Aventures del Porquet · Sin publicidad'
+    }
+  };
+
+  function setLang(btn, lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const t = texts[lang];
+    document.getElementById('playBtn').textContent = t.play;
+    document.getElementById('l-color').textContent = t.color;
+    document.getElementById('l-contes').textContent = t.contes;
+    document.getElementById('l-jocs').textContent = t.jocs;
+    document.getElementById('l-reptes').textContent = t.reptes;
+    document.getElementById('footer-txt').textContent = t.footer;
+  }
+</script>
+
+</body>
+</html>
