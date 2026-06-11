@@ -15,9 +15,7 @@
     --groc:     #FFD93D;
     --blau:     #4ECDC4;
     --blau-fosc:#2B7A6F;
-    --verd:     #95E77E;
     --taronja:  #FF8C42;
-    --blanc:    #FFFDF7;
     --fons:     #FFF0F7;
   }
 
@@ -33,21 +31,10 @@
     position: relative;
   }
 
-  /* Núvols de fons */
+  /* Núvols */
   .clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .cloud {
-    position: absolute;
-    background: white;
-    border-radius: 50px;
-    opacity: 0.6;
-    animation: floatCloud linear infinite;
-  }
-  .cloud::before, .cloud::after {
-    content: '';
-    position: absolute;
-    background: white;
-    border-radius: 50%;
-  }
+  .cloud { position: absolute; background: white; border-radius: 50px; opacity: 0.6; animation: floatCloud linear infinite; }
+  .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
   .c1 { width:120px; height:40px; top:8%; left:-140px; animation-duration:22s; }
   .c1::before { width:60px; height:60px; top:-30px; left:15px; }
   .c1::after  { width:45px; height:45px; top:-22px; left:50px; }
@@ -60,224 +47,157 @@
   .c4 { width:80px; height:28px; top:80%; left:-110px; animation-duration:32s; animation-delay:8s; }
   .c4::before { width:40px; height:40px; top:-20px; left:8px; }
   .c4::after  { width:30px; height:30px; top:-15px; left:35px; }
-  @keyframes floatCloud {
-    from { transform: translateX(0); }
-    to   { transform: translateX(calc(100vw + 250px)); }
-  }
+  @keyframes floatCloud { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 250px)); } }
 
   /* Estrelles */
   .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .star {
-    position: absolute;
-    font-size: 1.4rem;
-    animation: twinkle 2.5s ease-in-out infinite;
-  }
+  .star { position: absolute; font-size: 1.4rem; animation: twinkle 2.5s ease-in-out infinite; }
   @keyframes twinkle {
     0%,100% { transform: scale(1) rotate(0deg); opacity:.7; }
     50%      { transform: scale(1.3) rotate(20deg); opacity:1; }
   }
 
-  /* Contenidor principal */
+  /* Contenidor */
   .screen {
-    position: relative;
-    z-index: 10;
+    position: relative; z-index: 10;
     width: min(420px, 95vw);
     background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
     border-radius: 40px;
     border: 4px solid var(--rosa-clar);
     box-shadow: 0 20px 60px rgba(255,107,157,0.25), 0 4px 15px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: flex; flex-direction: column; align-items: center;
     padding: 28px 24px 24px;
   }
 
-  /* Cinta decorativa */
+  /* Cinta */
   .ribbon { display: flex; gap: 8px; margin-bottom: 12px; font-size: 1.5rem; }
   .ribbon span { animation: bounce 1.2s ease-in-out infinite; }
   .ribbon span:nth-child(2) { animation-delay:.15s; }
   .ribbon span:nth-child(3) { animation-delay:.30s; }
   .ribbon span:nth-child(4) { animation-delay:.45s; }
   .ribbon span:nth-child(5) { animation-delay:.60s; }
-  @keyframes bounce {
-    0%,100% { transform: translateY(0); }
-    50%      { transform: translateY(-8px); }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  /* HERO amb animació */
+  .hero {
+    width: 260px; height: 260px;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
   }
 
-  /* Personatge — imatge real */
-  .hero {
-    width: 260px;
-    height: 260px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    animation: heroFloat 3s ease-in-out infinite;
-  }
   .hero img {
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    width: 100%; height: 100%;
     object-fit: contain;
-    filter: drop-shadow(0 8px 20px rgba(255,107,157,0.4));
     mix-blend-mode: multiply;
+    filter: drop-shadow(0 8px 20px rgba(255,107,157,0.4));
+    transition: opacity 0.3s ease;
   }
-  @keyframes heroFloat {
-    0%,100% { transform: translateY(0px); }
-    50%      { transform: translateY(-12px); }
+
+  /* Imatge espaldas: visible per defecte, s'amaga quan es gira */
+  #img-espaldas { opacity: 1; }
+  #img-cara     { opacity: 0; }
+
+  /* Meneo d'espaldas */
+  @keyframes meneo {
+    0%,100% { transform: rotate(0deg) translateY(0px); }
+    20%     { transform: rotate(-4deg) translateY(-3px); }
+    40%     { transform: rotate(4deg) translateY(-5px); }
+    60%     { transform: rotate(-3deg) translateY(-3px); }
+    80%     { transform: rotate(3deg) translateY(-2px); }
   }
+
+  /* Quan es gira: bot i gir */
+  @keyframes girar {
+    0%   { transform: scale(1) rotate(0deg); }
+    30%  { transform: scale(1.15) rotate(180deg); }
+    60%  { transform: scale(1.1) rotate(360deg); }
+    100% { transform: scale(1) rotate(360deg); }
+  }
+
+  /* Ceja levantada — animació de la cara */
+  @keyframes cejas {
+    0%,100% { transform: scale(1); }
+    20%     { transform: scale(1.08) translateY(-4px); }
+    40%     { transform: scale(1.05) translateY(-2px); }
+    60%     { transform: scale(1.08) translateY(-4px); }
+    80%     { transform: scale(1) translateY(0); }
+  }
+
+  .hero.meneant #img-espaldas { animation: meneo 1.2s ease-in-out infinite; }
+  .hero.girant  #img-espaldas { animation: girar 0.6s ease-in-out forwards; opacity: 0; }
+  .hero.girant  #img-cara     { opacity: 1; animation: cejas 2s ease-in-out; }
 
   /* Títol */
   .title-wrap { text-align: center; margin: 8px 0 4px; }
   .title-sub {
-    font-family: 'Baloo 2', cursive;
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--blau-fosc);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    opacity: 0.75;
-    margin-bottom: 2px;
+    font-family: 'Baloo 2', cursive; font-size: 0.9rem; font-weight: 600;
+    color: var(--blau-fosc); letter-spacing: 2px; text-transform: uppercase;
+    opacity: 0.75; margin-bottom: 2px;
   }
   .title-main {
-    font-family: 'Baloo 2', cursive;
-    font-size: 2rem;
-    font-weight: 800;
-    line-height: 1.05;
+    font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; line-height: 1.05;
     background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     filter: drop-shadow(0 2px 4px rgba(255,107,157,0.3));
   }
   .title-del { font-size: 1.3rem; font-weight: 600; }
 
-  /* Selector idioma */
-  .lang-label {
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #aaa;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin: 12px 0 8px;
-  }
+  /* Idioma */
+  .lang-label { font-size: 0.8rem; font-weight: 700; color: #aaa; letter-spacing: 1px; text-transform: uppercase; margin: 12px 0 8px; }
   .lang-selector { display: flex; gap: 14px; margin-bottom: 16px; }
   .lang-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: white;
-    border: 3px solid transparent;
-    border-radius: 20px;
-    padding: 10px 20px 8px;
-    cursor: pointer;
-    transition: all .2s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: white; border: 3px solid transparent; border-radius: 20px;
+    padding: 10px 20px 8px; cursor: pointer; transition: all .2s ease;
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    font-family: 'Baloo 2', cursive;
-    font-weight: 700;
-    font-size: 1rem;
-    color: #555;
-    position: relative;
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1rem; color: #555; position: relative;
   }
   .lang-btn .flag { font-size: 1.8rem; }
   .lang-btn:hover, .lang-btn.active {
-    border-color: var(--rosa);
-    background: #FFF0F7;
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255,107,157,0.25);
-    color: var(--rosa);
+    border-color: var(--rosa); background: #FFF0F7;
+    transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.25); color: var(--rosa);
   }
   .lang-btn.active::after {
-    content: '✓';
-    position: absolute;
-    top: -10px; right: -8px;
-    background: var(--rosa);
-    color: white;
-    border-radius: 50%;
-    width: 22px; height: 22px;
-    font-size: 0.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
+    content: '✓'; position: absolute; top: -10px; right: -8px;
+    background: var(--rosa); color: white; border-radius: 50%;
+    width: 22px; height: 22px; font-size: 0.75rem;
+    display: flex; align-items: center; justify-content: center; font-weight: 900;
   }
 
   /* Botó jugar */
   .play-btn {
-    width: 100%;
-    max-width: 280px;
-    padding: 16px 0;
+    width: 100%; max-width: 280px; padding: 16px 0;
     background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%);
-    border: none;
-    border-radius: 50px;
-    font-family: 'Baloo 2', cursive;
-    font-size: 1.35rem;
-    font-weight: 800;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070;
-    transition: all .15s ease;
-    letter-spacing: 1px;
-    animation: pulseBtn 2.5s ease-in-out infinite;
+    border: none; border-radius: 50px;
+    font-family: 'Baloo 2', cursive; font-size: 1.35rem; font-weight: 800; color: white;
+    cursor: pointer; box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070;
+    letter-spacing: 1px; animation: pulseBtn 2.5s ease-in-out infinite;
   }
-  @keyframes pulseBtn {
-    0%,100% { transform: scale(1); }
-    50%      { transform: scale(1.04); }
-  }
+  @keyframes pulseBtn { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
   .play-btn:active { transform: scale(0.97) !important; }
 
   /* Mini menú */
-  .mini-menu {
-    display: flex;
-    gap: 10px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+  .mini-menu { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
   .mini-btn {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    background: white;
-    border: 2.5px solid #eee;
-    border-radius: 16px;
-    padding: 8px 10px 6px;
-    cursor: pointer;
-    transition: all .2s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    background: white; border: 2.5px solid #eee; border-radius: 16px;
+    padding: 8px 10px 6px; cursor: pointer; transition: all .2s ease;
     box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    font-family: 'Nunito', sans-serif;
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: #888;
-    min-width: 68px;
+    font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: #888; min-width: 68px;
   }
   .mini-btn .ico { width: 40px; height: 40px; object-fit: contain; }
-  .mini-btn:hover {
-    border-color: var(--blau);
-    color: var(--blau-fosc);
-    transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(78,205,196,0.25);
-  }
+  .mini-btn:hover { border-color: var(--blau); color: var(--blau-fosc); transform: translateY(-3px); box-shadow: 0 6px 18px rgba(78,205,196,0.25); }
 
-  /* Footer */
-  .footer {
-    margin-top: 14px;
-    font-size: 0.7rem;
-    color: #ccc;
-    font-weight: 600;
-    letter-spacing: 1px;
-  }
+  .footer { margin-top: 14px; font-size: 0.7rem; color: #ccc; font-weight: 600; letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
 <div class="clouds">
-  <div class="cloud c1"></div>
-  <div class="cloud c2"></div>
-  <div class="cloud c3"></div>
-  <div class="cloud c4"></div>
+  <div class="cloud c1"></div><div class="cloud c2"></div>
+  <div class="cloud c3"></div><div class="cloud c4"></div>
 </div>
-
 <div class="stars">
   <div class="star" style="top:5%;left:8%;animation-delay:0s">⭐</div>
   <div class="star" style="top:12%;right:10%;animation-delay:.6s">✨</div>
@@ -293,18 +213,17 @@
     <span>🎨</span><span>🎮</span><span>🐷</span><span>📚</span><span>🌟</span>
   </div>
 
-  <!-- Porquet real -->
-  <div class="hero">
-    <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_dab.png" alt="Porquet">
+  <!-- Porquet animat -->
+  <div class="hero meneant" id="hero">
+    <img id="img-espaldas" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_espaldas.png" alt="Porquet d'espaldas">
+    <img id="img-cara" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_sorpresa.png" alt="Porquet cara">
   </div>
 
-  <!-- Títol -->
   <div class="title-wrap">
     <div class="title-sub">🌟 Benvingut a 🌟</div>
     <div class="title-main">Les Aventures<br><span class="title-del">del</span> Porquet</div>
   </div>
 
-  <!-- Selector idioma -->
   <div class="lang-label">Tria l'idioma · Elige idioma</div>
   <div class="lang-selector">
     <button class="lang-btn active" onclick="setLang(this,'ca')">
@@ -315,10 +234,8 @@
     </button>
   </div>
 
-  <!-- Botó principal -->
   <button class="play-btn" id="playBtn">🐷 Juguem! ✨</button>
 
-  <!-- Mini menú amb imatges -->
   <div class="mini-menu">
     <div class="mini-btn">
       <span class="ico">🎨</span>
@@ -343,23 +260,35 @@
 </div>
 
 <script>
+  const BASE = 'https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/';
+  const hero = document.getElementById('hero');
+  const imgEspaldas = document.getElementById('img-espaldas');
+  const imgCara = document.getElementById('img-cara');
+
+  function gira() {
+    // Treu meneo, posa gir
+    hero.classList.remove('meneant');
+    hero.classList.add('girant');
+
+    // Després de mostrar la cara amb cejas, torna a espaldas
+    setTimeout(() => {
+      hero.classList.remove('girant');
+      imgEspaldas.style.opacity = '1';
+      imgCara.style.opacity = '0';
+      // Petita pausa i torna a menejar
+      setTimeout(() => {
+        hero.classList.add('meneant');
+      }, 300);
+    }, 2500);
+  }
+
+  // Es gira cada 6 segons
+  setInterval(gira, 6000);
+
+  // Idioma
   const texts = {
-    ca: {
-      play: '🐷 Juguem! ✨',
-      color: 'Coloreja',
-      contes: 'Contes',
-      jocs: 'Jocs',
-      reptes: 'Reptes',
-      footer: '© Les Aventures del Porquet · Sense publicitat'
-    },
-    es: {
-      play: '🐷 ¡Jugamos! ✨',
-      color: 'Colorear',
-      contes: 'Cuentos',
-      jocs: 'Juegos',
-      reptes: 'Retos',
-      footer: '© Les Aventures del Porquet · Sin publicidad'
-    }
+    ca: { play: '🐷 Juguem! ✨', color: 'Coloreja', contes: 'Contes', jocs: 'Jocs', reptes: 'Reptes', footer: '© Les Aventures del Porquet · Sense publicitat' },
+    es: { play: '🐷 ¡Jugamos! ✨', color: 'Colorear', contes: 'Cuentos', jocs: 'Juegos', reptes: 'Retos', footer: '© Les Aventures del Porquet · Sin publicidad' }
   };
 
   function setLang(btn, lang) {
