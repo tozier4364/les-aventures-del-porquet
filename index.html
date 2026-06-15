@@ -47,7 +47,6 @@
   .star { position: absolute; font-size: 1.4rem; animation: twinkle 2.5s ease-in-out infinite; }
   @keyframes twinkle { 0%,100% { opacity:.7; transform: scale(1); } 50% { opacity:1; transform: scale(1.3); } }
 
-  /* Pantalla */
   .screen {
     position: relative; z-index: 10;
     width: min(400px, 94vw);
@@ -59,7 +58,8 @@
     padding: 24px 22px 28px;
   }
 
-  .ribbon { display: flex; gap: 8px; margin-bottom: 10px; font-size: 1.5rem; }
+  /* Ribbon centrat */
+  .ribbon { display: flex; gap: 8px; margin-bottom: 10px; font-size: 1.5rem; justify-content: center; width: 100%; }
   .ribbon span { animation: bounce 1.2s ease-in-out infinite; }
   .ribbon span:nth-child(2) { animation-delay:.15s; }
   .ribbon span:nth-child(3) { animation-delay:.30s; }
@@ -67,9 +67,8 @@
   .ribbon span:nth-child(5) { animation-delay:.60s; }
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-  /* Hero — sense fons */
   .hero {
-    width: 320px; height: 320px;
+    width: 300px; height: 300px;
     display: flex; align-items: center; justify-content: center;
   }
   .hero img {
@@ -78,7 +77,6 @@
     filter: drop-shadow(0 10px 20px rgba(255,107,157,0.35));
   }
 
-  /* Títol */
   .title-wrap { text-align: center; margin: 6px 0 18px; }
   .title-sub {
     font-family: 'Baloo 2', cursive; font-size: 0.85rem; font-weight: 600;
@@ -92,20 +90,26 @@
   }
   .title-del { font-size: 1.3rem; }
 
-  /* Idioma */
-  .lang-label { font-size: 0.78rem; font-weight: 700; color: #bbb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
-  .lang-selector { display: flex; gap: 14px; margin-bottom: 22px; }
-  .lang-btn {
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
-    background: white; border: 3px solid transparent; border-radius: 20px;
-    padding: 10px 22px 8px; cursor: pointer; transition: all .2s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.07);
-    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1rem; color: #666; position: relative;
+  /* Label centrat */
+  .lang-label {
+    font-size: 0.78rem; font-weight: 700; color: #bbb;
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-bottom: 10px; text-align: center; width: 100%;
   }
 
+  .lang-selector { display: flex; gap: 14px; margin-bottom: 22px; justify-content: center; }
+
+  /* Botons sense fons */
+  .lang-btn {
+    display: flex; flex-direction: column; align-items: center;
+    background: #FFF0F7; border: 3px solid #ddd; border-radius: 20px;
+    padding: 10px 28px 10px; cursor: pointer; transition: all .2s ease;
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.1rem; color: #999;
+    position: relative;
+  }
   .lang-btn.active {
-    border-color: var(--rosa); background: #FFF0F7;
-    transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.25); color: var(--rosa);
+    border-color: var(--rosa); color: var(--rosa);
+    transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.2);
   }
   .lang-btn.active::after {
     content: '✓'; position: absolute; top: -10px; right: -8px;
@@ -114,7 +118,6 @@
     display: flex; align-items: center; justify-content: center; font-weight: 900;
   }
 
-  /* Botó */
   .play-btn {
     width: 100%; max-width: 280px; padding: 16px 0;
     background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%);
@@ -129,9 +132,7 @@
   /* MENÚ */
   #pantalla-menu { display: none; width: 100%; flex-direction: column; align-items: center; }
   #pantalla-menu.visible { display: flex; }
-
   .menu-title { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 14px; text-align: center; }
-
   .seccio { width: 100%; background: white; border-radius: 22px; border: 3px solid var(--rosa-clar); box-shadow: 0 4px 15px rgba(255,107,157,0.12); margin-bottom: 12px; overflow: hidden; }
   .seccio-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: linear-gradient(135deg, #FFF0F7, #E8F8FF); font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--rosa); }
   .seccio-header .ico { font-size: 1.6rem; }
@@ -139,10 +140,7 @@
   .item-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFF9F0; border: 2px solid #FFD93D; border-radius: 14px; padding: 8px 10px; cursor: pointer; transition: all .2s; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: #888; flex: 1; min-width: 65px; }
   .item-btn .ico2 { font-size: 1.4rem; }
   .item-btn:active { transform: scale(0.95); border-color: var(--rosa); color: var(--rosa); }
-
   .back-btn { margin-top: 6px; background: none; border: 2px solid #ddd; border-radius: 50px; padding: 8px 24px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: #aaa; cursor: pointer; }
-
-
   .footer { margin-top: 12px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; }
 </style>
 </head>
@@ -167,22 +165,18 @@
     </div>
 
     <div class="hero">
-      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_dab.png" alt="Porquet">
     </div>
 
     <div class="title-wrap">
-      <div class="title-sub">🌟 Benvingut a 🌟</div>
+      <div class="title-sub" id="title-sub">🌟 Benvingut a 🌟</div>
       <div class="title-main">Les Aventures<br><span class="title-del">del</span> Porquet</div>
     </div>
 
     <div class="lang-label">Tria l'idioma · Elige idioma</div>
     <div class="lang-selector">
-      <button class="lang-btn active" onclick="setLang(this,'ca')">
-        <img class="flag" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/senyera.png" alt="Senyera">Català
-      </button>
-      <button class="lang-btn" onclick="setLang(this,'es')">
-        Castellano
-      </button>
+      <button class="lang-btn active" onclick="setLang(this,'ca')">Català</button>
+      <button class="lang-btn" onclick="setLang(this,'es')">Castellano</button>
     </div>
 
     <button class="play-btn" id="playBtn" onclick="entrarMenu()">🐷 Juguem! ✨</button>
@@ -191,12 +185,8 @@
   <!-- MENÚ PRINCIPAL -->
   <div id="pantalla-menu">
     <div class="menu-title" id="menu-title">🐷 Què vols fer avui?</div>
-
     <div class="seccio">
-      <div class="seccio-header">
-        <span class="ico">🎓</span>
-        <span id="s-aprendre">Aprèn amb el Porquet</span>
-      </div>
+      <div class="seccio-header"><span class="ico">🎓</span><span id="s-aprendre">Aprèn amb el Porquet</span></div>
       <div class="seccio-items">
         <div class="item-btn"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
         <div class="item-btn"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
@@ -204,12 +194,8 @@
         <div class="item-btn"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
       </div>
     </div>
-
     <div class="seccio">
-      <div class="seccio-header">
-        <span class="ico">🎮</span>
-        <span id="s-jugar">Juga amb el Porquet</span>
-      </div>
+      <div class="seccio-header"><span class="ico">🎮</span><span id="s-jugar">Juga amb el Porquet</span></div>
       <div class="seccio-items">
         <div class="item-btn"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
         <div class="item-btn"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
@@ -217,7 +203,6 @@
         <div class="item-btn"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
       </div>
     </div>
-
     <button class="back-btn" id="backBtn" onclick="tornarPortada()">← Tornar</button>
     <div class="footer" id="footer-txt">© Les Aventures del Porquet · Sense publicitat</div>
   </div>
@@ -229,24 +214,22 @@
 
   const texts = {
     ca: {
+      titleSub: '🌟 Benvingut a 🌟',
       play: '🐷 Juguem! ✨',
       menuTitle: '🐷 Què vols fer avui?',
-      sAprendre: 'Aprèn amb el Porquet',
-      sJugar: 'Juga amb el Porquet',
+      sAprendre: 'Aprèn amb el Porquet', sJugar: 'Juga amb el Porquet',
       numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Animals',
       puzzle: 'Trencaclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Coloreja',
-      back: '← Tornar',
-      footer: '© Les Aventures del Porquet · Sense publicitat'
+      back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat'
     },
     es: {
+      titleSub: '🌟 Bienvenido a 🌟',
       play: '🐷 ¡Jugamos! ✨',
       menuTitle: '🐷 ¿Qué quieres hacer hoy?',
-      sAprendre: 'Aprende con el Porquet',
-      sJugar: 'Juega con el Porquet',
+      sAprendre: 'Aprende con el Porquet', sJugar: 'Juega con el Porquet',
       numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Animales',
       puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Colorear',
-      back: '← Volver',
-      footer: '© Les Aventures del Porquet · Sin publicidad'
+      back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad'
     }
   };
 
@@ -254,7 +237,9 @@
     langActual = lang;
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('playBtn').textContent = texts[lang].play;
+    const t = texts[lang];
+    document.getElementById('title-sub').textContent = t.titleSub;
+    document.getElementById('playBtn').textContent = t.play;
   }
 
   function entrarMenu() {
