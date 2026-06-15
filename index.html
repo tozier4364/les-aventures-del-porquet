@@ -69,16 +69,14 @@
 
   /* Hero — sense fons */
   .hero {
-    width: 240px; height: 240px;
+    width: 320px; height: 320px;
     display: flex; align-items: center; justify-content: center;
-    animation: float 3s ease-in-out infinite;
   }
   .hero img {
     width: 100%; height: 100%;
     object-fit: contain;
     filter: drop-shadow(0 10px 20px rgba(255,107,157,0.35));
   }
-  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
   /* Títol */
   .title-wrap { text-align: center; margin: 6px 0 18px; }
@@ -143,6 +141,8 @@
   .item-btn:active { transform: scale(0.95); border-color: var(--rosa); color: var(--rosa); }
 
   .back-btn { margin-top: 6px; background: none; border: 2px solid #ddd; border-radius: 50px; padding: 8px 24px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: #aaa; cursor: pointer; }
+  .flag-img { width: 44px; height: 28px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd; }
+
   .footer { margin-top: 12px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; }
 </style>
 </head>
@@ -178,7 +178,7 @@
     <div class="lang-label">Tria l'idioma · Elige idioma</div>
     <div class="lang-selector">
       <button class="lang-btn active" onclick="setLang(this,'ca')">
-        <span class="flag">🟡🔴</span>Català
+        <img class="flag" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/senyera.png" alt="Senyera">Català
       </button>
       <button class="lang-btn" onclick="setLang(this,'es')">
         <span class="flag">🇪🇸</span>Castellano
