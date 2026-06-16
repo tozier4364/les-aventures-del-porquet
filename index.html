@@ -16,6 +16,7 @@
     --blau:     #4ECDC4;
     --blau-fosc:#2B7A6F;
     --taronja:  #FF8C42;
+    --verd:     #6BD97A;
   }
 
   body {
@@ -50,6 +51,8 @@
   .screen {
     position: relative; z-index: 10;
     width: min(400px, 94vw);
+    max-height: 96vh;
+    overflow-y: auto;
     background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
     border-radius: 40px;
     border: 4px solid var(--rosa-clar);
@@ -58,7 +61,6 @@
     padding: 24px 22px 28px;
   }
 
-  /* Ribbon centrat */
   .ribbon { display: flex; gap: 8px; margin-bottom: 10px; font-size: 1.5rem; justify-content: center; width: 100%; }
   .ribbon span { animation: bounce 1.2s ease-in-out infinite; }
   .ribbon span:nth-child(2) { animation-delay:.15s; }
@@ -67,65 +69,21 @@
   .ribbon span:nth-child(5) { animation-delay:.60s; }
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-  .hero {
-    width: min(420px, 90vw); height: min(420px, 90vw);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .hero img {
-    width: 100%; height: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 10px 20px rgba(255,107,157,0.35));
-  }
+  .hero { width: min(380px, 88vw); height: min(380px, 88vw); display: flex; align-items: center; justify-content: center; }
+  .hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(255,107,157,0.35)); }
 
   .title-wrap { text-align: center; margin: 6px 0 18px; }
-  .title-sub {
-    font-family: 'Baloo 2', cursive; font-size: 0.85rem; font-weight: 600;
-    color: var(--blau-fosc); letter-spacing: 2px; text-transform: uppercase; opacity: 0.75;
-  }
-  .title-main {
-    font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; line-height: 1.1;
-    background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    filter: drop-shadow(0 2px 4px rgba(255,107,157,0.3));
-  }
+  .title-sub { font-family: 'Baloo 2', cursive; font-size: 0.85rem; font-weight: 600; color: var(--blau-fosc); letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; }
+  .title-main { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; line-height: 1.1; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
   .title-del { font-size: 1.3rem; }
 
-  /* Label centrat */
-  .lang-label {
-    font-size: 0.78rem; font-weight: 700; color: #bbb;
-    letter-spacing: 1px; text-transform: uppercase;
-    margin-bottom: 10px; text-align: center; width: 100%;
-  }
-
+  .lang-label { font-size: 0.78rem; font-weight: 700; color: #bbb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; text-align: center; width: 100%; }
   .lang-selector { display: flex; gap: 14px; margin-bottom: 22px; justify-content: center; }
+  .lang-btn { display: flex; flex-direction: column; align-items: center; background: #FFF0F7; border: 3px solid #ddd; border-radius: 20px; padding: 10px 28px; cursor: pointer; transition: all .2s ease; font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.1rem; color: #999; position: relative; }
+  .lang-btn.active { border-color: var(--rosa); color: var(--rosa); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.2); }
+  .lang-btn.active::after { content: '✓'; position: absolute; top: -10px; right: -8px; background: var(--rosa); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: 900; }
 
-  /* Botons sense fons */
-  .lang-btn {
-    display: flex; flex-direction: column; align-items: center;
-    background: #FFF0F7; border: 3px solid #ddd; border-radius: 20px;
-    padding: 10px 28px 10px; cursor: pointer; transition: all .2s ease;
-    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.1rem; color: #999;
-    position: relative;
-  }
-  .lang-btn.active {
-    border-color: var(--rosa); color: var(--rosa);
-    transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.2);
-  }
-  .lang-btn.active::after {
-    content: '✓'; position: absolute; top: -10px; right: -8px;
-    background: var(--rosa); color: white; border-radius: 50%;
-    width: 22px; height: 22px; font-size: 0.75rem;
-    display: flex; align-items: center; justify-content: center; font-weight: 900;
-  }
-
-  .play-btn {
-    width: 100%; max-width: 280px; padding: 16px 0; display: block; margin: 0 auto;
-    background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%);
-    border: none; border-radius: 50px;
-    font-family: 'Baloo 2', cursive; font-size: 1.35rem; font-weight: 800; color: white;
-    cursor: pointer; box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070;
-    letter-spacing: 1px; animation: pulseBtn 2.5s ease-in-out infinite;
-  }
+  .play-btn { width: 100%; max-width: 280px; padding: 16px 0; display: block; margin: 0 auto; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); border: none; border-radius: 50px; font-family: 'Baloo 2', cursive; font-size: 1.35rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070; letter-spacing: 1px; animation: pulseBtn 2.5s ease-in-out infinite; }
   @keyframes pulseBtn { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
   .play-btn:active { transform: scale(0.97) !important; }
 
@@ -144,6 +102,63 @@
   .item-btn:active { transform: scale(0.95); border-color: var(--rosa); color: var(--rosa); }
   .back-btn { margin-top: 6px; background: none; border: 2px solid #ddd; border-radius: 50px; padding: 8px 24px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: #aaa; cursor: pointer; }
   .footer { margin-top: 12px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; }
+
+  /* NIVELLS MEMÒRIA */
+  #pantalla-nivells { display: none; width: 100%; flex-direction: column; align-items: center; }
+  #pantalla-nivells.visible { display: flex; }
+  .nivells-title { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 16px; text-align: center; }
+  .nivell-btn {
+    width: 100%; background: white; border: 3px solid var(--rosa-clar);
+    border-radius: 20px; padding: 14px 20px; margin-bottom: 10px;
+    cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(255,107,157,0.1);
+  }
+  .nivell-btn:active { transform: scale(0.97); }
+  .nivell-btn:hover { border-color: var(--rosa); box-shadow: 0 6px 18px rgba(255,107,157,0.2); }
+  .nivell-info { display: flex; flex-direction: column; align-items: flex-start; }
+  .nivell-nom { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; color: var(--rosa); }
+  .nivell-desc { font-family: 'Nunito', sans-serif; font-size: 0.75rem; color: #aaa; font-weight: 700; margin-top: 2px; }
+  .nivell-estreles { font-size: 1.1rem; }
+
+  /* MEMÒRIA */
+  #pantalla-memoria { display: none; width: 100%; flex-direction: column; align-items: center; }
+  #pantalla-memoria.visible { display: flex; }
+
+  .memoria-header { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 10px; }
+  .memoria-title { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); }
+  .memoria-stats { display: flex; gap: 10px; }
+  .stat-badge { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+  .stat-fallos { background: #FFE0E0; color: #E05050; }
+  .stat-parelles { background: #E0FFE8; color: #30A050; }
+
+  .memoria-grid { display: grid; gap: 8px; width: 100%; margin-bottom: 12px; }
+  .memoria-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .memoria-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .memoria-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .memoria-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+  .carta { aspect-ratio: 1; border-radius: 12px; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
+  .carta.girada { transform: rotateY(180deg); }
+  .carta.encertada { transform: rotateY(180deg); pointer-events: none; }
+  .carta.error-flash { animation: errorFlash 0.4s ease; }
+  @keyframes errorFlash { 0%,100% { filter: none; } 50% { filter: brightness(0.7) sepia(1) hue-rotate(-30deg); } }
+
+  .carta-davant, .carta-darrere { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+  .carta-davant { background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); box-shadow: 0 3px 8px rgba(255,107,157,0.3); font-size: 1.4rem; }
+  .carta-darrere { background: white; border: 2px solid var(--rosa-clar); overflow: hidden; }
+  .carta-darrere img { width: 85%; height: 85%; object-fit: contain; }
+  .carta.encertada .carta-davant { background: linear-gradient(135deg, #95E77E, #4ECDC4); }
+  .carta.encertada .carta-darrere { border-color: #95E77E; }
+
+  /* RESULTAT */
+  .resultat { display: none; flex-direction: column; align-items: center; text-align: center; padding: 10px 0; width: 100%; }
+  .resultat.visible { display: flex; }
+  .resultat img { width: 200px; height: 200px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4)); margin-bottom: 12px; }
+  .resultat-text { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+  .resultat-sub { font-family: 'Nunito', sans-serif; font-size: 0.9rem; color: #aaa; font-weight: 700; margin-bottom: 20px; }
+  .resultat-btns { display: flex; gap: 10px; }
+  .btn-reintent { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 30px; padding: 12px 22px; font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,157,0.4); }
+  .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -162,32 +177,26 @@
 
   <!-- PORTADA -->
   <div id="pantalla-portada">
-    <div class="ribbon">
-      <span>🎨</span><span>🎮</span><span>🐷</span><span>📚</span><span>🌟</span>
-    </div>
-
+    <div class="ribbon"><span>🎨</span><span>🎮</span><span>🐷</span><span>📚</span><span>🌟</span></div>
     <div class="hero">
       <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_dab.png" alt="Porquet">
     </div>
-
     <div class="title-wrap">
       <div class="title-sub" id="title-sub">🌟 Benvingut a 🌟</div>
       <div class="title-main">Les Aventures<br><span class="title-del">del</span> Porquet</div>
     </div>
-
     <div class="lang-label">Tria l'idioma · Elige idioma</div>
     <div class="lang-selector">
       <button class="lang-btn active" onclick="setLang(this,'ca')">Català</button>
       <button class="lang-btn" onclick="setLang(this,'es')">Castellano</button>
     </div>
-
     <button class="play-btn" id="playBtn" onclick="entrarMenu()">🐷 Juguem! ✨</button>
   </div>
 
   <!-- MENÚ PRINCIPAL -->
   <div id="pantalla-menu">
     <div class="menu-hero">
-      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet pensant">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
     </div>
     <div class="menu-title" id="menu-title">🐷 Què vols fer avui?</div>
     <div class="seccio">
@@ -204,7 +213,7 @@
       <div class="seccio-items">
         <div class="item-btn"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
         <div class="item-btn"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
-        <div class="item-btn"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
+        <div class="item-btn" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
         <div class="item-btn"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
       </div>
     </div>
@@ -212,65 +221,364 @@
     <div class="footer" id="footer-txt">© Les Aventures del Porquet · Sense publicitat</div>
   </div>
 
+  <!-- SELECCIÓ DE NIVELLS -->
+  <div id="pantalla-nivells">
+    <div class="menu-hero">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="nivells-title">🃏 Tria el nivell</div>
+    <div style="width:100%">
+      <div class="nivell-btn" onclick="iniciarMemoria(1)">
+        <div class="nivell-info">
+          <div class="nivell-nom" id="n1-nom">Nivell 1</div>
+          <div class="nivell-desc" id="n1-desc">6 cartes · 2 errors màxim</div>
+        </div>
+        <div class="nivell-estreles">⭐</div>
+      </div>
+      <div class="nivell-btn" onclick="iniciarMemoria(2)">
+        <div class="nivell-info">
+          <div class="nivell-nom" id="n2-nom">Nivell 2</div>
+          <div class="nivell-desc" id="n2-desc">12 cartes · 3 errors màxim</div>
+        </div>
+        <div class="nivell-estreles">⭐⭐</div>
+      </div>
+      <div class="nivell-btn" onclick="iniciarMemoria(3)">
+        <div class="nivell-info">
+          <div class="nivell-nom" id="n3-nom">Nivell 3</div>
+          <div class="nivell-desc" id="n3-desc">20 cartes · 4 errors màxim</div>
+        </div>
+        <div class="nivell-estreles">⭐⭐⭐</div>
+      </div>
+      <div class="nivell-btn" onclick="iniciarMemoria(4)">
+        <div class="nivell-info">
+          <div class="nivell-nom" id="n4-nom">Nivell 4</div>
+          <div class="nivell-desc" id="n4-desc">36 cartes · 5 errors màxim</div>
+        </div>
+        <div class="nivell-estreles">⭐⭐⭐⭐</div>
+      </div>
+      <div class="nivell-btn" onclick="iniciarMemoria(5)">
+        <div class="nivell-info">
+          <div class="nivell-nom" id="n5-nom">Nivell 5</div>
+          <div class="nivell-desc" id="n5-desc">60 cartes · 6 errors màxim</div>
+        </div>
+        <div class="nivell-estreles">⭐⭐⭐⭐⭐</div>
+      </div>
+    </div>
+    <button class="back-btn" id="nivells-back" onclick="tornarMenu()" style="margin-top:14px">← Tornar</button>
+  </div>
+
+  <!-- JOC MEMÒRIA -->
+  <div id="pantalla-memoria">
+    <div class="memoria-header">
+      <div class="memoria-title" id="mem-title">🃏 Memòria</div>
+      <div class="memoria-stats">
+        <div class="stat-badge stat-fallos" id="mem-fallos">❌ 0/2</div>
+        <div class="stat-badge stat-parelles" id="mem-parelles">✅ 0</div>
+      </div>
+    </div>
+    <div class="memoria-grid cols-3" id="memoria-grid"></div>
+
+    <!-- VICTÒRIA -->
+    <div class="resultat" id="resultat-victoria">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="vic-sub">Has completat el nivell!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="vic-reintent" onclick="repetirNivell()">🔄 Repetir</button>
+        <button class="btn-menu" onclick="tornarNivells()">← Nivells</button>
+      </div>
+    </div>
+
+    <!-- DERROTA -->
+    <div class="resultat" id="resultat-derrota">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id  ="der-text" style="color:var(--rosa)">😢 Oh! Has perdut!</div>
+      <div class="resultat-sub" id="der-sub">Massa errors... Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="der-reintent" onclick="repetirNivell()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" onclick="tornarNivells()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-  let langActual = 'ca';
+  const BASE = 'https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/';
+  const IMG = BASE + 'images/';
+  const SND = BASE + 'sounds/';
 
+  let langActual = 'ca';
+  let nivellActual = 1;
+
+  // ===== SONS =====
+  const sons = {};
+  ['carta_girar','carta_error','aplauso_corto','aplauso_largo','llanto'].forEach(nom => {
+    const a = new Audio(SND + nom + '.wav');
+    a.preload = 'auto';
+    sons[nom] = a;
+  });
+
+  function sonar(nom) {
+    const s = sons[nom];
+    if (!s) return;
+    s.currentTime = 0;
+    s.play().catch(() => {});
+  }
+
+  // ===== IMATGES PER NIVELL =====
+  const totes_imatges = [
+    { id:1,  src: IMG+'porquet_dab.png' },
+    { id:2,  src: IMG+'porquet_sorpresa.png' },
+    { id:3,  src: IMG+'porquet_pensando.png' },
+    { id:4,  src: IMG+'porquet_contento.png' },
+    { id:5,  src: IMG+'tiburon_contento.png' },
+    { id:6,  src: IMG+'porquet_tiburon.png' },
+    { id:7,  src: IMG+'animal_perro.png' },
+    { id:8,  src: IMG+'animal_elefante.png' },
+    { id:9,  src: IMG+'animal_jirafa.png' },
+    { id:10, src: IMG+'animal_leon.png' },
+    { id:11, src: IMG+'animal_tigre.png' },
+    { id:12, src: IMG+'animal_mono.png' },
+    { id:13, src: IMG+'animal_zebra.png' },
+    { id:14, src: IMG+'animal_cocodrilo.png' },
+    { id:15, src: IMG+'animal_hormiga.png' },
+    { id:16, src: IMG+'animal_rinoceronte.png' },
+    { id:17, src: IMG+'fruta_platano.png' },
+    { id:18, src: IMG+'fruta_naranja.png' },
+    { id:19, src: IMG+'fruta_pina.png' },
+    { id:20, src: IMG+'fruta_sandia.png' },
+    { id:21, src: IMG+'fruta_aguacate.png' },
+    { id:22, src: IMG+'fruta_cacahuete.png' },
+    { id:23, src: IMG+'tiburon_pirata.png' },
+    { id:24, src: IMG+'tiburon_travieso.png' },
+    { id:25, src: IMG+'tiburon_triste.png' },
+    { id:26, src: IMG+'tiburon_enfadado.png' },
+    { id:27, src: IMG+'porquet_malicioso.png' },
+    { id:28, src: IMG+'porquet_travieso.png' },
+    { id:29, src: IMG+'porquet_llorando.png' },
+    { id:30, src: IMG+'porquet_espaldas.png' },
+  ];
+
+  const configNivells = [
+    { parelles: 3,  fallosMax: 2,  cols: 'cols-3' },
+    { parelles: 6,  fallosMax: 3,  cols: 'cols-4' },
+    { parelles: 10, fallosMax: 4,  cols: 'cols-5' },
+    { parelles: 18, fallosMax: 5,  cols: 'cols-6' },
+    { parelles: 30, fallosMax: 6,  cols: 'cols-6' },
+  ];
+
+  // ===== ESTAT =====
+  let cartesGirades = [];
+  let cartesEncertades = 0;
+  let fallos = 0;
+  let bloquejat = false;
+  let config = null;
+
+  // ===== TEXTOS =====
   const texts = {
     ca: {
-      titleSub: '🌟 Benvingut a 🌟',
-      play: '🐷 Juguem! ✨',
+      titleSub: '🌟 Benvingut a 🌟', play: '🐷 Juguem! ✨',
       menuTitle: '🐷 Què vols fer avui?',
       sAprendre: 'Aprèn amb el Porquet', sJugar: 'Juga amb el Porquet',
       numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Animals',
       puzzle: 'Trencaclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Coloreja',
-      back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat'
+      back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat',
+      nivellsTitol: '🃏 Tria el nivell',
+      nivellNom: (n) => `Nivell ${n}`,
+      nivellDesc: (c, f) => `${c} cartes · ${f} errors màxim`,
+      fallosLabel: (f, max) => `❌ ${f}/${max}`,
+      parellesLabel: (p) => `✅ ${p}`,
+      vicText: '🎉 Molt bé! 🎉', vicSub: 'Has completat el nivell!',
+      derText: '😢 Oh! Has perdut!', derSub: 'Massa errors... Torna-ho a intentar!',
+      reintent: '🔄 Repetir', tornarIntent: '🔄 Tornar a intentar', nivells: '← Nivells', tornar: '← Tornar'
     },
     es: {
-      titleSub: '🌟 Bienvenido a 🌟',
-      play: '🐷 ¡Juguemos! ✨',
+      titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
       menuTitle: '🐷 ¿Qué quieres hacer hoy?',
       sAprendre: 'Aprende con el Porquet', sJugar: 'Juega con el Porquet',
       numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Animales',
       puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Colorear',
-      back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad'
+      back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad',
+      nivellsTitol: '🃏 Elige el nivel',
+      nivellNom: (n) => `Nivel ${n}`,
+      nivellDesc: (c, f) => `${c} cartas · ${f} errores máximo`,
+      fallosLabel: (f, max) => `❌ ${f}/${max}`,
+      parellesLabel: (p) => `✅ ${p}`,
+      vicText: '🎉 ¡Muy bien! 🎉', vicSub: '¡Has completado el nivel!',
+      derText: '😢 ¡Oh! ¡Has perdido!', derSub: 'Demasiados errores... ¡Inténtalo de nuevo!',
+      reintent: '🔄 Repetir', tornarIntent: '🔄 Volver a intentar', nivells: '← Niveles', tornar: '← Volver'
     }
   };
+
+  function t() { return texts[langActual]; }
+
+  function ocultar(id) { const el = document.getElementById(id); el.style.display='none'; el.classList.remove('visible'); }
+  function mostrar(id) { const el = document.getElementById(id); el.style.display=''; el.classList.add('visible'); }
 
   function setLang(btn, lang) {
     langActual = lang;
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    const t = texts[lang];
-    document.getElementById('title-sub').textContent = t.titleSub;
-    document.getElementById('playBtn').textContent = t.play;
+    document.getElementById('title-sub').textContent = t().titleSub;
+    document.getElementById('playBtn').textContent = t().play;
   }
 
   function entrarMenu() {
-    const t = texts[langActual];
-    document.getElementById('menu-title').textContent = t.menuTitle;
-    document.getElementById('s-aprendre').textContent = t.sAprendre;
-    document.getElementById('s-jugar').textContent = t.sJugar;
-    document.getElementById('i-numeros').textContent = t.numeros;
-    document.getElementById('i-geo').textContent = t.geo;
-    document.getElementById('i-colors').textContent = t.colors;
-    document.getElementById('i-animals').textContent = t.animals;
-    document.getElementById('i-puzzle').textContent = t.puzzle;
-    document.getElementById('i-sopa').textContent = t.sopa;
-    document.getElementById('i-memoria').textContent = t.memoria;
-    document.getElementById('i-coloreja').textContent = t.coloreja;
-    document.getElementById('backBtn').textContent = t.back;
-    document.getElementById('footer-txt').textContent = t.footer;
+    const tx = t();
+    document.getElementById('menu-title').textContent = tx.menuTitle;
+    document.getElementById('s-aprendre').textContent = tx.sAprendre;
+    document.getElementById('s-jugar').textContent = tx.sJugar;
+    document.getElementById('i-numeros').textContent = tx.numeros;
+    document.getElementById('i-geo').textContent = tx.geo;
+    document.getElementById('i-colors').textContent = tx.colors;
+    document.getElementById('i-animals').textContent = tx.animals;
+    document.getElementById('i-puzzle').textContent = tx.puzzle;
+    document.getElementById('i-sopa').textContent = tx.sopa;
+    document.getElementById('i-memoria').textContent = tx.memoria;
+    document.getElementById('i-coloreja').textContent = tx.coloreja;
+    document.getElementById('backBtn').textContent = tx.back;
+    document.getElementById('footer-txt').textContent = tx.footer;
     document.getElementById('pantalla-portada').style.display = 'none';
-    document.getElementById('pantalla-menu').classList.add('visible');
+    mostrar('pantalla-menu');
+  }
+
+  function anarNivells() {
+    const tx = t();
+    document.getElementById('nivells-title').textContent = tx.nivellsTitol;
+    configNivells.forEach((c, i) => {
+      const n = i + 1;
+      document.getElementById(`n${n}-nom`).textContent = tx.nivellNom(n);
+      document.getElementById(`n${n}-desc`).textContent = tx.nivellDesc(c.parelles * 2, c.fallosMax);
+    });
+    document.getElementById('nivells-back').textContent = tx.tornar;
+    ocultar('pantalla-menu');
+    mostrar('pantalla-nivells');
+  }
+
+  function tornarMenu() {
+    ocultar('pantalla-nivells');
+    ocultar('pantalla-memoria');
+    mostrar('pantalla-menu');
   }
 
   function tornarPortada() {
-    document.getElementById('pantalla-menu').classList.remove('visible');
+    ocultar('pantalla-menu');
     document.getElementById('pantalla-portada').style.display = 'block';
   }
-</script>
 
+  function tornarNivells() {
+    ocultar('pantalla-memoria');
+    anarNivells();
+  }
+
+  function repetirNivell() {
+    iniciarMemoria(nivellActual);
+  }
+
+  function iniciarMemoria(nivell) {
+    nivellActual = nivell;
+    config = configNivells[nivell - 1];
+    cartesGirades = []; cartesEncertades = 0; fallos = 0; bloquejat = false;
+
+    ocultar('pantalla-nivells');
+    ocultar('resultat-victoria');
+    ocultar('resultat-derrota');
+    mostrar('pantalla-memoria');
+
+    const tx = t();
+    document.getElementById('mem-title').textContent = `🃏 ${tx.memoria} — ${tx.nivellNom(nivell)}`;
+    actualitzarStats();
+
+    // Preparar imatges
+    const seleccio = [...totes_imatges].sort(() => Math.random() - 0.5).slice(0, config.parelles);
+    const parelles = [...seleccio, ...seleccio].sort(() => Math.random() - 0.5);
+
+    // Grid
+    const grid = document.getElementById('memoria-grid');
+    grid.className = 'memoria-grid ' + config.cols;
+    grid.innerHTML = '';
+    parelles.forEach(img => {
+      const carta = document.createElement('div');
+      carta.className = 'carta';
+      carta.dataset.id = img.id;
+      carta.innerHTML = `<div class="carta-davant">🐷</div><div class="carta-darrere"><img src="${img.src}" alt="carta"></div>`;
+      carta.addEventListener('click', () => girarCarta(carta));
+      grid.appendChild(carta);
+    });
+  }
+
+  function actualitzarStats() {
+    const tx = t();
+    document.getElementById('mem-fallos').textContent = tx.fallosLabel(fallos, config.fallosMax);
+    document.getElementById('mem-parelles').textContent = tx.parellesLabel(cartesEncertades);
+  }
+
+  function girarCarta(carta) {
+    if (bloquejat) return;
+    if (carta.classList.contains('girada') || carta.classList.contains('encertada')) return;
+    if (cartesGirades.length >= 2) return;
+
+    sonar('carta_girar');
+    carta.classList.add('girada');
+    cartesGirades.push(carta);
+
+    if (cartesGirades.length === 2) {
+      bloquejat = true;
+      if (cartesGirades[0].dataset.id === cartesGirades[1].dataset.id) {
+        // ENCERT
+        setTimeout(() => {
+          sonar('aplauso_corto');
+          cartesGirades.forEach(c => c.classList.add('encertada'));
+          cartesEncertades++;
+          cartesGirades = [];
+          bloquejat = false;
+          actualitzarStats();
+          if (cartesEncertades === config.parelles) {
+            setTimeout(mostrarVictoria, 500);
+          }
+        }, 400);
+      } else {
+        // ERROR
+        setTimeout(() => {
+          sonar('carta_error');
+          cartesGirades.forEach(c => {
+            c.classList.remove('girada');
+            c.classList.add('error-flash');
+            setTimeout(() => c.classList.remove('error-flash'), 400);
+          });
+          cartesGirades = [];
+          fallos++;
+          bloquejat = false;
+          actualitzarStats();
+          if (fallos >= config.fallosMax) {
+            setTimeout(mostrarDerrota, 600);
+          }
+        }, 800);
+      }
+    }
+  }
+
+  function mostrarVictoria() {
+    const tx = t();
+    sonar('aplauso_largo');
+    document.getElementById('vic-text').textContent = tx.vicText;
+    document.getElementById('vic-sub').textContent = tx.vicSub;
+    document.getElementById('vic-reintent').textContent = tx.reintent;
+    document.getElementById('memoria-grid').style.display = 'none';
+    mostrar('resultat-victoria');
+  }
+
+  function mostrarDerrota() {
+    const tx = t();
+    sonar('llanto');
+    document.getElementById('der-text').textContent = tx.derText;
+    document.getElementById('der-sub').textContent = tx.derSub;
+    document.getElementById('der-reintent').textContent = tx.tornarIntent;
+    document.getElementById('memoria-grid').style.display = 'none';
+    mostrar('resultat-derrota');
+  }
+
+</script>
 </body>
 </html>
