@@ -145,7 +145,7 @@
 
   .carta-davant, .carta-darrere { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
   .carta-davant { background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); box-shadow: 0 3px 8px rgba(255,107,157,0.3); font-size: 1.4rem; }
-  .carta-darrere { background: white; border: 2px solid var(--rosa-clar); overflow: hidden; }
+  .carta-darrere { background: white; border: 2px solid var(--rosa-clar); overflow: hidden; transform: rotateY(180deg); }
   .carta-darrere img { width: 85%; height: 85%; object-fit: contain; }
   .carta.encertada .carta-davant { background: linear-gradient(135deg, #95E77E, #4ECDC4); }
   .carta.encertada .carta-darrere { border-color: #95E77E; }
