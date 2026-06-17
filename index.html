@@ -192,7 +192,7 @@
   .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
   .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
-  /* PUZZLE - VERSIÓN CORREGIDA (SIN ESPACIOS) */
+  /* PUZZLE - VERSIÓN DEFINITIVA (SIN ESPACIOS) */
   #pantalla-puzzle-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
   #pantalla-puzzle-nivells.visible { display: flex; }
   #pantalla-puzzle { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; }
@@ -222,25 +222,24 @@
     display: grid; 
     width: 100%;
     height: 100%;
-    max-width: 100%;
-    max-height: 100%;
     border: 4px solid var(--rosa-clar); 
     border-radius: 12px; 
     overflow: hidden;
-    aspect-ratio: auto !important;
-    gap: 0 !important;  /* <--- ELIMINA ESPACIOS ENTRE PIEZAS */
+    gap: 0 !important;
     background-color: var(--rosa-clar);
   }
   .puzzle-piece {
     position: relative;
     overflow: hidden;
     cursor: grab;
-    border: 0px solid rgba(255,255,255,0.3); /* <--- BORDE 0 PARA QUE NO SE VEA */
+    border: 0 !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     aspect-ratio: 1 / 1;
     background-repeat: no-repeat !important;
     margin: 0 !important;
     padding: 0 !important;
+    min-width: 0;
+    min-height: 0;
   }
   .puzzle-piece.dragging { 
     opacity: 0.8; 
@@ -257,7 +256,7 @@
 
   .puzzle-preview { 
     width: 60px; 
-    height: 80px;  /* Rectángulo vertical */
+    height: 80px;
     border-radius: 8px; 
     overflow: hidden; 
     border: 2px solid var(--rosa-clar); 
@@ -267,7 +266,7 @@
   .puzzle-preview img { 
     width: 100%; 
     height: 100%; 
-    object-fit: cover !important;  /* Llena el rectángulo sin espacios */
+    object-fit: cover !important;
     display: block;
   }
 
@@ -798,7 +797,7 @@
   
   let dialogCallback = null;
 
-  // ===== PUZZLE - VERSIÓN CORREGIDA =====
+  // ===== PUZZLE - VERSIÓN DEFINITIVA =====
   const escenes = [
     'escena_playa','escena_bosque','escena_espai','escena_cuina','escena_futbol',
     'escena_muntanya','escena_circ','escena_pirates','escena_jungla','escena_hivernacle'
@@ -971,7 +970,7 @@
     if (e.target.classList.contains('correcta')) return;
     dragSrc = e.target;
     dragSrc.classList.add('dragging');
-    sonar('carta_girar');  // <--- Sonido al empezar a arrastrar
+    sonar('carta_girar');
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
   }
@@ -999,7 +998,7 @@
     touchStartX = touch.clientX;
     touchStartY = touch.clientY;
     touchPiece.classList.add('dragging');
-    sonar('carta_girar');  // <--- Sonido al empezar a arrastrar (táctil)
+    sonar('carta_girar');
     document.addEventListener('touchmove', onTouchMove, {passive:false});
     document.addEventListener('touchend', onTouchEnd);
   }
