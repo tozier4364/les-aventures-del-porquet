@@ -164,6 +164,41 @@
   .resultat-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
   .btn-reintent { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 30px; padding: 12px 20px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,157,0.4); }
   .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 20px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; }
+
+  /* DIALOG CONFIRMACIÓ */
+  .dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .dialog-overlay.visible { display: flex; }
+  .dialog-box { background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 100%); border-radius: 30px; border: 4px solid var(--rosa-clar); box-shadow: 0 20px 60px rgba(255,107,157,0.3); padding: 24px 22px; max-width: 320px; width: 90%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .dialog-img { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(255,107,157,0.3)); margin-bottom: 12px; }
+  .dialog-text { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 20px; line-height: 1.4; }
+  .dialog-btns { display: flex; gap: 10px; }
+  .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
+  .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
+
+  /* PUZZLE */
+  #pantalla-puzzle-nivells { display: none; width: 100%; flex-direction: column; align-items: center; }
+  #pantalla-puzzle-nivells.visible { display: flex; }
+  #pantalla-puzzle { display: none; width: 100%; flex-direction: column; align-items: center; }
+  #pantalla-puzzle.visible { display: flex; }
+
+  .puzzle-header { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 8px; }
+  .puzzle-title { font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: var(--blau-fosc); }
+
+  .puzzle-container { position: relative; width: 100%; touch-action: none; }
+  .puzzle-grid { display: grid; width: 100%; border: 3px solid var(--rosa-clar); border-radius: 12px; overflow: hidden; }
+  .puzzle-piece {
+    position: relative; overflow: hidden; cursor: grab;
+    border: 1px solid rgba(255,255,255,0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .puzzle-piece.dragging { opacity: 0.7; transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 100; cursor: grabbing; }
+  .puzzle-piece.correcta { border-color: rgba(107,217,122,0.6); pointer-events: none; }
+  .puzzle-piece img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+
+  .puzzle-preview { width: 80px; height: 107px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rosa-clar); flex-shrink: 0; }
+  .puzzle-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+  .puzzle-progress { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--blau-fosc); padding: 4px 10px; background: #E8F8FF; border-radius: 20px; }
 </style>
 </head>
 <body>
@@ -216,7 +251,7 @@
     <div class="seccio">
       <div class="seccio-header"><span class="ico">🎮</span><span id="s-jugar">Juga amb el Porquet</span></div>
       <div class="seccio-items">
-        <div class="item-btn"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
+        <div class="item-btn" onclick="anarNivellsPuzzle()"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
         <div class="item-btn"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
         <div class="item-btn" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
         <div class="item-btn"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
@@ -272,6 +307,57 @@
     </div>
   </div>
 
+
+
+  <!-- NIVELLS PUZZLE -->
+  <div id="pantalla-puzzle-nivells">
+    <div class="menu-hero">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="puzzle-nivells-title">🧩 Tria el nivell</div>
+    <div style="width:100%" id="puzzle-nivells-container"></div>
+    <button class="reset-btn" id="puzzle-reset-btn" onclick="resetStatsPuzzle()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="puzzle-nivells-back" onclick="tornarMenuDesPuzzleNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- JOC PUZZLE -->
+  <div id="pantalla-puzzle">
+    <div class="puzzle-header">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="puzzle-preview"><img id="puzzle-preview-img" src="" alt="preview"></div>
+        <div>
+          <div class="puzzle-title" id="puzzle-title">🧩 Puzzle</div>
+          <div class="puzzle-progress" id="puzzle-progress">0 / 9</div>
+        </div>
+      </div>
+      <button class="sortir-btn" id="puzzle-sortir-btn" onclick="sortirPuzzle()">✖</button>
+    </div>
+    <div class="puzzle-grid" id="puzzle-grid"></div>
+
+    <!-- VICTÒRIA PUZZLE -->
+    <div class="resultat" id="puzzle-victoria">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="puzzle-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="puzzle-vic-sub">Has completat el puzzle!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="puzzle-vic-reintent" onclick="repetirPuzzle()">🔄 Repetir</button>
+        <button class="btn-menu" id="puzzle-vic-nivells" onclick="tornarNivellsPuzzle()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIALOG CONFIRMACIÓ -->
+  <div class="dialog-overlay" id="dialog-overlay">
+    <div class="dialog-box">
+      <img class="dialog-img" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+      <div class="dialog-text" id="dialog-text">Segur que vols esborrar totes les estadístiques?</div>
+      <div class="dialog-btns">
+        <button class="dialog-ok" id="dialog-ok" onclick="confirmarReset()">✓ Sí</button>
+        <button class="dialog-cancel" id="dialog-cancel" onclick="tancarDialog()">✗ No</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -312,12 +398,7 @@
     stats[key][tipus]++;
     guardarStats(stats);
   }
-  function resetStats() {
-    if (confirm(t().confirmReset)) {
-      localStorage.removeItem('porquet_memoria_stats');
-      renderNivells();
-    }
-  }
+
 
   // ===== IMATGES =====
   const totes_imatges = [
@@ -390,7 +471,8 @@
       nivells: '← Nivells', tornar: '← Tornar',
       sortir: '✖ Sortir',
       resetBtn: '🗑️ Esborrar estadístiques',
-      confirmReset: 'Segur que vols esborrar totes les estadístiques?'
+      confirmReset: 'Segur que vols esborrar totes les estadístiques?',
+      dialogSi: '✓ Sí', dialogNo: '✗ No'
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -412,7 +494,8 @@
       nivells: '← Niveles', tornar: '← Volver',
       sortir: '✖ Salir',
       resetBtn: '🗑️ Borrar estadísticas',
-      confirmReset: '¿Seguro que quieres borrar todas las estadísticas?'
+      confirmReset: '¿Seguro que quieres borrar todas las estadísticas?',
+      dialogSi: '✓ Sí', dialogNo: '✗ No'
     }
   };
 
@@ -605,6 +688,304 @@
     document.getElementById('memoria-grid').style.display = 'none';
     mostrar('resultat-derrota');
   }
+
+  function resetStats() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => { localStorage.removeItem('porquet_memoria_stats'); renderNivells(); };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+  function tancarDialog() {
+    document.getElementById('dialog-overlay').classList.remove('visible');
+  }
+  function confirmarReset() {
+    tancarDialog();
+    if (dialogCallback) { dialogCallback(); dialogCallback = null; return; }
+    localStorage.removeItem('porquet_memoria_stats');
+    renderNivells();
+  }
+  let dialogCallback = null;
+
+
+  // ===== PUZZLE =====
+  const escenes = [
+    'escena_playa','escena_bosque','escena_espai','escena_cuina','escena_futbol',
+    'escena_muntanya','escena_circ','escena_pirates','escena_jungla','escena_hivernacle'
+  ];
+
+  const configPuzzle = [
+    { files: 3, cols: 3, peces: 9  },
+    { files: 4, cols: 4, peces: 16 },
+    { files: 5, cols: 5, peces: 25 },
+    { files: 6, cols: 6, peces: 36 },
+    { files: 7, cols: 7, peces: 49 },
+  ];
+
+  let puzzleNivellActual = 1;
+  let puzzleEscenaActual = '';
+  let puzzlePecesCorrectes = 0;
+  let puzzleTotal = 0;
+  let dragSrc = null;
+
+  function carregarStatsPuzzle() {
+    try { return JSON.parse(localStorage.getItem('porquet_puzzle_stats')) || {}; } catch { return {}; }
+  }
+  function guardarStatsPuzzle(stats) {
+    try { localStorage.setItem('porquet_puzzle_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStatPuzzle(nivell, tipus) {
+    const stats = carregarStatsPuzzle();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsPuzzle(stats);
+  }
+  function resetStatsPuzzle() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_puzzle_stats');
+      renderNivellsPuzzle();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function renderNivellsPuzzle() {
+    const tx = t();
+    const stats = carregarStatsPuzzle();
+    const container = document.getElementById('puzzle-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
+    const pecesNivell = [9,16,25,36,49];
+    configPuzzle.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarPuzzle(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${pecesNivell[i]} ${langActual==='ca'?'peces':'piezas'}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('puzzle-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('puzzle-nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivellsPuzzle() {
+    document.getElementById('puzzle-nivells-title').textContent = langActual==='ca' ? '🧩 Tria el nivell' : '🧩 Elige el nivel';
+    renderNivellsPuzzle();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-puzzle-nivells');
+  }
+
+  function tornarNivellsPuzzle() {
+    ocultar('pantalla-puzzle');
+    renderNivellsPuzzle();
+    mostrar('pantalla-puzzle-nivells');
+  }
+
+  function tornarMenuDesPuzzleNivells() {
+    ocultar('pantalla-puzzle-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function sortirPuzzle() {
+    incrementStatPuzzle(puzzleNivellActual, 'p');
+    tornarNivellsPuzzle();
+  }
+
+  function repetirPuzzle() { iniciarPuzzle(puzzleNivellActual); }
+
+  function iniciarPuzzle(nivell) {
+    puzzleNivellActual = nivell;
+    puzzlePecesCorrectes = 0;
+    const cfg = configPuzzle[nivell - 1];
+    puzzleTotal = cfg.peces;
+
+    // Escena aleatoria diferent a l'anterior
+    let escenes_disponibles = escenes.filter(e => e !== puzzleEscenaActual);
+    puzzleEscenaActual = escenes_disponibles[Math.floor(Math.random() * escenes_disponibles.length)];
+    const imgSrc = IMG + puzzleEscenaActual + '.png';
+
+    ocultar('pantalla-puzzle-nivells');
+    ocultar('puzzle-victoria');
+    mostrar('pantalla-puzzle');
+
+    const tx = t();
+    document.getElementById('puzzle-title').textContent = `🧩 ${langActual==='ca'?'Puzzle':'Puzzle'} — ${tx.nivellNom(nivell)}`;
+    document.getElementById('puzzle-sortir-btn').textContent = tx.sortir;
+    document.getElementById('puzzle-vic-nivells').textContent = tx.nivells;
+    document.getElementById('puzzle-vic-reintent').textContent = tx.reintent;
+    document.getElementById('puzzle-preview-img').src = imgSrc;
+    actualitzarProgressPuzzle();
+
+    // Crear grid
+    const grid = document.getElementById('puzzle-grid');
+    grid.innerHTML = '';
+    grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
+    grid.style.display = 'grid';
+
+    // Calcular mida peces
+    const gridW = grid.offsetWidth || (window.innerWidth * 0.88);
+    const pieceW = gridW / cfg.cols;
+    const pieceH = pieceW * (4/3); // proporció vertical 3:4
+
+    // Crear peces amb background-position
+    const indices = Array.from({length: cfg.peces}, (_, i) => i);
+    const barrejats = [...indices].sort(() => Math.random() - 0.5);
+
+    barrejats.forEach((posOriginal, posActual) => {
+      const row = Math.floor(posOriginal / cfg.cols);
+      const col = posOriginal % cfg.cols;
+
+      const piece = document.createElement('div');
+      piece.className = 'puzzle-piece';
+      piece.dataset.original = posOriginal;
+      piece.dataset.current = posActual;
+      piece.style.height = pieceH + 'px';
+      piece.style.backgroundImage = `url('${imgSrc}')`;
+      piece.style.backgroundSize = `${cfg.cols * 100}% ${cfg.files * 100}%`;
+      piece.style.backgroundPosition = `${col * 100/(cfg.cols-1)}% ${row * 100/(cfg.files-1)}%`;
+
+      if (posOriginal === posActual) {
+        piece.classList.add('correcta');
+        puzzlePecesCorrectes++;
+      }
+
+      // Drag & drop tàctil i mouse
+      piece.addEventListener('mousedown', onPieceDragStart);
+      piece.addEventListener('touchstart', onPieceTouchStart, {passive:true});
+
+      grid.appendChild(piece);
+    });
+
+    actualitzarProgressPuzzle();
+  }
+
+  function actualitzarProgressPuzzle() {
+    document.getElementById('puzzle-progress').textContent = `${puzzlePecesCorrectes} / ${puzzleTotal}`;
+  }
+
+  // ===== DRAG & DROP =====
+  let touchStartX, touchStartY, touchPiece, touchClone;
+
+  function onPieceDragStart(e) {
+    if (e.target.classList.contains('correcta')) return;
+    dragSrc = e.target;
+    dragSrc.classList.add('dragging');
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup', onMouseUp);
+  }
+
+  function onMouseMove(e) {
+    if (!dragSrc) return;
+  }
+
+  function onMouseUp(e) {
+    if (!dragSrc) return;
+    dragSrc.classList.remove('dragging');
+    const grid = document.getElementById('puzzle-grid');
+    const pieces = Array.from(grid.children);
+    const target = document.elementFromPoint(e.clientX, e.clientY);
+    const targetPiece = target?.closest('.puzzle-piece');
+    if (targetPiece && targetPiece !== dragSrc && !targetPiece.classList.contains('correcta')) {
+      swapPeces(dragSrc, targetPiece);
+    }
+    dragSrc = null;
+    document.removeEventListener('mousemove', onMouseMove);
+    document.removeEventListener('mouseup', onMouseUp);
+  }
+
+  function onPieceTouchStart(e) {
+    if (e.target.classList.contains('correcta')) return;
+    touchPiece = e.target;
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchPiece.classList.add('dragging');
+    document.addEventListener('touchmove', onTouchMove, {passive:false});
+    document.addEventListener('touchend', onTouchEnd);
+  }
+
+  function onTouchMove(e) {
+    e.preventDefault();
+  }
+
+  function onTouchEnd(e) {
+    if (!touchPiece) return;
+    touchPiece.classList.remove('dragging');
+    const touch = e.changedTouches[0];
+    const target = document.elementFromPoint(touch.clientX, touch.clientY);
+    const targetPiece = target?.closest('.puzzle-piece');
+    if (targetPiece && targetPiece !== touchPiece && !targetPiece.classList.contains('correcta')) {
+      swapPeces(touchPiece, targetPiece);
+    }
+    touchPiece = null;
+    document.removeEventListener('touchmove', onTouchMove);
+    document.removeEventListener('touchend', onTouchEnd);
+  }
+
+  function swapPeces(a, b) {
+    const cfg = configPuzzle[puzzleNivellActual - 1];
+    // Intercanviar backgrounds
+    const tmpBg = a.style.backgroundPosition;
+    const tmpOrig = a.dataset.original;
+    a.style.backgroundPosition = b.style.backgroundPosition;
+    a.dataset.original = b.dataset.original;
+    b.style.backgroundPosition = tmpBg;
+    b.dataset.original = tmpOrig;
+
+    // Comprovar correctes
+    const grid = document.getElementById('puzzle-grid');
+    const pieces = Array.from(grid.children);
+    puzzlePecesCorrectes = 0;
+    pieces.forEach((p, idx) => {
+      if (parseInt(p.dataset.original) === idx) {
+        p.classList.add('correcta');
+        puzzlePecesCorrectes++;
+      } else {
+        p.classList.remove('correcta');
+      }
+    });
+
+    actualitzarProgressPuzzle();
+
+    if (puzzlePecesCorrectes === puzzleTotal) {
+      setTimeout(mostrarVictoriaPuzzle, 400);
+    }
+  }
+
+  function mostrarVictoriaPuzzle() {
+    const tx = t();
+    incrementStatPuzzle(puzzleNivellActual, 'g');
+    sonar('aplauso_largo');
+    document.getElementById('puzzle-vic-text').textContent = tx.vicText;
+    document.getElementById('puzzle-vic-sub').textContent = langActual==='ca' ? 'Has completat el puzzle!' : '¡Has completado el puzzle!';
+    document.getElementById('puzzle-grid').style.display = 'none';
+    mostrar('puzzle-victoria');
+  }
+
+  // Dialog callback generic
+  let dialogCallback = null;
+  function confirmarReset() {
+    tancarDialog();
+    if (dialogCallback) { dialogCallback(); dialogCallback = null; }
+  }
+
 </script>
 </body>
 </html>
