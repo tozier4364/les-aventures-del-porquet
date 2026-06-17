@@ -255,24 +255,23 @@
     cursor: grabbing; 
   }
   .puzzle-piece.correcta { 
-    border-color: rgba(107,217,122,0.8); 
-    pointer-events: none; 
     box-shadow: inset 0 0 0 2px rgba(107,217,122,0.5);
   }
 
   .puzzle-preview { 
     width: 90px; 
-    height: 110px;
     border-radius: 8px; 
     overflow: hidden; 
     border: 2px solid var(--rosa-clar); 
     flex-shrink: 0;
     background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .puzzle-preview img { 
     width: 100%; 
-    height: 100%; 
-    object-fit: contain !important;
+    height: auto;
     display: block;
   }
 
@@ -1013,7 +1012,6 @@
   }
 
   function seleccionarPeca(piece) {
-    if (piece.classList.contains('correcta')) return;
 
     if (!piecaSeleccionada) {
       piecaSeleccionada = piece;
