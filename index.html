@@ -478,11 +478,14 @@
     a.preload = 'auto';
     sons[nom] = a;
   });
-  function sonar(nom) {
+  function sonar(nom, duracioMs) {
     const s = sons[nom];
     if (!s) return;
     s.currentTime = 0;
     s.play().catch(() => {});
+    if (duracioMs) {
+      setTimeout(() => { s.pause(); s.currentTime = 0; }, duracioMs);
+    }
   }
 
   // ===== ESTADÍSTIQUES (localStorage) =====
@@ -746,7 +749,7 @@
       bloquejat = true;
       if (cartesGirades[0].dataset.id === cartesGirades[1].dataset.id) {
         setTimeout(() => {
-          sonar('aplauso_corto');
+          sonar('aplauso_corto', 5000);
           cartesGirades.forEach(c => c.classList.add('encertada'));
           cartesEncertades++;
           cartesGirades = [];
@@ -775,7 +778,7 @@
   function mostrarVictoria() {
     const tx = t();
     incrementStat(nivellActual, 'g');
-    sonar('aplauso_largo');
+    sonar('aplauso_largo', 5000);
     document.getElementById('vic-text').textContent = tx.vicText;
     document.getElementById('vic-sub').textContent = tx.vicSub;
     document.getElementById('vic-reintent').textContent = tx.reintent;
@@ -1016,12 +1019,13 @@
     if (!piecaSeleccionada) {
       piecaSeleccionada = piece;
       piece.classList.add('seleccionada');
-      sonar('carta_girar');
+      sonar('carta_girar', 200);
     } else if (piecaSeleccionada === piece) {
       piece.classList.remove('seleccionada');
       piecaSeleccionada = null;
     } else {
       piecaSeleccionada.classList.remove('seleccionada');
+      sonar('carta_girar', 200);
       swapPeces(piecaSeleccionada, piece);
       piecaSeleccionada = null;
     }
@@ -1057,7 +1061,7 @@
   function mostrarVictoriaPuzzle() {
     const tx = t();
     incrementStatPuzzle(puzzleNivellActual, 'g');
-    sonar('aplauso_largo');
+    sonar('aplauso_largo', 5000);
     document.getElementById('puzzle-vic-text').textContent = tx.vicText;
     document.getElementById('puzzle-vic-sub').textContent = langActual==='ca' ? 'Has completat el puzzle!' : '¡Has completado el puzzle!';
     document.getElementById('puzzle-grid').style.display = 'none';
