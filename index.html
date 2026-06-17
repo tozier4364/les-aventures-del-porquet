@@ -361,11 +361,11 @@
   ];
 
   const configNivells = [
-    { parelles: 3,  fallosMax: 2,  cols: 'cols-3' },
-    { parelles: 6,  fallosMax: 3,  cols: 'cols-4' },
-    { parelles: 10, fallosMax: 4,  cols: 'cols-5' },
-    { parelles: 18, fallosMax: 5,  cols: 'cols-6' },
-    { parelles: 30, fallosMax: 6,  cols: 'cols-6' },
+    { parelles: 3,  fallosMax: 3,  cols: "cols-3" },
+    { parelles: 6,  fallosMax: 6,  cols: "cols-4" },
+    { parelles: 10, fallosMax: 9,  cols: "cols-5" },
+    { parelles: 18, fallosMax: 12, cols: "cols-6" },
+    { parelles: 30, fallosMax: 999, cols: "cols-6" },
   ];
 
   // ===== ESTAT =====
@@ -386,8 +386,8 @@
       back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat',
       nivellsTitol: '🃏 Tria el nivell',
       nivellNom: (n) => `Nivell ${n}`,
-      nivellDesc: (c, f) => `${c} cartes · ${f} errors màxim`,
-      fallosLabel: (f, max) => `❌ ${f}/${max}`,
+      nivellDesc: (c, f) => f >= 999 ? `${c} cartes · sense límit d'errors` : `${c} cartes · ${f} errors màxim`,
+      fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errors` : `❌ ${f}/${max}`,
       parellesLabel: (p) => `✅ ${p}`,
       vicText: '🎉 Molt bé! 🎉', vicSub: 'Has completat el nivell!',
       derText: '😢 Oh! Has perdut!', derSub: 'Massa errors... Torna-ho a intentar!',
@@ -402,8 +402,8 @@
       back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad',
       nivellsTitol: '🃏 Elige el nivel',
       nivellNom: (n) => `Nivel ${n}`,
-      nivellDesc: (c, f) => `${c} cartas · ${f} errores máximo`,
-      fallosLabel: (f, max) => `❌ ${f}/${max}`,
+      nivellDesc: (c, f) => f >= 999 ? `${c} cartas · sin límite de errores` : `${c} cartas · ${f} errores máximo`,
+      fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errors` : `❌ ${f}/${max}`,
       parellesLabel: (p) => `✅ ${p}`,
       vicText: '🎉 ¡Muy bien! 🎉', vicSub: '¡Has completado el nivel!',
       derText: '😢 ¡Oh! ¡Has perdido!', derSub: 'Demasiados errores... ¡Inténtalo de nuevo!',
@@ -480,6 +480,9 @@
     nivellActual = nivell;
     config = configNivells[nivell - 1];
     cartesGirades = []; cartesEncertades = 0; fallos = 0; bloquejat = false;
+    document.getElementById("memoria-grid").style.display = "";
+    ocultar("resultat-victoria");
+    ocultar("resultat-derrota");
 
     ocultar('pantalla-nivells');
     ocultar('resultat-victoria');
