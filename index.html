@@ -175,7 +175,7 @@
   .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
   .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
-  /* PUZZLE */
+  /* PUZZLE - NUEVA VERSIÓN PARA PEQUES */
   #pantalla-puzzle-nivells { display: none; width: 100%; flex-direction: column; align-items: center; }
   #pantalla-puzzle-nivells.visible { display: flex; }
   #pantalla-puzzle { display: none; width: 100%; flex-direction: column; align-items: center; }
@@ -187,15 +187,19 @@
   .puzzle-container { position: relative; width: 100%; touch-action: none; }
   .puzzle-grid { display: grid; width: 100%; border: 3px solid var(--rosa-clar); border-radius: 12px; overflow: hidden; }
   .puzzle-piece {
-    position: relative; overflow: hidden; cursor: grab;
+    position: relative;
+    overflow: hidden;
+    cursor: grab;
     border: 1px solid rgba(255,255,255,0.4);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
+    aspect-ratio: 1 / 1;
+    background-size: cover !important;
+    background-position: center !important;
   }
   .puzzle-piece.dragging { opacity: 0.7; transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 100; cursor: grabbing; }
   .puzzle-piece.correcta { border-color: rgba(107,217,122,0.6); pointer-events: none; }
-  .puzzle-piece img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
 
-  .puzzle-preview { width: 80px; height: 107px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rosa-clar); flex-shrink: 0; }
+  .puzzle-preview { width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 2px solid var(--rosa-clar); flex-shrink: 0; }
   .puzzle-preview img { width: 100%; height: 100%; object-fit: cover; }
 
   .puzzle-progress { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--blau-fosc); padding: 4px 10px; background: #E8F8FF; border-radius: 20px; }
@@ -261,7 +265,7 @@
     <div class="footer" id="footer-txt">© Les Aventures del Porquet · Sense publicitat</div>
   </div>
 
-  <!-- SELECCIÓ DE NIVELLS -->
+  <!-- SELECCIÓ DE NIVELLS MEMÒRIA -->
   <div id="pantalla-nivells">
     <div class="menu-hero">
       <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
@@ -306,8 +310,6 @@
       </div>
     </div>
   </div>
-
-
 
   <!-- NIVELLS PUZZLE -->
   <div id="pantalla-puzzle-nivells">
@@ -714,18 +716,19 @@
   
   let dialogCallback = null;
 
-  // ===== PUZZLE =====
+  // ===== PUZZLE - NUEVA VERSIÓN PARA PEQUES =====
   const escenes = [
     'escena_playa','escena_bosque','escena_espai','escena_cuina','escena_futbol',
     'escena_muntanya','escena_circ','escena_pirates','escena_jungla','escena_hivernacle'
   ];
 
+  // NUEVA CONFIGURACIÓN: más columnas que filas para piezas cuadradas
   const configPuzzle = [
-    { files: 3, cols: 3, peces: 9  },
-    { files: 4, cols: 4, peces: 16 },
-    { files: 5, cols: 5, peces: 25 },
-    { files: 6, cols: 6, peces: 36 },
-    { files: 7, cols: 7, peces: 49 },
+    { files: 2, cols: 3, peces: 6  },
+    { files: 3, cols: 4, peces: 12 },
+    { files: 3, cols: 5, peces: 15 },
+    { files: 4, cols: 5, peces: 20 },
+    { files: 4, cols: 6, peces: 24 },
   ];
 
   let puzzleNivellActual = 1;
@@ -768,7 +771,7 @@
     const container = document.getElementById('puzzle-nivells-container');
     container.innerHTML = '';
     const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
-    const pecesNivell = [9,16,25,36,49];
+    const pecesNivell = [6,12,15,20,24];
     configPuzzle.forEach((c, i) => {
       const n = i + 1;
       const st = stats[`n${n}`] || { g: 0, p: 0 };
@@ -779,7 +782,7 @@
         <div class="nivell-top">
           <div class="nivell-info">
             <div class="nivell-nom">${tx.nivellNom(n)}</div>
-            <div class="nivell-desc">${pecesNivell[i]} ${langActual==='ca'?'peces':'piezas'}</div>
+            <div class="nivell-desc">${c.files}×${c.cols} · ${pecesNivell[i]} ${langActual==='ca'?'peces':'piezas'}</div>
           </div>
           <div class="nivell-estreles">${estreles[i]}</div>
         </div>
@@ -845,10 +848,6 @@
     grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
     grid.style.display = 'grid';
 
-    const gridW = grid.offsetWidth || (window.innerWidth * 0.88);
-    const pieceW = gridW / cfg.cols;
-    const pieceH = pieceW * (4/3);
-
     const indices = Array.from({length: cfg.peces}, (_, i) => i);
     const barrejats = [...indices].sort(() => Math.random() - 0.5);
 
@@ -860,7 +859,6 @@
       piece.className = 'puzzle-piece';
       piece.dataset.original = posOriginal;
       piece.dataset.current = posActual;
-      piece.style.height = pieceH + 'px';
       piece.style.backgroundImage = `url('${imgSrc}')`;
       piece.style.backgroundSize = `${cfg.cols * 100}% ${cfg.files * 100}%`;
       piece.style.backgroundPosition = `${col * 100/(cfg.cols-1)}% ${row * 100/(cfg.files-1)}%`;
