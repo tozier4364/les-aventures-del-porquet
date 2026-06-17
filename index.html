@@ -570,6 +570,8 @@
   function tornarMenu() {
     ocultar('pantalla-nivells');
     ocultar('pantalla-memoria');
+    ocultar('pantalla-puzzle');
+    ocultar('pantalla-puzzle-nivells');
     mostrar('pantalla-menu');
   }
 
@@ -697,17 +699,20 @@
     dialogCallback = () => { localStorage.removeItem('porquet_memoria_stats'); renderNivells(); };
     document.getElementById('dialog-overlay').classList.add('visible');
   }
+  
   function tancarDialog() {
     document.getElementById('dialog-overlay').classList.remove('visible');
   }
+  
   function confirmarReset() {
     tancarDialog();
-    if (dialogCallback) { dialogCallback(); dialogCallback = null; return; }
-    localStorage.removeItem('porquet_memoria_stats');
-    renderNivells();
+    if (dialogCallback) { 
+      dialogCallback(); 
+      dialogCallback = null; 
+    }
   }
+  
   let dialogCallback = null;
-
 
   // ===== PUZZLE =====
   const escenes = [
@@ -732,9 +737,11 @@
   function carregarStatsPuzzle() {
     try { return JSON.parse(localStorage.getItem('porquet_puzzle_stats')) || {}; } catch { return {}; }
   }
+  
   function guardarStatsPuzzle(stats) {
     try { localStorage.setItem('porquet_puzzle_stats', JSON.stringify(stats)); } catch {}
   }
+  
   function incrementStatPuzzle(nivell, tipus) {
     const stats = carregarStatsPuzzle();
     const key = `n${nivell}`;
@@ -742,6 +749,7 @@
     stats[key][tipus]++;
     guardarStatsPuzzle(stats);
   }
+  
   function resetStatsPuzzle() {
     const tx = t();
     document.getElementById('dialog-text').textContent = tx.confirmReset;
@@ -816,7 +824,6 @@
     const cfg = configPuzzle[nivell - 1];
     puzzleTotal = cfg.peces;
 
-    // Escena aleatoria diferent a l'anterior
     let escenes_disponibles = escenes.filter(e => e !== puzzleEscenaActual);
     puzzleEscenaActual = escenes_disponibles[Math.floor(Math.random() * escenes_disponibles.length)];
     const imgSrc = IMG + puzzleEscenaActual + '.png';
@@ -833,18 +840,15 @@
     document.getElementById('puzzle-preview-img').src = imgSrc;
     actualitzarProgressPuzzle();
 
-    // Crear grid
     const grid = document.getElementById('puzzle-grid');
     grid.innerHTML = '';
     grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
     grid.style.display = 'grid';
 
-    // Calcular mida peces
     const gridW = grid.offsetWidth || (window.innerWidth * 0.88);
     const pieceW = gridW / cfg.cols;
-    const pieceH = pieceW * (4/3); // proporció vertical 3:4
+    const pieceH = pieceW * (4/3);
 
-    // Crear peces amb background-position
     const indices = Array.from({length: cfg.peces}, (_, i) => i);
     const barrejats = [...indices].sort(() => Math.random() - 0.5);
 
@@ -866,7 +870,6 @@
         puzzlePecesCorrectes++;
       }
 
-      // Drag & drop tàctil i mouse
       piece.addEventListener('mousedown', onPieceDragStart);
       piece.addEventListener('touchstart', onPieceTouchStart, {passive:true});
 
@@ -891,15 +894,12 @@
     document.addEventListener('mouseup', onMouseUp);
   }
 
-  function onMouseMove(e) {
-    if (!dragSrc) return;
-  }
+  function onMouseMove(e) {}
 
   function onMouseUp(e) {
     if (!dragSrc) return;
     dragSrc.classList.remove('dragging');
     const grid = document.getElementById('puzzle-grid');
-    const pieces = Array.from(grid.children);
     const target = document.elementFromPoint(e.clientX, e.clientY);
     const targetPiece = target?.closest('.puzzle-piece');
     if (targetPiece && targetPiece !== dragSrc && !targetPiece.classList.contains('correcta')) {
@@ -941,7 +941,6 @@
 
   function swapPeces(a, b) {
     const cfg = configPuzzle[puzzleNivellActual - 1];
-    // Intercanviar backgrounds
     const tmpBg = a.style.backgroundPosition;
     const tmpOrig = a.dataset.original;
     a.style.backgroundPosition = b.style.backgroundPosition;
@@ -949,7 +948,6 @@
     b.style.backgroundPosition = tmpBg;
     b.dataset.original = tmpOrig;
 
-    // Comprovar correctes
     const grid = document.getElementById('puzzle-grid');
     const pieces = Array.from(grid.children);
     puzzlePecesCorrectes = 0;
@@ -978,14 +976,6 @@
     document.getElementById('puzzle-grid').style.display = 'none';
     mostrar('puzzle-victoria');
   }
-
-  // Dialog callback generic
-  let dialogCallback = null;
-  function confirmarReset() {
-    tancarDialog();
-    if (dialogCallback) { dialogCallback(); dialogCallback = null; }
-  }
-
 </script>
 </body>
 </html>
