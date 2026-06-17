@@ -103,48 +103,53 @@
   .back-btn { margin-top: 6px; background: none; border: 2px solid #ddd; border-radius: 50px; padding: 8px 24px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: #aaa; cursor: pointer; }
   .footer { margin-top: 12px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; }
 
-  /* NIVELLS MEMÒRIA */
+  /* NIVELLS */
   #pantalla-nivells { display: none; width: 100%; flex-direction: column; align-items: center; }
   #pantalla-nivells.visible { display: flex; }
   .nivells-title { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 16px; text-align: center; }
-  .nivell-btn {
-    width: 100%; background: white; border: 3px solid var(--rosa-clar);
-    border-radius: 20px; padding: 14px 20px; margin-bottom: 10px;
-    cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: space-between;
-    box-shadow: 0 4px 12px rgba(255,107,157,0.1);
-  }
+  .nivell-btn { width: 100%; background: white; border: 3px solid var(--rosa-clar); border-radius: 20px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; transition: all .2s; box-shadow: 0 4px 12px rgba(255,107,157,0.1); }
   .nivell-btn:active { transform: scale(0.97); }
-  .nivell-btn:hover { border-color: var(--rosa); box-shadow: 0 6px 18px rgba(255,107,157,0.2); }
+  .nivell-btn:hover { border-color: var(--rosa); }
+  .nivell-top { display: flex; align-items: center; justify-content: space-between; }
   .nivell-info { display: flex; flex-direction: column; align-items: flex-start; }
-  .nivell-nom { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; color: var(--rosa); }
-  .nivell-desc { font-family: 'Nunito', sans-serif; font-size: 0.75rem; color: #aaa; font-weight: 700; margin-top: 2px; }
-  .nivell-estreles { font-size: 1.1rem; }
+  .nivell-nom { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--rosa); }
+  .nivell-desc { font-family: 'Nunito', sans-serif; font-size: 0.72rem; color: #aaa; font-weight: 700; margin-top: 2px; }
+  .nivell-estreles { font-size: 1rem; }
+  .nivell-stats { display: flex; gap: 8px; margin-top: 6px; }
+  .stat-mini { font-family: 'Nunito', sans-serif; font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  .stat-mini.guanyat { background: #E0FFE8; color: #30A050; }
+  .stat-mini.perdut  { background: #FFE0E0; color: #E05050; }
+
+  .reset-btn { margin-top: 10px; background: none; border: 2px solid #ffb3b3; border-radius: 50px; padding: 8px 20px; font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: #E05050; cursor: pointer; }
+  .reset-btn:active { background: #FFE0E0; }
 
   /* MEMÒRIA */
   #pantalla-memoria { display: none; width: 100%; flex-direction: column; align-items: center; }
   #pantalla-memoria.visible { display: flex; }
 
   .memoria-header { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 10px; }
-  .memoria-title { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); }
-  .memoria-stats { display: flex; gap: 10px; }
-  .stat-badge { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+  .memoria-title { font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: var(--blau-fosc); }
+  .memoria-stats { display: flex; gap: 6px; align-items: center; }
+  .stat-badge { font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 20px; }
   .stat-fallos { background: #FFE0E0; color: #E05050; }
   .stat-parelles { background: #E0FFE8; color: #30A050; }
+  .sortir-btn { background: none; border: 2px solid #ddd; border-radius: 20px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 700; color: #aaa; cursor: pointer; }
+  .sortir-btn:active { background: #f5f5f5; }
 
-  .memoria-grid { display: grid; gap: 8px; width: 100%; margin-bottom: 12px; }
+  .memoria-grid { display: grid; gap: 6px; width: 100%; margin-bottom: 12px; }
   .memoria-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
   .memoria-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
   .memoria-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
   .memoria-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
 
-  .carta { aspect-ratio: 1; border-radius: 12px; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
+  .carta { aspect-ratio: 1; border-radius: 10px; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
   .carta.girada { transform: rotateY(180deg); }
   .carta.encertada { transform: rotateY(180deg); pointer-events: none; }
   .carta.error-flash { animation: errorFlash 0.4s ease; }
-  @keyframes errorFlash { 0%,100% { filter: none; } 50% { filter: brightness(0.7) sepia(1) hue-rotate(-30deg); } }
+  @keyframes errorFlash { 0%,100% { filter: none; } 50% { filter: brightness(0.6) sepia(1) hue-rotate(-30deg); } }
 
-  .carta-davant, .carta-darrere { position: absolute; inset: 0; border-radius: 12px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
-  .carta-davant { background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); box-shadow: 0 3px 8px rgba(255,107,157,0.3); font-size: 1.4rem; }
+  .carta-davant, .carta-darrere { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+  .carta-davant { background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); box-shadow: 0 2px 6px rgba(255,107,157,0.3); font-size: 1.2rem; }
   .carta-darrere { background: white; border: 2px solid var(--rosa-clar); overflow: hidden; transform: rotateY(180deg); }
   .carta-darrere img { width: 85%; height: 85%; object-fit: contain; }
   .carta.encertada .carta-davant { background: linear-gradient(135deg, #95E77E, #4ECDC4); }
@@ -153,12 +158,12 @@
   /* RESULTAT */
   .resultat { display: none; flex-direction: column; align-items: center; text-align: center; padding: 10px 0; width: 100%; }
   .resultat.visible { display: flex; }
-  .resultat img { width: 200px; height: 200px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4)); margin-bottom: 12px; }
-  .resultat-text { font-family: 'Baloo 2', cursive; font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
-  .resultat-sub { font-family: 'Nunito', sans-serif; font-size: 0.9rem; color: #aaa; font-weight: 700; margin-bottom: 20px; }
-  .resultat-btns { display: flex; gap: 10px; }
-  .btn-reintent { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 30px; padding: 12px 22px; font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,157,0.4); }
-  .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
+  .resultat img { width: 180px; height: 180px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4)); margin-bottom: 12px; }
+  .resultat-text { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+  .resultat-sub { font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: #aaa; font-weight: 700; margin-bottom: 20px; }
+  .resultat-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .btn-reintent { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 30px; padding: 12px 20px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,157,0.4); }
+  .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 20px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -227,44 +232,9 @@
       <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
     </div>
     <div class="nivells-title" id="nivells-title">🃏 Tria el nivell</div>
-    <div style="width:100%">
-      <div class="nivell-btn" onclick="iniciarMemoria(1)">
-        <div class="nivell-info">
-          <div class="nivell-nom" id="n1-nom">Nivell 1</div>
-          <div class="nivell-desc" id="n1-desc">6 cartes · 2 errors màxim</div>
-        </div>
-        <div class="nivell-estreles">⭐</div>
-      </div>
-      <div class="nivell-btn" onclick="iniciarMemoria(2)">
-        <div class="nivell-info">
-          <div class="nivell-nom" id="n2-nom">Nivell 2</div>
-          <div class="nivell-desc" id="n2-desc">12 cartes · 3 errors màxim</div>
-        </div>
-        <div class="nivell-estreles">⭐⭐</div>
-      </div>
-      <div class="nivell-btn" onclick="iniciarMemoria(3)">
-        <div class="nivell-info">
-          <div class="nivell-nom" id="n3-nom">Nivell 3</div>
-          <div class="nivell-desc" id="n3-desc">20 cartes · 4 errors màxim</div>
-        </div>
-        <div class="nivell-estreles">⭐⭐⭐</div>
-      </div>
-      <div class="nivell-btn" onclick="iniciarMemoria(4)">
-        <div class="nivell-info">
-          <div class="nivell-nom" id="n4-nom">Nivell 4</div>
-          <div class="nivell-desc" id="n4-desc">36 cartes · 5 errors màxim</div>
-        </div>
-        <div class="nivell-estreles">⭐⭐⭐⭐</div>
-      </div>
-      <div class="nivell-btn" onclick="iniciarMemoria(5)">
-        <div class="nivell-info">
-          <div class="nivell-nom" id="n5-nom">Nivell 5</div>
-          <div class="nivell-desc" id="n5-desc">60 cartes · 6 errors màxim</div>
-        </div>
-        <div class="nivell-estreles">⭐⭐⭐⭐⭐</div>
-      </div>
-    </div>
-    <button class="back-btn" id="nivells-back" onclick="tornarMenu()" style="margin-top:14px">← Tornar</button>
+    <div style="width:100%" id="nivells-container"></div>
+    <button class="reset-btn" id="reset-btn" onclick="resetStats()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="nivells-back" onclick="tornarMenu()" style="margin-top:8px">← Tornar</button>
   </div>
 
   <!-- JOC MEMÒRIA -->
@@ -272,8 +242,9 @@
     <div class="memoria-header">
       <div class="memoria-title" id="mem-title">🃏 Memòria</div>
       <div class="memoria-stats">
-        <div class="stat-badge stat-fallos" id="mem-fallos">❌ 0/2</div>
+        <div class="stat-badge stat-fallos" id="mem-fallos">❌ 0/3</div>
         <div class="stat-badge stat-parelles" id="mem-parelles">✅ 0</div>
+        <button class="sortir-btn" id="sortir-btn" onclick="sortirAMitges()">✖</button>
       </div>
     </div>
     <div class="memoria-grid cols-3" id="memoria-grid"></div>
@@ -285,18 +256,18 @@
       <div class="resultat-sub" id="vic-sub">Has completat el nivell!</div>
       <div class="resultat-btns">
         <button class="btn-reintent" id="vic-reintent" onclick="repetirNivell()">🔄 Repetir</button>
-        <button class="btn-menu" onclick="tornarNivells()">← Nivells</button>
+        <button class="btn-menu" id="vic-nivells" onclick="tornarNivells()">← Nivells</button>
       </div>
     </div>
 
     <!-- DERROTA -->
     <div class="resultat" id="resultat-derrota">
       <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
-      <div class="resultat-text" id  ="der-text" style="color:var(--rosa)">😢 Oh! Has perdut!</div>
+      <div class="resultat-text" id="der-text" style="color:var(--rosa)">😢 Oh! Has perdut!</div>
       <div class="resultat-sub" id="der-sub">Massa errors... Torna-ho a intentar!</div>
       <div class="resultat-btns">
         <button class="btn-reintent" id="der-reintent" onclick="repetirNivell()">🔄 Tornar a intentar</button>
-        <button class="btn-menu" onclick="tornarNivells()">← Nivells</button>
+        <button class="btn-menu" id="der-nivells" onclick="tornarNivells()">← Nivells</button>
       </div>
     </div>
   </div>
@@ -318,7 +289,6 @@
     a.preload = 'auto';
     sons[nom] = a;
   });
-
   function sonar(nom) {
     const s = sons[nom];
     if (!s) return;
@@ -326,7 +296,30 @@
     s.play().catch(() => {});
   }
 
-  // ===== IMATGES PER NIVELL =====
+  // ===== ESTADÍSTIQUES (localStorage) =====
+  function carregarStats() {
+    try {
+      return JSON.parse(localStorage.getItem('porquet_memoria_stats')) || {};
+    } catch { return {}; }
+  }
+  function guardarStats(stats) {
+    try { localStorage.setItem('porquet_memoria_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStat(nivell, tipus) {
+    const stats = carregarStats();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStats(stats);
+  }
+  function resetStats() {
+    if (confirm(t().confirmReset)) {
+      localStorage.removeItem('porquet_memoria_stats');
+      renderNivells();
+    }
+  }
+
+  // ===== IMATGES =====
   const totes_imatges = [
     { id:1,  src: IMG+'porquet_dab.png' },
     { id:2,  src: IMG+'porquet_sorpresa.png' },
@@ -361,14 +354,14 @@
   ];
 
   const configNivells = [
-    { parelles: 3,  fallosMax: 3,  cols: "cols-3" },
-    { parelles: 6,  fallosMax: 6,  cols: "cols-4" },
-    { parelles: 10, fallosMax: 9,  cols: "cols-5" },
-    { parelles: 18, fallosMax: 12, cols: "cols-6" },
-    { parelles: 30, fallosMax: 999, cols: "cols-6" },
+    { parelles: 3,  fallosMax: 3,   cols: 'cols-3' },
+    { parelles: 6,  fallosMax: 6,   cols: 'cols-4' },
+    { parelles: 10, fallosMax: 9,   cols: 'cols-5' },
+    { parelles: 18, fallosMax: 12,  cols: 'cols-6' },
+    { parelles: 30, fallosMax: 999, cols: 'cols-6' },
   ];
 
-  // ===== ESTAT =====
+  // ===== ESTAT JOC =====
   let cartesGirades = [];
   let cartesEncertades = 0;
   let fallos = 0;
@@ -389,9 +382,15 @@
       nivellDesc: (c, f) => f >= 999 ? `${c} cartes · sense límit d'errors` : `${c} cartes · ${f} errors màxim`,
       fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errors` : `❌ ${f}/${max}`,
       parellesLabel: (p) => `✅ ${p}`,
+      guanyat: (n) => `🏆 ${n} guanyat${n!==1?'s':''}`,
+      perdut: (n) => `💔 ${n} perdut${n!==1?'s':''}`,
       vicText: '🎉 Molt bé! 🎉', vicSub: 'Has completat el nivell!',
       derText: '😢 Oh! Has perdut!', derSub: 'Massa errors... Torna-ho a intentar!',
-      reintent: '🔄 Repetir', tornarIntent: '🔄 Tornar a intentar', nivells: '← Nivells', tornar: '← Tornar'
+      reintent: '🔄 Repetir', tornarIntent: '🔄 Tornar a intentar',
+      nivells: '← Nivells', tornar: '← Tornar',
+      sortir: '✖ Sortir',
+      resetBtn: '🗑️ Esborrar estadístiques',
+      confirmReset: 'Segur que vols esborrar totes les estadístiques?'
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -403,16 +402,21 @@
       nivellsTitol: '🃏 Elige el nivel',
       nivellNom: (n) => `Nivel ${n}`,
       nivellDesc: (c, f) => f >= 999 ? `${c} cartas · sin límite de errores` : `${c} cartas · ${f} errores máximo`,
-      fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errors` : `❌ ${f}/${max}`,
+      fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errores` : `❌ ${f}/${max}`,
       parellesLabel: (p) => `✅ ${p}`,
+      guanyat: (n) => `🏆 ${n} ganado${n!==1?'s':''}`,
+      perdut: (n) => `💔 ${n} perdido${n!==1?'s':''}`,
       vicText: '🎉 ¡Muy bien! 🎉', vicSub: '¡Has completado el nivel!',
       derText: '😢 ¡Oh! ¡Has perdido!', derSub: 'Demasiados errores... ¡Inténtalo de nuevo!',
-      reintent: '🔄 Repetir', tornarIntent: '🔄 Volver a intentar', nivells: '← Niveles', tornar: '← Volver'
+      reintent: '🔄 Repetir', tornarIntent: '🔄 Volver a intentar',
+      nivells: '← Niveles', tornar: '← Volver',
+      sortir: '✖ Salir',
+      resetBtn: '🗑️ Borrar estadísticas',
+      confirmReset: '¿Seguro que quieres borrar todas las estadísticas?'
     }
   };
 
   function t() { return texts[langActual]; }
-
   function ocultar(id) { const el = document.getElementById(id); el.style.display='none'; el.classList.remove('visible'); }
   function mostrar(id) { const el = document.getElementById(id); el.style.display=''; el.classList.add('visible'); }
 
@@ -443,15 +447,39 @@
     mostrar('pantalla-menu');
   }
 
-  function anarNivells() {
+  function renderNivells() {
     const tx = t();
-    document.getElementById('nivells-title').textContent = tx.nivellsTitol;
+    const stats = carregarStats();
+    const container = document.getElementById('nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
     configNivells.forEach((c, i) => {
       const n = i + 1;
-      document.getElementById(`n${n}-nom`).textContent = tx.nivellNom(n);
-      document.getElementById(`n${n}-desc`).textContent = tx.nivellDesc(c.parelles * 2, c.fallosMax);
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarMemoria(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${tx.nivellDesc(c.parelles * 2, c.fallosMax)}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
     });
+    document.getElementById('reset-btn').textContent = tx.resetBtn;
     document.getElementById('nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivells() {
+    document.getElementById('nivells-title').textContent = t().nivellsTitol;
+    renderNivells();
     ocultar('pantalla-menu');
     mostrar('pantalla-nivells');
   }
@@ -469,35 +497,37 @@
 
   function tornarNivells() {
     ocultar('pantalla-memoria');
-    anarNivells();
+    document.getElementById('nivells-title').textContent = t().nivellsTitol;
+    renderNivells();
+    mostrar('pantalla-nivells');
   }
 
-  function repetirNivell() {
-    iniciarMemoria(nivellActual);
+  function repetirNivell() { iniciarMemoria(nivellActual); }
+
+  function sortirAMitges() {
+    incrementStat(nivellActual, 'p');
+    tornarNivells();
   }
 
   function iniciarMemoria(nivell) {
     nivellActual = nivell;
     config = configNivells[nivell - 1];
     cartesGirades = []; cartesEncertades = 0; fallos = 0; bloquejat = false;
-    document.getElementById("memoria-grid").style.display = "";
-    ocultar("resultat-victoria");
-    ocultar("resultat-derrota");
-
-    ocultar('pantalla-nivells');
+    document.getElementById('memoria-grid').style.display = '';
     ocultar('resultat-victoria');
     ocultar('resultat-derrota');
+    ocultar('pantalla-nivells');
     mostrar('pantalla-memoria');
 
     const tx = t();
     document.getElementById('mem-title').textContent = `🃏 ${tx.memoria} — ${tx.nivellNom(nivell)}`;
+    document.getElementById('sortir-btn').textContent = tx.sortir;
+    document.getElementById('vic-nivells').textContent = tx.nivells;
+    document.getElementById('der-nivells').textContent = tx.nivells;
     actualitzarStats();
 
-    // Preparar imatges
     const seleccio = [...totes_imatges].sort(() => Math.random() - 0.5).slice(0, config.parelles);
     const parelles = [...seleccio, ...seleccio].sort(() => Math.random() - 0.5);
-
-    // Grid
     const grid = document.getElementById('memoria-grid');
     grid.className = 'memoria-grid ' + config.cols;
     grid.innerHTML = '';
@@ -521,15 +551,12 @@
     if (bloquejat) return;
     if (carta.classList.contains('girada') || carta.classList.contains('encertada')) return;
     if (cartesGirades.length >= 2) return;
-
     sonar('carta_girar');
     carta.classList.add('girada');
     cartesGirades.push(carta);
-
     if (cartesGirades.length === 2) {
       bloquejat = true;
       if (cartesGirades[0].dataset.id === cartesGirades[1].dataset.id) {
-        // ENCERT
         setTimeout(() => {
           sonar('aplauso_corto');
           cartesGirades.forEach(c => c.classList.add('encertada'));
@@ -537,12 +564,9 @@
           cartesGirades = [];
           bloquejat = false;
           actualitzarStats();
-          if (cartesEncertades === config.parelles) {
-            setTimeout(mostrarVictoria, 500);
-          }
+          if (cartesEncertades === config.parelles) setTimeout(mostrarVictoria, 500);
         }, 400);
       } else {
-        // ERROR
         setTimeout(() => {
           sonar('carta_error');
           cartesGirades.forEach(c => {
@@ -554,9 +578,7 @@
           fallos++;
           bloquejat = false;
           actualitzarStats();
-          if (fallos >= config.fallosMax) {
-            setTimeout(mostrarDerrota, 600);
-          }
+          if (fallos >= config.fallosMax) setTimeout(mostrarDerrota, 600);
         }, 800);
       }
     }
@@ -564,6 +586,7 @@
 
   function mostrarVictoria() {
     const tx = t();
+    incrementStat(nivellActual, 'g');
     sonar('aplauso_largo');
     document.getElementById('vic-text').textContent = tx.vicText;
     document.getElementById('vic-sub').textContent = tx.vicSub;
@@ -574,6 +597,7 @@
 
   function mostrarDerrota() {
     const tx = t();
+    incrementStat(nivellActual, 'p');
     sonar('llanto');
     document.getElementById('der-text').textContent = tx.derText;
     document.getElementById('der-sub').textContent = tx.derSub;
@@ -581,7 +605,6 @@
     document.getElementById('memoria-grid').style.display = 'none';
     mostrar('resultat-derrota');
   }
-
 </script>
 </body>
 </html>
