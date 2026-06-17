@@ -175,7 +175,7 @@
   .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
   .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
-  /* PUZZLE - NUEVA VERSIÓN PARA PEQUES */
+  /* PUZZLE - VERSIÓN CORREGIDA */
   #pantalla-puzzle-nivells { display: none; width: 100%; flex-direction: column; align-items: center; }
   #pantalla-puzzle-nivells.visible { display: flex; }
   #pantalla-puzzle { display: none; width: 100%; flex-direction: column; align-items: center; }
@@ -195,6 +195,7 @@
     aspect-ratio: 1 / 1;
     background-size: cover !important;
     background-position: center !important;
+    background-repeat: no-repeat !important;
   }
   .puzzle-piece.dragging { opacity: 0.7; transform: scale(1.05); box-shadow: 0 8px 20px rgba(0,0,0,0.3); z-index: 100; cursor: grabbing; }
   .puzzle-piece.correcta { border-color: rgba(107,217,122,0.6); pointer-events: none; }
@@ -716,19 +717,19 @@
   
   let dialogCallback = null;
 
-  // ===== PUZZLE - NUEVA VERSIÓN PARA PEQUES =====
+  // ===== PUZZLE - VERSIÓN CORREGIDA =====
   const escenes = [
     'escena_playa','escena_bosque','escena_espai','escena_cuina','escena_futbol',
     'escena_muntanya','escena_circ','escena_pirates','escena_jungla','escena_hivernacle'
   ];
 
-  // NUEVA CONFIGURACIÓN: más columnas que filas para piezas cuadradas
+  // CONFIGURACIÓN CORRECTA: filas × columnas (más filas que columnas)
   const configPuzzle = [
-    { files: 2, cols: 3, peces: 6  },
-    { files: 3, cols: 4, peces: 12 },
-    { files: 3, cols: 5, peces: 15 },
-    { files: 4, cols: 5, peces: 20 },
-    { files: 4, cols: 6, peces: 24 },
+    { files: 3, cols: 2, peces: 6  },
+    { files: 4, cols: 3, peces: 12 },
+    { files: 5, cols: 3, peces: 15 },
+    { files: 5, cols: 4, peces: 20 },
+    { files: 6, cols: 4, peces: 24 },
   ];
 
   let puzzleNivellActual = 1;
@@ -848,6 +849,7 @@
     grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
     grid.style.display = 'grid';
 
+    // Crear piezas con la imagen dividida correctamente
     const indices = Array.from({length: cfg.peces}, (_, i) => i);
     const barrejats = [...indices].sort(() => Math.random() - 0.5);
 
@@ -859,9 +861,12 @@
       piece.className = 'puzzle-piece';
       piece.dataset.original = posOriginal;
       piece.dataset.current = posActual;
+      
+      // Cada pieza muestra solo una parte de la imagen
       piece.style.backgroundImage = `url('${imgSrc}')`;
       piece.style.backgroundSize = `${cfg.cols * 100}% ${cfg.files * 100}%`;
       piece.style.backgroundPosition = `${col * 100/(cfg.cols-1)}% ${row * 100/(cfg.files-1)}%`;
+      piece.style.backgroundRepeat = 'no-repeat';
 
       if (posOriginal === posActual) {
         piece.classList.add('correcta');
