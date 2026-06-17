@@ -261,8 +261,8 @@
   }
 
   .puzzle-preview { 
-    width: 60px; 
-    height: 80px;
+    width: 90px; 
+    height: 110px;
     border-radius: 8px; 
     overflow: hidden; 
     border: 2px solid var(--rosa-clar); 
@@ -424,16 +424,16 @@
   <!-- JOC PUZZLE -->
   <div id="pantalla-puzzle">
     <div class="puzzle-header">
-      <div style="display:flex;align-items:center;gap:8px;min-width:0;">
-        <div class="puzzle-preview"><img id="puzzle-preview-img" src="" alt="preview"></div>
-        <div style="min-width:0;">
-          <div class="puzzle-title" id="puzzle-title">🧩 Puzzle</div>
-          <div class="puzzle-progress" id="puzzle-progress">0 / 9</div>
-        </div>
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="puzzle-title">🧩 Puzzle</div>
+        <div class="puzzle-progress" id="puzzle-progress" style="align-self:flex-start;">0 / 9</div>
+        <div class="puzzle-hint" id="puzzle-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca una peça, després toca una altra per canviar-les</div>
       </div>
-      <button class="sortir-btn" id="puzzle-sortir-btn" onclick="sortirPuzzle()">✖</button>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <div class="puzzle-preview"><img id="puzzle-preview-img" src="" alt="preview"></div>
+        <button class="sortir-btn" id="puzzle-sortir-btn" onclick="sortirPuzzle()">✖</button>
+      </div>
     </div>
-    <div class="puzzle-hint" id="puzzle-hint">👆 Toca una peça, després toca una altra per canviar-les</div>
     <div class="puzzle-container">
       <div class="puzzle-grid" id="puzzle-grid"></div>
     </div>
@@ -999,14 +999,16 @@
 
   // ===== SISTEMA TAP-TAP =====
   let piecaSeleccionada = null;
+  let _lastTouchTime = 0;
 
   function onPieceTap(e) {
+    // Si acaba de haber un touch, ignorar el click sintético
+    if (Date.now() - _lastTouchTime < 400) return;
     seleccionarPeca(e.currentTarget);
   }
 
   function onPieceTouchTap(e) {
-    // evitar que también dispare el click
-    e.preventDefault && e.preventDefault();
+    _lastTouchTime = Date.now();
     seleccionarPeca(e.currentTarget);
   }
 
@@ -1014,16 +1016,13 @@
     if (piece.classList.contains('correcta')) return;
 
     if (!piecaSeleccionada) {
-      // Primera selecció
       piecaSeleccionada = piece;
       piece.classList.add('seleccionada');
       sonar('carta_girar');
     } else if (piecaSeleccionada === piece) {
-      // Toca la mateixa → deseleccionar
       piece.classList.remove('seleccionada');
       piecaSeleccionada = null;
     } else {
-      // Segona peça → intercanviar
       piecaSeleccionada.classList.remove('seleccionada');
       swapPeces(piecaSeleccionada, piece);
       piecaSeleccionada = null;
