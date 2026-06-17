@@ -192,7 +192,7 @@
   .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
   .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
-  /* PUZZLE - VERSIÓN CORREGIDA */
+  /* PUZZLE - VERSIÓN CORREGIDA (SIN ESPACIOS) */
   #pantalla-puzzle-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
   #pantalla-puzzle-nivells.visible { display: flex; }
   #pantalla-puzzle { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; }
@@ -228,15 +228,19 @@
     border-radius: 12px; 
     overflow: hidden;
     aspect-ratio: auto !important;
+    gap: 0 !important;  /* <--- ELIMINA ESPACIOS ENTRE PIEZAS */
+    background-color: var(--rosa-clar);
   }
   .puzzle-piece {
     position: relative;
     overflow: hidden;
     cursor: grab;
-    border: 1px solid rgba(255,255,255,0.3);
+    border: 0px solid rgba(255,255,255,0.3); /* <--- BORDE 0 PARA QUE NO SE VEA */
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     aspect-ratio: 1 / 1;
     background-repeat: no-repeat !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .puzzle-piece.dragging { 
     opacity: 0.8; 
