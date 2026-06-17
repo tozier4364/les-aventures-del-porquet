@@ -221,7 +221,6 @@
   .puzzle-grid { 
     display: grid; 
     width: 100%;
-    height: 100%;
     border: 4px solid var(--rosa-clar); 
     border-radius: 12px; 
     overflow: hidden;
@@ -231,15 +230,22 @@
   .puzzle-piece {
     position: relative;
     overflow: hidden;
-    cursor: grab;
+    cursor: pointer;
     border: 0 !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    aspect-ratio: 1 / 1;
     background-repeat: no-repeat !important;
     margin: 0 !important;
     padding: 0 !important;
     min-width: 0;
     min-height: 0;
+    width: 100%;
+  }
+  .puzzle-piece.seleccionada {
+    outline: 4px solid var(--groc);
+    outline-offset: -4px;
+    transform: scale(0.93);
+    z-index: 10;
+    box-shadow: 0 0 0 4px var(--groc);
   }
   .puzzle-piece.dragging { 
     opacity: 0.8; 
@@ -278,6 +284,20 @@
     padding: 2px 8px; 
     background: #E8F8FF; 
     border-radius: 20px; 
+  }
+
+  .puzzle-hint {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--blau-fosc);
+    background: #E8F8FF;
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin-bottom: 6px;
+    text-align: center;
+    flex-shrink: 0;
+    opacity: 0.85;
   }
 
   #puzzle-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
@@ -413,6 +433,7 @@
       </div>
       <button class="sortir-btn" id="puzzle-sortir-btn" onclick="sortirPuzzle()">✖</button>
     </div>
+    <div class="puzzle-hint" id="puzzle-hint">👆 Toca una peça, després toca una altra per canviar-les</div>
     <div class="puzzle-container">
       <div class="puzzle-grid" id="puzzle-grid"></div>
     </div>
@@ -815,7 +836,6 @@
   let puzzleEscenaActual = '';
   let puzzlePecesCorrectes = 0;
   let puzzleTotal = 0;
-  let dragSrc = null;
 
   function carregarStatsPuzzle() {
     try { return JSON.parse(localStorage.getItem('porquet_puzzle_stats')) || {}; } catch { return {}; }
@@ -921,12 +941,25 @@
     document.getElementById('puzzle-vic-nivells').textContent = tx.nivells;
     document.getElementById('puzzle-vic-reintent').textContent = tx.reintent;
     document.getElementById('puzzle-preview-img').src = imgSrc;
+    document.getElementById('puzzle-hint').textContent = langActual === 'ca'
+      ? '👆 Toca una peça, després toca una altra per canviar-les'
+      : '👆 Toca una pieza, luego toca otra para intercambiarlas';
     actualitzarProgressPuzzle();
 
     const grid = document.getElementById('puzzle-grid');
     grid.innerHTML = '';
     grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(${cfg.files}, 1fr)`;
     grid.style.display = 'grid';
+
+    // Calculamos la altura de cada celda según el espacio disponible
+    const container = document.querySelector('.puzzle-container');
+    const containerH = container.clientHeight;
+    const containerW = container.clientWidth;
+    // Mantenemos proporción de la imagen: usamos el espacio disponible
+    const cellSize = Math.min(Math.floor(containerW / cfg.cols), Math.floor(containerH / cfg.files));
+    grid.style.width = (cellSize * cfg.cols) + 'px';
+    grid.style.height = (cellSize * cfg.files) + 'px';
 
     const indices = Array.from({length: cfg.peces}, (_, i) => i);
     const barrejats = [...indices].sort(() => Math.random() - 0.5);
@@ -942,16 +975,17 @@
       
       piece.style.backgroundImage = `url('${imgSrc}')`;
       piece.style.backgroundSize = `${cfg.cols * 100}% ${cfg.files * 100}%`;
-      piece.style.backgroundPosition = `${col * 100/(cfg.cols-1)}% ${row * 100/(cfg.files-1)}%`;
+      piece.style.backgroundPosition = `${cfg.cols > 1 ? col * 100/(cfg.cols-1) : 0}% ${cfg.files > 1 ? row * 100/(cfg.files-1) : 0}%`;
       piece.style.backgroundRepeat = 'no-repeat';
+      piece.style.height = cellSize + 'px';
 
       if (posOriginal === posActual) {
         piece.classList.add('correcta');
         puzzlePecesCorrectes++;
       }
 
-      piece.addEventListener('mousedown', onPieceDragStart);
-      piece.addEventListener('touchstart', onPieceTouchStart, {passive:true});
+      piece.addEventListener('click', onPieceTap);
+      piece.addEventListener('touchend', onPieceTouchTap, {passive:true});
 
       grid.appendChild(piece);
     });
@@ -963,62 +997,37 @@
     document.getElementById('puzzle-progress').textContent = `${puzzlePecesCorrectes} / ${puzzleTotal}`;
   }
 
-  // ===== DRAG & DROP CON SONIDO =====
-  let touchStartX, touchStartY, touchPiece;
+  // ===== SISTEMA TAP-TAP =====
+  let piecaSeleccionada = null;
 
-  function onPieceDragStart(e) {
-    if (e.target.classList.contains('correcta')) return;
-    dragSrc = e.target;
-    dragSrc.classList.add('dragging');
-    sonar('carta_girar');
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+  function onPieceTap(e) {
+    seleccionarPeca(e.currentTarget);
   }
 
-  function onMouseMove(e) {}
+  function onPieceTouchTap(e) {
+    // evitar que también dispare el click
+    e.preventDefault && e.preventDefault();
+    seleccionarPeca(e.currentTarget);
+  }
 
-  function onMouseUp(e) {
-    if (!dragSrc) return;
-    dragSrc.classList.remove('dragging');
-    const grid = document.getElementById('puzzle-grid');
-    const target = document.elementFromPoint(e.clientX, e.clientY);
-    const targetPiece = target?.closest('.puzzle-piece');
-    if (targetPiece && targetPiece !== dragSrc && !targetPiece.classList.contains('correcta')) {
-      swapPeces(dragSrc, targetPiece);
+  function seleccionarPeca(piece) {
+    if (piece.classList.contains('correcta')) return;
+
+    if (!piecaSeleccionada) {
+      // Primera selecció
+      piecaSeleccionada = piece;
+      piece.classList.add('seleccionada');
+      sonar('carta_girar');
+    } else if (piecaSeleccionada === piece) {
+      // Toca la mateixa → deseleccionar
+      piece.classList.remove('seleccionada');
+      piecaSeleccionada = null;
+    } else {
+      // Segona peça → intercanviar
+      piecaSeleccionada.classList.remove('seleccionada');
+      swapPeces(piecaSeleccionada, piece);
+      piecaSeleccionada = null;
     }
-    dragSrc = null;
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  }
-
-  function onPieceTouchStart(e) {
-    if (e.target.classList.contains('correcta')) return;
-    touchPiece = e.target;
-    const touch = e.touches[0];
-    touchStartX = touch.clientX;
-    touchStartY = touch.clientY;
-    touchPiece.classList.add('dragging');
-    sonar('carta_girar');
-    document.addEventListener('touchmove', onTouchMove, {passive:false});
-    document.addEventListener('touchend', onTouchEnd);
-  }
-
-  function onTouchMove(e) {
-    e.preventDefault();
-  }
-
-  function onTouchEnd(e) {
-    if (!touchPiece) return;
-    touchPiece.classList.remove('dragging');
-    const touch = e.changedTouches[0];
-    const target = document.elementFromPoint(touch.clientX, touch.clientY);
-    const targetPiece = target?.closest('.puzzle-piece');
-    if (targetPiece && targetPiece !== touchPiece && !targetPiece.classList.contains('correcta')) {
-      swapPeces(touchPiece, targetPiece);
-    }
-    touchPiece = null;
-    document.removeEventListener('touchmove', onTouchMove);
-    document.removeEventListener('touchend', onTouchEnd);
   }
 
   function swapPeces(a, b) {
