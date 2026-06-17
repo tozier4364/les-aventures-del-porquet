@@ -172,10 +172,28 @@
   .carta.encertada .carta-davant { background: linear-gradient(135deg, #95E77E, #4ECDC4); }
   .carta.encertada .carta-darrere { border-color: #95E77E; }
 
-  /* RESULTAT */
-  .resultat { display: none; flex-direction: column; align-items: center; text-align: center; padding: 10px 0; width: 100%; flex: 1; justify-content: center; }
+  /* RESULTAT - CERDITO MÁS GRANDE */
+  .resultat {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 10px 0;
+    width: 100%;
+    flex: 1;
+    justify-content: center;
+  }
   .resultat.visible { display: flex; }
-  .resultat img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4)); margin-bottom: 12px; }
+  .resultat img {
+    width: min(280px, 60vh, 60vw);
+    height: min(280px, 60vh, 60vw);
+    max-width: 90vw;
+    max-height: 55vh;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4));
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
   .resultat-text { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
   .resultat-sub { font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: #aaa; font-weight: 700; margin-bottom: 20px; }
   .resultat-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
@@ -192,7 +210,7 @@
   .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
   .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
-  /* PUZZLE - VERSIÓN DEFINITIVA (SIN ESPACIOS) */
+  /* PUZZLE */
   #pantalla-puzzle-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
   #pantalla-puzzle-nivells.visible { display: flex; }
   #pantalla-puzzle { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; }
@@ -220,7 +238,6 @@
   }
   .puzzle-grid { 
     display: grid; 
-    width: 100%;
     border: 4px solid var(--rosa-clar); 
     border-radius: 12px; 
     overflow: hidden;
@@ -301,6 +318,18 @@
 
   #puzzle-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
   .back-btn { flex-shrink: 0; }
+
+  /* RESULTADO PUZZLE - CERDITO MÁS GRANDE */
+  #pantalla-puzzle .resultat img {
+    width: min(280px, 60vh, 60vw);
+    height: min(280px, 60vh, 60vw);
+    max-width: 90vw;
+    max-height: 55vh;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4));
+    margin-bottom: 12px;
+    flex-shrink: 0;
+  }
 </style>
 </head>
 <body>
@@ -820,7 +849,7 @@
   
   let dialogCallback = null;
 
-  // ===== PUZZLE - VERSIÓN DEFINITIVA =====
+  // ===== PUZZLE =====
   const escenes = [
     'escena_playa','escena_bosque','escena_espai','escena_cuina','escena_futbol',
     'escena_muntanya','escena_circ','escena_pirates','escena_jungla','escena_hivernacle'
@@ -954,11 +983,9 @@
     grid.style.gridTemplateRows = `repeat(${cfg.files}, 1fr)`;
     grid.style.display = 'grid';
 
-    // Calculamos la altura de cada celda según el espacio disponible
     const container = document.querySelector('.puzzle-container');
     const containerH = container.clientHeight;
     const containerW = container.clientWidth;
-    // Mantenemos proporción de la imagen: usamos el espacio disponible
     const cellSize = Math.min(Math.floor(containerW / cfg.cols), Math.floor(containerH / cfg.files));
     grid.style.width = (cellSize * cfg.cols) + 'px';
     grid.style.height = (cellSize * cfg.files) + 'px';
@@ -1004,7 +1031,6 @@
   let _lastTouchTime = 0;
 
   function onPieceTap(e) {
-    // Si acaba de haber un touch, ignorar el click sintético
     if (Date.now() - _lastTouchTime < 400) return;
     seleccionarPeca(e.currentTarget);
   }
@@ -1015,7 +1041,6 @@
   }
 
   function seleccionarPeca(piece) {
-
     if (!piecaSeleccionada) {
       piecaSeleccionada = piece;
       piece.classList.add('seleccionada');
