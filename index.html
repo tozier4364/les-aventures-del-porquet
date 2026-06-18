@@ -232,7 +232,7 @@
   /* RESULTAT */
   .resultat { display: none; flex-direction: column; align-items: center; text-align: center; padding: 10px 0; width: 100%; flex: 1; justify-content: center; }
   .resultat.visible { display: flex; }
-  .resultat img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4)); margin-bottom: 12px; }
+  .resultat img { width: min(75vw, 360px); height: min(75vw, 360px); object-fit: contain; filter: drop-shadow(0 12px 24px rgba(255,107,157,0.45)); margin-bottom: 8px; animation: heroFloat 3s ease-in-out infinite; }
   .resultat-text { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
   .resultat-sub { font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: #aaa; font-weight: 700; margin-bottom: 20px; }
   .resultat-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
