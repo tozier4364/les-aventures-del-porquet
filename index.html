@@ -37,14 +37,22 @@
   body {
     font-family: 'Nunito', sans-serif;
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
     background: linear-gradient(160deg, #FF6B9D 0%, #FF8C42 40%, #FFD93D 100%);
     position: relative;
     width: 100vw;
-    height: 100vh;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
+    height: 100dvh;
+  }
+
+  .screen {
+    position: relative; z-index: 10;
+    width: 100%;
+    height: 100dvh;
+    background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
+    display: flex; flex-direction: column; align-items: center;
+    overflow: hidden;
+    border-radius: 0;
   }
 
   .clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
@@ -88,7 +96,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 100%;
+    height: 100dvh;
     padding: 20px;
     background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%);
     position: relative;
@@ -141,7 +149,7 @@
   .play-btn:active { transform: scale(0.97) !important; }
 
   /* MENÚ */
-  #pantalla-menu { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; padding: 16px 0; background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%); }
+  #pantalla-menu { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; padding: 16px 0; background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%); }
   #pantalla-menu.visible { display: flex; }
   .menu-hero { width: 100px; height: 100px; margin-bottom: 4px; flex-shrink: 0; animation: heroFloat 3s ease-in-out infinite; }
   .menu-hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(255,107,157,0.3)); }
@@ -177,7 +185,7 @@
   .footer { margin-top: 10px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; }
 
   /* NIVELLS MEMÒRIA */
-  #pantalla-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
+  #pantalla-nivells { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
   #pantalla-nivells.visible { display: flex; }
   .nivells-title { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 16px; text-align: center; flex-shrink: 0; }
   #nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
@@ -198,13 +206,13 @@
   .reset-btn:active { background: #FFE0E0; }
 
   /* NIVELLS SOPA */
-  #pantalla-sopa-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
+  #pantalla-sopa-nivells { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
   #pantalla-sopa-nivells.visible { display: flex; }
   .sopa-nivells-title { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 16px; text-align: center; flex-shrink: 0; }
   #sopa-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
 
   /* MEMÒRIA */
-  #pantalla-memoria { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 12px 0; }
+  #pantalla-memoria { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; padding: 12px 0; }
   #pantalla-memoria.visible { display: flex; }
 
   .memoria-header { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 400px; margin-bottom: 10px; flex-shrink: 0; }
@@ -246,24 +254,35 @@
   .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 20px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
   /* SOPA DE LLETRES */
-  #pantalla-sopa { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 10px 12px; background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%); }
+  #pantalla-sopa { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; padding: 10px 12px; background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%); }
   #pantalla-sopa.visible { display: flex; }
   .sopa-header { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 420px; margin-bottom: 4px; flex-shrink: 0; }
   .sopa-title { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); }
   .sopa-info { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--rosa); }
-  .sopa-imatges-fila { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; width: 100%; max-width: 420px; margin-bottom: 2px; flex-shrink: 0; min-height: 64px; }
-  .sopa-slot { width: 60px; height: 60px; border-radius: 10px; border: 2px dashed #e0c0d0; background: #fdf0f6; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; transition: border-color .3s; }
+  .sopa-imatges-fila { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 420px; margin-bottom: 4px; flex-shrink: 0; min-height: 56px; }
+  .sopa-slot { width: 52px; height: 52px; border-radius: 10px; border: 2px dashed #e0c0d0; background: #fdf0f6; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; transition: border-color .3s; }
   .sopa-slot.omplert { border: 2px solid var(--rosa); background: white; }
   .sopa-slot img { width: 100%; height: 100%; object-fit: contain; animation: heroFloat 3s ease-in-out infinite; }
-  .sopa-grid-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
-  .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; position: relative; }
-  .sopa-cel { display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-weight: 800; color: var(--blau-fosc); background: white; border-radius: 8px; border: 2px solid #f0d8e8; cursor: pointer; transition: background .12s, color .12s, transform .1s; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
-  .sopa-cel.seleccionada { background: var(--groc); color: #333; transform: scale(1.08); border-color: var(--taronja); }
-  .sopa-cel.trobada { background: white; color: var(--blau-fosc); }
-  .sopa-overlay { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 5; }
-  .sopa-paraules { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 420px; margin-top: 6px; flex-shrink: 0; }
-  .sopa-paraula { font-family: 'Baloo 2', cursive; font-size: 0.9rem; font-weight: 800; padding: 5px 14px; border-radius: 20px; background: #f0d8e8; color: var(--blau-fosc); border: 2px solid #e0c0d0; transition: all .3s; }
-  .sopa-paraula.trobada { background: var(--rosa); color: white; border-color: #c94070; text-decoration: line-through; opacity: 0.75; }
+  .sopa-grid-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
+  .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; }
+  .sopa-cel { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; color: var(--blau-fosc); background: white; border-radius: 8px; border: 2px solid #f0d8e8; cursor: pointer; transition: background .12s, color .12s, transform .1s; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+  .sopa-cel.seleccionada { background: var(--groc); color: #333; transform: scale(1.1); border-color: var(--taronja); }
+  .sopa-cel.trobada { 
+    background: white !important; 
+    color: var(--blau-fosc) !important; 
+    border-color: var(--rosa) !important;
+    outline: 3px solid var(--rosa);
+    outline-offset: -2px;
+  }
+  .sopa-paraules { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 420px; margin-top: 8px; flex-shrink: 0; }
+  .sopa-paraula { font-family: 'Baloo 2', cursive; font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; background: #f0d8e8; color: var(--blau-fosc); border: 2px solid #e0c0d0; transition: all .3s; }
+  .sopa-paraula.trobada { 
+    background: white !important; 
+    color: var(--blau-fosc) !important; 
+    border-color: var(--rosa) !important;
+    text-decoration: none !important;
+    opacity: 0.8 !important;
+  }
   .sopa-victoria { display: none; position: absolute; inset: 0; background: rgba(255,240,247,0.97); z-index: 50; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 40px; }
   .sopa-victoria.visible { display: flex; }
 
@@ -278,9 +297,9 @@
   .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
   /* PUZZLE */
-  #pantalla-puzzle-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-puzzle-nivells { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
   #pantalla-puzzle-nivells.visible { display: flex; }
-  #pantalla-puzzle { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; }
+  #pantalla-puzzle { display: none; width: 100%; height: 100dvh; flex-direction: column; align-items: center; padding: 8px 12px; }
   #pantalla-puzzle.visible { display: flex; }
 
   .puzzle-header { 
@@ -551,9 +570,7 @@
     </div>
     <div class="sopa-imatges-fila" id="sopa-imatges-fila"></div>
     <div class="sopa-grid-wrap">
-      <div class="sopa-grid" id="sopa-grid">
-        <canvas class="sopa-overlay" id="sopa-overlay"></canvas>
-      </div>
+      <div class="sopa-grid" id="sopa-grid"></div>
     </div>
     <div class="sopa-paraules" id="sopa-paraules"></div>
     <div class="sopa-victoria" id="sopa-victoria">
@@ -1263,7 +1280,6 @@
 
   let sopaGrid = [];
   let sopaMida = 4;
-  let sopaCelMida = 36;
   let sopaParaulesBuscades = [];
   let sopaTrobades = 0;
   let sopaArrossegant = false;
@@ -1392,29 +1408,12 @@
     // Generar la graella
     sopaGrid = generarSopaGrid(sopaMida, sopaParaulesBuscades.map(p => normalitza(p.paraula)));
 
-    // Ajustar tamaño de las celdas — usar todo el espacio disponible
-    const pantallaH = window.innerHeight;
-    const pantallaW = window.innerWidth;
-    // Reservar: header ~44px, imatges ~70px, paraules ~50px, marges ~30px
-    const espaiGrid = Math.min(pantallaH - 44 - 70 - 50 - 30, pantallaW - 24);
-    const celMida = Math.floor((espaiGrid - (sopaMida - 1) * 3) / sopaMida);
-    const gridMida = celMida * sopaMida + (sopaMida - 1) * 3;
-
+    // Ajustar tamaño de las celdas
+    const maxW = Math.min(window.innerWidth - 40, 380);
+    const celMida = Math.floor((maxW - (sopaMida - 1) * 3) / sopaMida);
     const gridEl = document.getElementById('sopa-grid');
     gridEl.style.gridTemplateColumns = `repeat(${sopaMida}, ${celMida}px)`;
     gridEl.innerHTML = '';
-
-    // Recriar el canvas overlay
-    const canvas = document.createElement('canvas');
-    canvas.className = 'sopa-overlay';
-    canvas.id = 'sopa-overlay';
-    canvas.width = gridMida;
-    canvas.height = gridMida;
-    canvas.style.width = gridMida + 'px';
-    canvas.style.height = gridMida + 'px';
-    gridEl.appendChild(canvas);
-
-    sopaCelMida = celMida;
 
     sopaGrid.forEach((fila, r) => {
       fila.forEach((lletra, c) => {
@@ -1557,16 +1556,13 @@
       return pn === text || pn === textInv;
     });
     if (trobat) {
-      // Marcar celdas como trobada (para compartir letras seguimos permitiéndolo)
-      cels.forEach(c => { c.classList.remove('seleccionada'); c.classList.add('trobada'); });
+      cels.forEach(c => { 
+        c.classList.remove('seleccionada'); 
+        c.classList.add('trobada'); 
+      });
       const paraulaEl = document.getElementById('sopa-p-' + normalitza(trobat.paraula));
       if (paraulaEl) paraulaEl.classList.add('trobada');
       sonar('aplauso_corto', 2000);
-
-      // Dibujar encuadre en el canvas
-      dibuixarEncuadre(cels);
-
-      // Omplir slot imatge
       const slot = document.getElementById('sopa-slot-' + normalitza(trobat.paraula));
       if (slot) {
         slot.classList.add('omplert');
@@ -1591,47 +1587,10 @@
     }
   }
 
-  function dibuixarEncuadre(cels) {
-    const canvas = document.getElementById('sopa-overlay');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const gap = 3;
-    const cm = sopaCelMida;
-
-    // Colors per a cada paraula trobada (cicle)
-    const colors = ['#FF6B9D','#4ECDC4','#FFD93D','#6BD97A','#FF8C42','#a78bfa','#f472b6','#34d399','#fb923c','#60a5fa'];
-    const idx = document.querySelectorAll('.sopa-paraula.trobada').length - 1;
-    const color = colors[idx % colors.length];
-
-    // Calcular centre de la primera i última cel·la
-    const primer = cels[0];
-    const ultim = cels[cels.length - 1];
-    const r1 = parseInt(primer.dataset.r), c1 = parseInt(primer.dataset.c);
-    const r2 = parseInt(ultim.dataset.r),  c2 = parseInt(ultim.dataset.c);
-
-    const x1 = c1 * (cm + gap) + cm / 2;
-    const y1 = r1 * (cm + gap) + cm / 2;
-    const x2 = c2 * (cm + gap) + cm / 2;
-    const y2 = r2 * (cm + gap) + cm / 2;
-
-    const radi = cm / 2 + 4;
-
-    ctx.save();
-    ctx.strokeStyle = color;
-    ctx.lineWidth = cm * 0.55;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.globalAlpha = 0.35;
-    ctx.beginPath();
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    ctx.restore();
-  }
-
   function sopaPressInici(e) {
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
+    if (cel.classList.contains('trobada')) return;
     sopaArrossegant = true;
     sopaCelInici = cel;
     sopaSeleccio = [cel];
@@ -1642,6 +1601,7 @@
     if (!sopaArrossegant || !sopaCelInici) return;
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
+    if (cel.classList.contains('trobada')) return;
     sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
     actualitzarSeleccioVisual(sopaSeleccio);
   }
