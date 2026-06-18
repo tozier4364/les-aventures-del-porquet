@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="El Porquet">
+<meta name="theme-color" content="#FF6B9D">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_hero.png">
+<title>Les Aventures del Porquet</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Nunito:wght@400;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --rosa:     #FF6B9D;
+    --rosa-clar:#FFB3CF;
+    --groc:     #FFD93D;
+    --blau:     #4ECDC4;
+    --blau-fosc:#2B7A6F;
+    --taronja:  #FF8C42;
+    --verd:     #6BD97A;
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .cloud { position: absolute; background: white; border-radius: 50px; opacity: 0.5; animation: floatCloud linear infinite; }
+  .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
+  .c1 { width:120px; height:40px; top:8%; left:-140px; animation-duration:22s; }
+  .c1::before { width:60px; height:60px; top:-30px; left:15px; }
+  .c1::after  { width:45px; height:45px; top:-22px; left:50px; }
+  .c2 { width:90px; height:30px; top:20%; left:-120px; animation-duration:28s; animation-delay:5s; }
+  .c2::before { width:44px; height:44px; top:-22px; left:10px; }
+  .c2::after  { width:34px; height:34px; top:-17px; left:38px; }
+  .c3 { width:150px; height:50px; top:65%; left:-180px; animation-duration:18s; animation-delay:2s; }
+  .c3::before { width:70px; height:70px; top:-35px; left:20px; }
+  .c3::after  { width:55px; height:55px; top:-28px; left:65px; }
+  @keyframes floatCloud { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 250px)); } }
+
+  .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .star { position: absolute; font-size: 1.4rem; animation: twinkle 2.5s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity:.7; transform: scale(1); } 50% { opacity:1; transform: scale(1.3); } }
+
+  .screen {
+    position: relative; z-index: 10;
+    width: 100%;
+    height: 100%;
+    max-width: 100vw;
+    max-height: 100vh;
+    background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
+    display: flex; flex-direction: column; align-items: center;
+    padding: 12px 16px;
+    overflow: hidden;
+  }
+
+  /* PORTADA */
+  #pantalla-portada {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+  }
+
+  .ribbon { display: flex; gap: 8px; margin-bottom: 10px; font-size: 1.5rem; justify-content: center; width: 100%; }
+  .ribbon span { animation: bounce 1.2s ease-in-out infinite; }
+  .ribbon span:nth-child(2) { animation-delay:.15s; }
+  .ribbon span:nth-child(3) { animation-delay:.30s; }
+  .ribbon span:nth-child(4) { animation-delay:.45s; }
+  .ribbon span:nth-child(5) { animation-delay:.60s; }
+  @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+  .hero { width: min(300px, 60vw); height: min(300px, 60vw); display: flex; align-items: center; justify-content: center; }
+  .hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(255,107,157,0.35)); }
+
+  .title-wrap { text-align: center; margin: 6px 0 18px; }
+  .title-sub { font-family: 'Baloo 2', cursive; font-size: 0.85rem; font-weight: 600; color: var(--blau-fosc); letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; }
+  .title-main { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; line-height: 1.1; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .title-del { font-size: 1.3rem; }
+
+  .lang-label { font-size: 0.78rem; font-weight: 700; color: #bbb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; text-align: center; width: 100%; }
+  .lang-selector { display: flex; gap: 14px; margin-bottom: 22px; justify-content: center; }
+  .lang-btn { display: flex; flex-direction: column; align-items: center; background: #FFF0F7; border: 3px solid #ddd; border-radius: 20px; padding: 10px 28px; cursor: pointer; transition: all .2s ease; font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.1rem; color: #999; position: relative; }
+  .lang-btn.active { border-color: var(--rosa); color: var(--rosa); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.2); }
+  .lang-btn.active::after { content: '✓'; position: absolute; top: -10px; right: -8px; background: var(--rosa); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+
+  .play-btn { width: 100%; max-width: 280px; padding: 16px 0; display: block; margin: 0 auto; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); border: none; border-radius: 50px; font-family: 'Baloo 2', cursive; font-size: 1.35rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070; letter-spacing: 1px; animation: pulseBtn 2.5s ease-in-out infinite; }
+  @keyframes pulseBtn { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .play-btn:active { transform: scale(0.97) !important; }
+
+  /* MENÚ */
+  #pantalla-menu { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; padding: 20px 0; }
+  #pantalla-menu.visible { display: flex; }
+  .menu-hero { width: 120px; height: 120px; margin-bottom: 8px; flex-shrink: 0; }
+  .menu-hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(255,107,157,0.3)); }
+  .menu-title { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 14px; text-align: center; flex-shrink: 0; }
+  .seccio { width: 100%; max-width: 400px; background: white; border-radius: 22px; border: 3px solid var(--rosa-clar); box-shadow: 0 4px 15px rgba(255,107,157,0.12); margin-bottom: 12px; overflow: hidden; flex-shrink: 0; }
+  .seccio-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: linear-gradient(135deg, #FFF0F7, #E8F8FF); font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--rosa); }
+  .seccio-header .ico { font-size: 1.6rem; }
+  .seccio-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; }
+  .item-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFF9F0; border: 2px solid #FFD93D; border-radius: 14px; padding: 8px 10px; cursor: pointer; transition: all .2s; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: #888; flex: 1; min-width: 65px; }
+  .item-btn .ico2 { font-size: 1.4rem; }
+  .item-btn:active { transform: scale(0.95); border-color: var(--rosa); color: var(--rosa); }
+  .back-btn { margin-top: 6px; background: none; border: 2px solid #ddd; border-radius: 50px; padding: 8px 24px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: #aaa; cursor: pointer; flex-shrink: 0; }
+  .footer { margin-top: 12px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; }
+
+  /* NIVELLS */
+  #pantalla-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
+  #pantalla-nivells.visible { display: flex; }
+  .nivells-title { font-family: 'Baloo 2', cursive; font-size: 1.2rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 16px; text-align: center; flex-shrink: 0; }
+  #nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+  .nivell-btn { width: 100%; background: white; border: 3px solid var(--rosa-clar); border-radius: 20px; padding: 12px 16px; margin-bottom: 8px; cursor: pointer; transition: all .2s; box-shadow: 0 4px 12px rgba(255,107,157,0.1); }
+  .nivell-btn:active { transform: scale(0.97); }
+  .nivell-btn:hover { border-color: var(--rosa); }
+  .nivell-top { display: flex; align-items: center; justify-content: space-between; }
+  .nivell-info { display: flex; flex-direction: column; align-items: flex-start; }
+  .nivell-nom { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--rosa); }
+  .nivell-desc { font-family: 'Nunito', sans-serif; font-size: 0.72rem; color: #aaa; font-weight: 700; margin-top: 2px; }
+  .nivell-estreles { font-size: 1rem; }
+  .nivell-stats { display: flex; gap: 8px; margin-top: 6px; }
+  .stat-mini { font-family: 'Nunito', sans-serif; font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+  .stat-mini.guanyat { background: #E0FFE8; color: #30A050; }
+  .stat-mini.perdut  { background: #FFE0E0; color: #E05050; }
+
+  .reset-btn { margin-top: 10px; background: none; border: 2px solid #ffb3b3; border-radius: 50px; padding: 8px 20px; font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: #E05050; cursor: pointer; flex-shrink: 0; }
+  .reset-btn:active { background: #FFE0E0; }
+
+  /* MEMÒRIA */
+  #pantalla-memoria { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 12px 0; }
+  #pantalla-memoria.visible { display: flex; }
+
+  .memoria-header { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 400px; margin-bottom: 10px; flex-shrink: 0; }
+  .memoria-title { font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: var(--blau-fosc); }
+  .memoria-stats { display: flex; gap: 6px; align-items: center; }
+  .stat-badge { font-family: 'Nunito', sans-serif; font-size: 0.75rem; font-weight: 700; padding: 4px 8px; border-radius: 20px; }
+  .stat-fallos { background: #FFE0E0; color: #E05050; }
+  .stat-parelles { background: #E0FFE8; color: #30A050; }
+  .sortir-btn { background: none; border: 2px solid #ddd; border-radius: 20px; padding: 4px 10px; font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 700; color: #aaa; cursor: pointer; }
+  .sortir-btn:active { background: #f5f5f5; }
+
+  .memoria-grid { display: grid; gap: 6px; width: 100%; max-width: 400px; flex: 1; align-content: center; }
+  .memoria-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .memoria-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .memoria-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .memoria-grid.cols-6 { grid-template-columns: repeat(6, 1fr); }
+
+  .carta { aspect-ratio: 1; border-radius: 10px; cursor: pointer; position: relative; transform-style: preserve-3d; transition: transform 0.4s ease; }
+  .carta.girada { transform: rotateY(180deg); }
+  .carta.encertada { transform: rotateY(180deg); pointer-events: none; }
+  .carta.error-flash { animation: errorFlash 0.4s ease; }
+  @keyframes errorFlash { 0%,100% { filter: none; } 50% { filter: brightness(0.6) sepia(1) hue-rotate(-30deg); } }
+
+  .carta-davant, .carta-darrere { position: absolute; inset: 0; border-radius: 10px; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; }
+  .carta-davant { background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); box-shadow: 0 2px 6px rgba(255,107,157,0.3); font-size: 1.2rem; }
+  .carta-darrere { background: white; border: 2px solid var(--rosa-clar); overflow: hidden; transform: rotateY(180deg); }
+  .carta-darrere img { width: 85%; height: 85%; object-fit: contain; }
+  .carta.encertada .carta-davant { background: linear-gradient(135deg, #95E77E, #4ECDC4); }
+  .carta.encertada .carta-darrere { border-color: #95E77E; }
+
+  /* RESULTAT */
+  .resultat { display: none; flex-direction: column; align-items: center; text-align: center; padding: 10px 0; width: 100%; flex: 1; justify-content: center; }
+  .resultat.visible { display: flex; }
+  .resultat img { width: 150px; height: 150px; object-fit: contain; filter: drop-shadow(0 8px 16px rgba(255,107,157,0.4)); margin-bottom: 12px; }
+  .resultat-text { font-family: 'Baloo 2', cursive; font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+  .resultat-sub { font-family: 'Nunito', sans-serif; font-size: 0.88rem; color: #aaa; font-weight: 700; margin-bottom: 20px; }
+  .resultat-btns { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  .btn-reintent { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 30px; padding: 12px 20px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,157,0.4); }
+  .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 20px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; }
+
+  /* DIALOG CONFIRMACIÓ */
+  .dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
+  .dialog-overlay.visible { display: flex; }
+  .dialog-box { background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 100%); border-radius: 30px; border: 4px solid var(--rosa-clar); box-shadow: 0 20px 60px rgba(255,107,157,0.3); padding: 24px 22px; max-width: 320px; width: 90%; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .dialog-img { width: 120px; height: 120px; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(255,107,157,0.3)); margin-bottom: 12px; }
+  .dialog-text { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 20px; line-height: 1.4; }
+  .dialog-btns { display: flex; gap: 10px; }
+  .dialog-ok { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 25px; padding: 10px 22px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; }
+  .dialog-cancel { background: none; border: 2px solid #ddd; border-radius: 25px; padding: 10px 22px; font-family: 'Nunito', sans-serif; font-size: 0.9rem; font-weight: 700; color: #aaa; cursor: pointer; }
+
+  /* PUZZLE - VERSIÓN DEFINITIVA (SIN ESPACIOS) */
+  #pantalla-puzzle-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-puzzle-nivells.visible { display: flex; }
+  #pantalla-puzzle { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; }
+  #pantalla-puzzle.visible { display: flex; }
+
+  .puzzle-header { 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between; 
+    width: 100%; 
+    margin-bottom: 6px; 
+    flex-shrink: 0;
+    max-width: 100%;
+  }
+  .puzzle-title { font-family: 'Baloo 2', cursive; font-size: 0.85rem; font-weight: 800; color: var(--blau-fosc); }
+
+  .puzzle-container { 
+    position: relative; 
+    width: 100%; 
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+  }
+  .puzzle-grid { 
+    display: grid; 
+    width: 100%;
+    border: 4px solid var(--rosa-clar); 
+    border-radius: 12px; 
+    overflow: hidden;
+    gap: 0 !important;
+    background-color: var(--rosa-clar);
+  }
+  .puzzle-piece {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: 0 !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background-repeat: no-repeat !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    min-width: 0;
+    min-height: 0;
+    width: 100%;
+  }
+  .puzzle-piece.seleccionada {
+    outline: 4px solid var(--groc);
+    outline-offset: -4px;
+    transform: scale(0.93);
+    z-index: 10;
+    box-shadow: 0 0 0 4px var(--groc);
+  }
+  .puzzle-piece.dragging { 
+    opacity: 0.8; 
+    transform: scale(1.08); 
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3); 
+    z-index: 100; 
+    cursor: grabbing; 
+  }
+  .puzzle-piece.correcta { 
+    box-shadow: inset 0 0 0 2px rgba(107,217,122,0.5);
+  }
+
+  .puzzle-preview { 
+    width: 90px; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    border: 2px solid var(--rosa-clar); 
+    flex-shrink: 0;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .puzzle-preview img { 
+    width: 100%; 
+    height: auto;
+    display: block;
+  }
+
+  .puzzle-progress { 
+    font-family: 'Nunito', sans-serif; 
+    font-size: 0.7rem; 
+    font-weight: 700; 
+    color: var(--blau-fosc); 
+    padding: 2px 8px; 
+    background: #E8F8FF; 
+    border-radius: 20px; 
+  }
+
+  .puzzle-hint {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--blau-fosc);
+    background: #E8F8FF;
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin-bottom: 6px;
+    text-align: center;
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+
+  #puzzle-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+  .back-btn { flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="clouds">
+  <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+</div>
+<div class="stars">
+  <div class="star" style="top:5%;left:6%;animation-delay:0s">⭐</div>
+  <div class="star" style="top:10%;right:8%;animation-delay:.6s">✨</div>
+  <div class="star" style="bottom:15%;left:5%;animation-delay:.9s">⭐</div>
+  <div class="star" style="bottom:8%;right:7%;animation-delay:1.5s">✨</div>
+</div>
+
+<div class="screen">
+
+  <!-- PORTADA -->
+  <div id="pantalla-portada">
+    <div class="ribbon"><span>🎨</span><span>🎮</span><span>🐷</span><span>📚</span><span>🌟</span></div>
+    <div class="hero">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_dab.png" alt="Porquet">
+    </div>
+    <div class="title-wrap">
+      <div class="title-sub" id="title-sub">🌟 Benvingut a 🌟</div>
+      <div class="title-main">Les Aventures<br><span class="title-del">del</span> Porquet</div>
+    </div>
+    <div class="lang-label">Tria l'idioma · Elige idioma</div>
+    <div class="lang-selector">
+      <button class="lang-btn active" onclick="setLang(this,'ca')">Català</button>
+      <button class="lang-btn" onclick="setLang(this,'es')">Castellano</button>
+    </div>
+    <button class="play-btn" id="playBtn" onclick="entrarMenu()">🐷 Juguem! ✨</button>
+  </div>
+
+  <!-- MENÚ PRINCIPAL -->
+  <div id="pantalla-menu">
+    <div class="menu-hero">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="menu-title" id="menu-title">🐷 Què vols fer avui?</div>
+    <div class="seccio">
+      <div class="seccio-header"><span class="ico">🎓</span><span id="s-aprendre">Aprèn amb el Porquet</span></div>
+      <div class="seccio-items">
+        <div class="item-btn"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
+        <div class="item-btn"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
+        <div class="item-btn"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
+        <div class="item-btn"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
+      </div>
+    </div>
+    <div class="seccio">
+      <div class="seccio-header"><span class="ico">🎮</span><span id="s-jugar">Juga amb el Porquet</span></div>
+      <div class="seccio-items">
+        <div class="item-btn" onclick="anarNivellsPuzzle()"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
+        <div class="item-btn"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
+        <div class="item-btn" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
+        <div class="item-btn"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
+      </div>
+    </div>
+    <button class="back-btn" id="backBtn" onclick="tornarPortada()">← Tornar</button>
+    <div class="footer" id="footer-txt">© Les Aventures del Porquet · Sense publicitat</div>
+  </div>
+
+  <!-- SELECCIÓ DE NIVELLS MEMÒRIA -->
+  <div id="pantalla-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="nivells-title">🃏 Tria el nivell</div>
+    <div style="width:100%;max-width:400px;flex:1;overflow-y:auto;" id="nivells-container"></div>
+    <button class="reset-btn" id="reset-btn" onclick="resetStats()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="nivells-back" onclick="tornarMenu()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- JOC MEMÒRIA -->
+  <div id="pantalla-memoria">
+    <div class="memoria-header">
+      <div class="memoria-title" id="mem-title">🃏 Memòria</div>
+      <div class="memoria-stats">
+        <div class="stat-badge stat-fallos" id="mem-fallos">❌ 0/3</div>
+        <div class="stat-badge stat-parelles" id="mem-parelles">✅ 0</div>
+        <button class="sortir-btn" id="sortir-btn" onclick="sortirAMitges()">✖</button>
+      </div>
+    </div>
+    <div class="memoria-grid cols-3" id="memoria-grid"></div>
+
+    <!-- VICTÒRIA -->
+    <div class="resultat" id="resultat-victoria">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="vic-sub">Has completat el nivell!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="vic-reintent" onclick="repetirNivell()">🔄 Repetir</button>
+        <button class="btn-menu" id="vic-nivells" onclick="tornarNivells()">← Nivells</button>
+      </div>
+    </div>
+
+    <!-- DERROTA -->
+    <div class="resultat" id="resultat-derrota">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id="der-text" style="color:var(--rosa)">😢 Oh! Has perdut!</div>
+      <div class="resultat-sub" id="der-sub">Massa errors... Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="der-reintent" onclick="repetirNivell()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" id="der-nivells" onclick="tornarNivells()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NIVELLS PUZZLE -->
+  <div id="pantalla-puzzle-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="puzzle-nivells-title">🧩 Tria el nivell</div>
+    <div id="puzzle-nivells-container"></div>
+    <button class="reset-btn" id="puzzle-reset-btn" onclick="resetStatsPuzzle()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="puzzle-nivells-back" onclick="tornarMenuDesPuzzleNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- JOC PUZZLE -->
+  <div id="pantalla-puzzle">
+    <div class="puzzle-header">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="puzzle-title">🧩 Puzzle</div>
+        <div class="puzzle-progress" id="puzzle-progress" style="align-self:flex-start;">0 / 9</div>
+        <div class="puzzle-hint" id="puzzle-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca una peça, després toca una altra per canviar-les</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <div class="puzzle-preview"><img id="puzzle-preview-img" src="" alt="preview"></div>
+        <button class="sortir-btn" id="puzzle-sortir-btn" onclick="sortirPuzzle()">✖</button>
+      </div>
+    </div>
+    <div class="puzzle-container">
+      <div class="puzzle-grid" id="puzzle-grid"></div>
+    </div>
+
+    <!-- VICTÒRIA PUZZLE -->
+    <div class="resultat" id="puzzle-victoria" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="puzzle-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="puzzle-vic-sub">Has completat el puzzle!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="puzzle-vic-reintent" onclick="repetirPuzzle()">🔄 Repetir</button>
+        <button class="btn-menu" id="puzzle-vic-nivells" onclick="tornarNivellsPuzzle()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DIALOG CONFIRMACIÓ -->
+  <div class="dialog-overlay" id="dialog-overlay">
+    <div class="dialog-box">
+      <img class="dialog-img" src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+      <div class="dialog-text" id="dialog-text">Segur que vols esborrar totes les estadístiques?</div>
+      <div class="dialog-btns">
+        <button class="dialog-ok" id="dialog-ok" onclick="confirmarReset()">✓ Sí</button>
+        <button class="dialog-cancel" id="dialog-cancel" onclick="tancarDialog()">✗ No</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const BASE = 'https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/';
+  const IMG = BASE + 'images/';
+  const SND = BASE + 'sounds/';
+
+  let langActual = 'ca';
+  let nivellActual = 1;
+
+  // ===== SONS =====
+  const sons = {};
+  ['carta_girar','carta_error','aplauso_corto','aplauso_largo','llanto'].forEach(nom => {
+    const a = new Audio(SND + nom + '.wav');
+    a.preload = 'auto';
+    sons[nom] = a;
+  });
+  function sonar(nom, duracioMs) {
+    const s = sons[nom];
+    if (!s) return;
+    s.currentTime = 0;
+    s.play().catch(() => {});
+    if (duracioMs) {
+      setTimeout(() => { s.pause(); s.currentTime = 0; }, duracioMs);
+    }
+  }
+
+  // ===== ESTADÍSTIQUES (localStorage) =====
+  function carregarStats() {
+    try {
+      return JSON.parse(localStorage.getItem('porquet_memoria_stats')) || {};
+    } catch { return {}; }
+  }
+  function guardarStats(stats) {
+    try { localStorage.setItem('porquet_memoria_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStat(nivell, tipus) {
+    const stats = carregarStats();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStats(stats);
+  }
+
+
+  // ===== IMATGES =====
+  const totes_imatges = [
+    { id:1,  src: IMG+'porquet_dab.png' },
+    { id:2,  src: IMG+'porquet_sorpresa.png' },
+    { id:3,  src: IMG+'porquet_pensando.png' },
+    { id:4,  src: IMG+'porquet_contento.png' },
+    { id:5,  src: IMG+'tiburon_contento.png' },
+    { id:6,  src: IMG+'porquet_tiburon.png' },
+    { id:7,  src: IMG+'animal_perro.png' },
+    { id:8,  src: IMG+'animal_elefante.png' },
+    { id:9,  src: IMG+'animal_jirafa.png' },
+    { id:10, src: IMG+'animal_leon.png' },
+    { id:11, src: IMG+'animal_tigre.png' },
+    { id:12, src: IMG+'animal_mono.png' },
+    { id:13, src: IMG+'animal_zebra.png' },
+    { id:14, src: IMG+'animal_cocodrilo.png' },
+    { id:15, src: IMG+'animal_hormiga.png' },
+    { id:16, src: IMG+'animal_rinoceronte.png' },
+    { id:17, src: IMG+'fruta_platano.png' },
+    { id:18, src: IMG+'fruta_naranja.png' },
+    { id:19, src: IMG+'fruta_pina.png' },
+    { id:20, src: IMG+'fruta_sandia.png' },
+    { id:21, src: IMG+'fruta_aguacate.png' },
+    { id:22, src: IMG+'fruta_cacahuete.png' },
+    { id:23, src: IMG+'tiburon_pirata.png' },
+    { id:24, src: IMG+'tiburon_travieso.png' },
+    { id:25, src: IMG+'tiburon_triste.png' },
+    { id:26, src: IMG+'tiburon_enfadado.png' },
+    { id:27, src: IMG+'porquet_malicioso.png' },
+    { id:28, src: IMG+'porquet_travieso.png' },
+    { id:29, src: IMG+'porquet_llorando.png' },
+    { id:30, src: IMG+'porquet_espaldas.png' },
+  ];
+
+  const configNivells = [
+    { parelles: 3,  fallosMax: 3,   cols: 'cols-3' },
+    { parelles: 6,  fallosMax: 6,   cols: 'cols-4' },
+    { parelles: 10, fallosMax: 9,   cols: 'cols-5' },
+    { parelles: 18, fallosMax: 12,  cols: 'cols-6' },
+    { parelles: 30, fallosMax: 999, cols: 'cols-6' },
+  ];
+
+  // ===== ESTAT JOC =====
+  let cartesGirades = [];
+  let cartesEncertades = 0;
+  let fallos = 0;
+  let bloquejat = false;
+  let config = null;
+
+  // ===== TEXTOS =====
+  const texts = {
+    ca: {
+      titleSub: '🌟 Benvingut a 🌟', play: '🐷 Juguem! ✨',
+      menuTitle: '🐷 Què vols fer avui?',
+      sAprendre: 'Aprèn amb el Porquet', sJugar: 'Juga amb el Porquet',
+      numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Animals',
+      puzzle: 'Trencaclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Coloreja',
+      back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat',
+      nivellsTitol: '🃏 Tria el nivell',
+      nivellNom: (n) => `Nivell ${n}`,
+      nivellDesc: (c, f) => f >= 999 ? `${c} cartes · sense límit d'errors` : `${c} cartes · ${f} errors màxim`,
+      fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errors` : `❌ ${f}/${max}`,
+      parellesLabel: (p) => `✅ ${p}`,
+      guanyat: (n) => `🏆 ${n} guanyat${n!==1?'s':''}`,
+      perdut: (n) => `💔 ${n} perdut${n!==1?'s':''}`,
+      vicText: '🎉 Molt bé! 🎉', vicSub: 'Has completat el nivell!',
+      derText: '😢 Oh! Has perdut!', derSub: 'Massa errors... Torna-ho a intentar!',
+      reintent: '🔄 Repetir', tornarIntent: '🔄 Tornar a intentar',
+      nivells: '← Nivells', tornar: '← Tornar',
+      sortir: '✖ Sortir',
+      resetBtn: '🗑️ Esborrar estadístiques',
+      confirmReset: 'Segur que vols esborrar totes les estadístiques?',
+      dialogSi: '✓ Sí', dialogNo: '✗ No'
+    },
+    es: {
+      titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
+      menuTitle: '🐷 ¿Qué quieres hacer hoy?',
+      sAprendre: 'Aprende con el Porquet', sJugar: 'Juega con el Porquet',
+      numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Animales',
+      puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Colorear',
+      back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad',
+      nivellsTitol: '🃏 Elige el nivel',
+      nivellNom: (n) => `Nivel ${n}`,
+      nivellDesc: (c, f) => f >= 999 ? `${c} cartas · sin límite de errores` : `${c} cartas · ${f} errores máximo`,
+      fallosLabel: (f, max) => max >= 999 ? `🎮 ${f} errores` : `❌ ${f}/${max}`,
+      parellesLabel: (p) => `✅ ${p}`,
+      guanyat: (n) => `🏆 ${n} ganado${n!==1?'s':''}`,
+      perdut: (n) => `💔 ${n} perdido${n!==1?'s':''}`,
+      vicText: '🎉 ¡Muy bien! 🎉', vicSub: '¡Has completado el nivel!',
+      derText: '😢 ¡Oh! ¡Has perdido!', derSub: 'Demasiados errores... ¡Inténtalo de nuevo!',
+      reintent: '🔄 Repetir', tornarIntent: '🔄 Volver a intentar',
+      nivells: '← Niveles', tornar: '← Volver',
+      sortir: '✖ Salir',
+      resetBtn: '🗑️ Borrar estadísticas',
+      confirmReset: '¿Seguro que quieres borrar todas las estadísticas?',
+      dialogSi: '✓ Sí', dialogNo: '✗ No'
+    }
+  };
+
+  function t() { return texts[langActual]; }
+  function ocultar(id) { const el = document.getElementById(id); el.style.display='none'; el.classList.remove('visible'); }
+  function mostrar(id) { const el = document.getElementById(id); el.style.display=''; el.classList.add('visible'); }
+
+  function setLang(btn, lang) {
+    langActual = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('title-sub').textContent = t().titleSub;
+    document.getElementById('playBtn').textContent = t().play;
+  }
+
+  function entrarMenu() {
+    const tx = t();
+    document.getElementById('menu-title').textContent = tx.menuTitle;
+    document.getElementById('s-aprendre').textContent = tx.sAprendre;
+    document.getElementById('s-jugar').textContent = tx.sJugar;
+    document.getElementById('i-numeros').textContent = tx.numeros;
+    document.getElementById('i-geo').textContent = tx.geo;
+    document.getElementById('i-colors').textContent = tx.colors;
+    document.getElementById('i-animals').textContent = tx.animals;
+    document.getElementById('i-puzzle').textContent = tx.puzzle;
+    document.getElementById('i-sopa').textContent = tx.sopa;
+    document.getElementById('i-memoria').textContent = tx.memoria;
+    document.getElementById('i-coloreja').textContent = tx.coloreja;
+    document.getElementById('backBtn').textContent = tx.back;
+    document.getElementById('footer-txt').textContent = tx.footer;
+    document.getElementById('pantalla-portada').style.display = 'none';
+    mostrar('pantalla-menu');
+  }
+
+  function renderNivells() {
+    const tx = t();
+    const stats = carregarStats();
+    const container = document.getElementById('nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
+    configNivells.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarMemoria(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${tx.nivellDesc(c.parelles * 2, c.fallosMax)}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('reset-btn').textContent = tx.resetBtn;
+    document.getElementById('nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivells() {
+    document.getElementById('nivells-title').textContent = t().nivellsTitol;
+    renderNivells();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-nivells');
+  }
+
+  function tornarMenu() {
+    ocultar('pantalla-nivells');
+    ocultar('pantalla-memoria');
+    ocultar('pantalla-puzzle');
+    ocultar('pantalla-puzzle-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function tornarPortada() {
+    ocultar('pantalla-menu');
+    document.getElementById('pantalla-portada').style.display = 'flex';
+  }
+
+  function tornarNivells() {
+    ocultar('pantalla-memoria');
+    document.getElementById('nivells-title').textContent = t().nivellsTitol;
+    renderNivells();
+    mostrar('pantalla-nivells');
+  }
+
+  function repetirNivell() { iniciarMemoria(nivellActual); }
+
+  function sortirAMitges() {
+    incrementStat(nivellActual, 'p');
+    tornarNivells();
+  }
+
+  function iniciarMemoria(nivell) {
+    nivellActual = nivell;
+    config = configNivells[nivell - 1];
+    cartesGirades = []; cartesEncertades = 0; fallos = 0; bloquejat = false;
+    document.getElementById('memoria-grid').style.display = '';
+    ocultar('resultat-victoria');
+    ocultar('resultat-derrota');
+    ocultar('pantalla-nivells');
+    mostrar('pantalla-memoria');
+
+    const tx = t();
+    document.getElementById('mem-title').textContent = `🃏 ${tx.memoria} — ${tx.nivellNom(nivell)}`;
+    document.getElementById('sortir-btn').textContent = tx.sortir;
+    document.getElementById('vic-nivells').textContent = tx.nivells;
+    document.getElementById('der-nivells').textContent = tx.nivells;
+    actualitzarStats();
+
+    const seleccio = [...totes_imatges].sort(() => Math.random() - 0.5).slice(0, config.parelles);
+    const parelles = [...seleccio, ...seleccio].sort(() => Math.random() - 0.5);
+    const grid = document.getElementById('memoria-grid');
+    grid.className = 'memoria-grid ' + config.cols;
+    grid.innerHTML = '';
+    parelles.forEach(img => {
+      const carta = document.createElement('div');
+      carta.className = 'carta';
+      carta.dataset.id = img.id;
+      carta.innerHTML = `<div class="carta-davant">🐷</div><div class="carta-darrere"><img src="${img.src}" alt="carta"></div>`;
+      carta.addEventListener('click', () => girarCarta(carta));
+      grid.appendChild(carta);
+    });
+  }
+
+  function actualitzarStats() {
+    const tx = t();
+    document.getElementById('mem-fallos').textContent = tx.fallosLabel(fallos, config.fallosMax);
+    document.getElementById('mem-parelles').textContent = tx.parellesLabel(cartesEncertades);
+  }
+
+  function girarCarta(carta) {
+    if (bloquejat) return;
+    if (carta.classList.contains('girada') || carta.classList.contains('encertada')) return;
+    if (cartesGirades.length >= 2) return;
+    sonar('carta_girar');
+    carta.classList.add('girada');
+    cartesGirades.push(carta);
+    if (cartesGirades.length === 2) {
+      bloquejat = true;
+      if (cartesGirades[0].dataset.id === cartesGirades[1].dataset.id) {
+        setTimeout(() => {
+          sonar('aplauso_corto', 5000);
+          cartesGirades.forEach(c => c.classList.add('encertada'));
+          cartesEncertades++;
+          cartesGirades = [];
+          bloquejat = false;
+          actualitzarStats();
+          if (cartesEncertades === config.parelles) setTimeout(mostrarVictoria, 500);
+        }, 400);
+      } else {
+        setTimeout(() => {
+          sonar('carta_error');
+          cartesGirades.forEach(c => {
+            c.classList.remove('girada');
+            c.classList.add('error-flash');
+            setTimeout(() => c.classList.remove('error-flash'), 400);
+          });
+          cartesGirades = [];
+          fallos++;
+          bloquejat = false;
+          actualitzarStats();
+          if (fallos >= config.fallosMax) setTimeout(mostrarDerrota, 600);
+        }, 800);
+      }
+    }
+  }
+
+  function mostrarVictoria() {
+    const tx = t();
+    incrementStat(nivellActual, 'g');
+    sonar('aplauso_largo', 5000);
+    document.getElementById('vic-text').textContent = tx.vicText;
+    document.getElementById('vic-sub').textContent = tx.vicSub;
+    document.getElementById('vic-reintent').textContent = tx.reintent;
+    document.getElementById('memoria-grid').style.display = 'none';
+    mostrar('resultat-victoria');
+  }
+
+  function mostrarDerrota() {
+    const tx = t();
+    incrementStat(nivellActual, 'p');
+    sonar('llanto');
+    document.getElementById('der-text').textContent = tx.derText;
+    document.getElementById('der-sub').textContent = tx.derSub;
+    document.getElementById('der-reintent').textContent = tx.tornarIntent;
+    document.getElementById('memoria-grid').style.display = 'none';
+    mostrar('resultat-derrota');
+  }
+
+  function resetStats() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => { localStorage.removeItem('porquet_memoria_stats'); renderNivells(); };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+  
+  function tancarDialog() {
+    document.getElementById('dialog-overlay').classList.remove('visible');
+  }
+  
+  function confirmarReset() {
+    tancarDialog();
+    if (dialogCallback) { 
+      dialogCallback(); 
+      dialogCallback = null; 
+    }
+  }
+  
+  let dialogCallback = null;
+
+  // ===== PUZZLE - VERSIÓN DEFINITIVA =====
+  const escenes = [
+    'escena_playa','escena_bosque','escena_espai','escena_cuina','escena_futbol',
+    'escena_muntanya','escena_circ','escena_pirates','escena_jungla','escena_hivernacle'
+  ];
+
+  const configPuzzle = [
+    { files: 3, cols: 2, peces: 6  },
+    { files: 4, cols: 3, peces: 12 },
+    { files: 5, cols: 3, peces: 15 },
+    { files: 5, cols: 4, peces: 20 },
+    { files: 6, cols: 4, peces: 24 },
+  ];
+
+  let puzzleNivellActual = 1;
+  let puzzleEscenaActual = '';
+  let puzzlePecesCorrectes = 0;
+  let puzzleTotal = 0;
+
+  function carregarStatsPuzzle() {
+    try { return JSON.parse(localStorage.getItem('porquet_puzzle_stats')) || {}; } catch { return {}; }
+  }
+  
+  function guardarStatsPuzzle(stats) {
+    try { localStorage.setItem('porquet_puzzle_stats', JSON.stringify(stats)); } catch {}
+  }
+  
+  function incrementStatPuzzle(nivell, tipus) {
+    const stats = carregarStatsPuzzle();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsPuzzle(stats);
+  }
+  
+  function resetStatsPuzzle() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_puzzle_stats');
+      renderNivellsPuzzle();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function renderNivellsPuzzle() {
+    const tx = t();
+    const stats = carregarStatsPuzzle();
+    const container = document.getElementById('puzzle-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
+    const pecesNivell = [6,12,15,20,24];
+    configPuzzle.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarPuzzle(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${c.files}×${c.cols} · ${pecesNivell[i]} ${langActual==='ca'?'peces':'piezas'}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('puzzle-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('puzzle-nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivellsPuzzle() {
+    document.getElementById('puzzle-nivells-title').textContent = langActual==='ca' ? '🧩 Tria el nivell' : '🧩 Elige el nivel';
+    renderNivellsPuzzle();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-puzzle-nivells');
+  }
+
+  function tornarNivellsPuzzle() {
+    ocultar('pantalla-puzzle');
+    renderNivellsPuzzle();
+    mostrar('pantalla-puzzle-nivells');
+  }
+
+  function tornarMenuDesPuzzleNivells() {
+    ocultar('pantalla-puzzle-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function sortirPuzzle() {
+    incrementStatPuzzle(puzzleNivellActual, 'p');
+    tornarNivellsPuzzle();
+  }
+
+  function repetirPuzzle() { iniciarPuzzle(puzzleNivellActual); }
+
+  function iniciarPuzzle(nivell) {
+    puzzleNivellActual = nivell;
+    puzzlePecesCorrectes = 0;
+    const cfg = configPuzzle[nivell - 1];
+    puzzleTotal = cfg.peces;
+
+    let escenes_disponibles = escenes.filter(e => e !== puzzleEscenaActual);
+    puzzleEscenaActual = escenes_disponibles[Math.floor(Math.random() * escenes_disponibles.length)];
+    const imgSrc = IMG + puzzleEscenaActual + '.png';
+
+    ocultar('pantalla-puzzle-nivells');
+    ocultar('puzzle-victoria');
+    mostrar('pantalla-puzzle');
+
+    const tx = t();
+    document.getElementById('puzzle-title').textContent = `🧩 ${langActual==='ca'?'Puzzle':'Puzzle'} — ${tx.nivellNom(nivell)}`;
+    document.getElementById('puzzle-sortir-btn').textContent = tx.sortir;
+    document.getElementById('puzzle-vic-nivells').textContent = tx.nivells;
+    document.getElementById('puzzle-vic-reintent').textContent = tx.reintent;
+    document.getElementById('puzzle-preview-img').src = imgSrc;
+    document.getElementById('puzzle-hint').textContent = langActual === 'ca'
+      ? '👆 Toca una peça, després toca una altra per canviar-les'
+      : '👆 Toca una pieza, luego toca otra para intercambiarlas';
+    actualitzarProgressPuzzle();
+
+    const grid = document.getElementById('puzzle-grid');
+    grid.innerHTML = '';
+    grid.style.gridTemplateColumns = `repeat(${cfg.cols}, 1fr)`;
+    grid.style.gridTemplateRows = `repeat(${cfg.files}, 1fr)`;
+    grid.style.display = 'grid';
+
+    // Calculamos la altura de cada celda según el espacio disponible
+    const container = document.querySelector('.puzzle-container');
+    const containerH = container.clientHeight;
+    const containerW = container.clientWidth;
+    // Mantenemos proporción de la imagen: usamos el espacio disponible
+    const cellSize = Math.min(Math.floor(containerW / cfg.cols), Math.floor(containerH / cfg.files));
+    grid.style.width = (cellSize * cfg.cols) + 'px';
+    grid.style.height = (cellSize * cfg.files) + 'px';
+
+    const indices = Array.from({length: cfg.peces}, (_, i) => i);
+    const barrejats = [...indices].sort(() => Math.random() - 0.5);
+
+    barrejats.forEach((posOriginal, posActual) => {
+      const row = Math.floor(posOriginal / cfg.cols);
+      const col = posOriginal % cfg.cols;
+
+      const piece = document.createElement('div');
+      piece.className = 'puzzle-piece';
+      piece.dataset.original = posOriginal;
+      piece.dataset.current = posActual;
+      
+      piece.style.backgroundImage = `url('${imgSrc}')`;
+      piece.style.backgroundSize = `${cfg.cols * 100}% ${cfg.files * 100}%`;
+      piece.style.backgroundPosition = `${cfg.cols > 1 ? col * 100/(cfg.cols-1) : 0}% ${cfg.files > 1 ? row * 100/(cfg.files-1) : 0}%`;
+      piece.style.backgroundRepeat = 'no-repeat';
+      piece.style.height = cellSize + 'px';
+
+      if (posOriginal === posActual) {
+        piece.classList.add('correcta');
+        puzzlePecesCorrectes++;
+      }
+
+      piece.addEventListener('click', onPieceTap);
+      piece.addEventListener('touchend', onPieceTouchTap, {passive:true});
+
+      grid.appendChild(piece);
+    });
+
+    actualitzarProgressPuzzle();
+  }
+
+  function actualitzarProgressPuzzle() {
+    document.getElementById('puzzle-progress').textContent = `${puzzlePecesCorrectes} / ${puzzleTotal}`;
+  }
+
+  // ===== SISTEMA TAP-TAP =====
+  let piecaSeleccionada = null;
+  let _lastTouchTime = 0;
+
+  function onPieceTap(e) {
+    // Si acaba de haber un touch, ignorar el click sintético
+    if (Date.now() - _lastTouchTime < 400) return;
+    seleccionarPeca(e.currentTarget);
+  }
+
+  function onPieceTouchTap(e) {
+    _lastTouchTime = Date.now();
+    seleccionarPeca(e.currentTarget);
+  }
+
+  function seleccionarPeca(piece) {
+
+    if (!piecaSeleccionada) {
+      piecaSeleccionada = piece;
+      piece.classList.add('seleccionada');
+      sonar('carta_girar', 200);
+    } else if (piecaSeleccionada === piece) {
+      piece.classList.remove('seleccionada');
+      piecaSeleccionada = null;
+    } else {
+      piecaSeleccionada.classList.remove('seleccionada');
+      sonar('carta_girar', 200);
+      swapPeces(piecaSeleccionada, piece);
+      piecaSeleccionada = null;
+    }
+  }
+
+  function swapPeces(a, b) {
+    const tmpBg = a.style.backgroundPosition;
+    const tmpOrig = a.dataset.original;
+    a.style.backgroundPosition = b.style.backgroundPosition;
+    a.dataset.original = b.dataset.original;
+    b.style.backgroundPosition = tmpBg;
+    b.dataset.original = tmpOrig;
+
+    const grid = document.getElementById('puzzle-grid');
+    const pieces = Array.from(grid.children);
+    puzzlePecesCorrectes = 0;
+    pieces.forEach((p, idx) => {
+      if (parseInt(p.dataset.original) === idx) {
+        p.classList.add('correcta');
+        puzzlePecesCorrectes++;
+      } else {
+        p.classList.remove('correcta');
+      }
+    });
+
+    actualitzarProgressPuzzle();
+
+    if (puzzlePecesCorrectes === puzzleTotal) {
+      setTimeout(mostrarVictoriaPuzzle, 400);
+    }
+  }
+
+  function mostrarVictoriaPuzzle() {
+    const tx = t();
+    incrementStatPuzzle(puzzleNivellActual, 'g');
+    sonar('aplauso_largo', 5000);
+    document.getElementById('puzzle-vic-text').textContent = tx.vicText;
+    document.getElementById('puzzle-vic-sub').textContent = langActual==='ca' ? 'Has completat el puzzle!' : '¡Has completado el puzzle!';
+    document.getElementById('puzzle-grid').style.display = 'none';
+    mostrar('puzzle-victoria');
+  }
+</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
