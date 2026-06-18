@@ -2,7 +2,7 @@
 <html lang="ca">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,6 +30,8 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
   }
 
   body {
@@ -257,10 +259,22 @@
   .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; }
   .sopa-cel { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; color: var(--blau-fosc); background: white; border-radius: 8px; border: 2px solid #f0d8e8; cursor: pointer; transition: background .12s, color .12s, transform .1s; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
   .sopa-cel.seleccionada { background: var(--groc); color: #333; transform: scale(1.1); border-color: var(--taronja); }
-  .sopa-cel.trobada { background: var(--rosa); color: white; border-color: #c94070; }
+  .sopa-cel.trobada { 
+    background: white !important; 
+    color: var(--blau-fosc) !important; 
+    border-color: var(--rosa) !important;
+    outline: 3px solid var(--rosa);
+    outline-offset: -2px;
+  }
   .sopa-paraules { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 420px; margin-top: 8px; flex-shrink: 0; }
   .sopa-paraula { font-family: 'Baloo 2', cursive; font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; background: #f0d8e8; color: var(--blau-fosc); border: 2px solid #e0c0d0; transition: all .3s; }
-  .sopa-paraula.trobada { background: var(--rosa); color: white; border-color: #c94070; text-decoration: line-through; opacity: 0.7; }
+  .sopa-paraula.trobada { 
+    background: white !important; 
+    color: var(--blau-fosc) !important; 
+    border-color: var(--rosa) !important;
+    text-decoration: none !important;
+    opacity: 0.8 !important;
+  }
   .sopa-victoria { display: none; position: absolute; inset: 0; background: rgba(255,240,247,0.97); z-index: 50; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 40px; }
   .sopa-victoria.visible { display: flex; }
 
@@ -1203,10 +1217,10 @@
   // ===== SOPA DE LLETRES =====
   const sopaNivells = [
     { mida: 4, paraules: 2 },
-    { mida: 5, paraules: 4 },
-    { mida: 6, paraules: 6 },
-    { mida: 7, paraules: 8 },
-    { mida: 8, paraules: 10 },
+    { mida: 5, paraules: 3 },
+    { mida: 6, paraules: 4 },
+    { mida: 7, paraules: 5 },
+    { mida: 8, paraules: 6 },
   ];
 
   const sopaParaulesData = {
@@ -1227,6 +1241,8 @@
       { paraula: 'SINDRIA',    img: 'fruta_sandia.png' },
       { paraula: 'ALVOCAT',    img: 'fruta_aguacate.png' },
       { paraula: 'CACAUET',    img: 'fruta_cacahuete.png' },
+      { paraula: 'PORQUET',    img: 'porquet_dab.png' },
+      { paraula: 'TIBURON',    img: 'tiburon_contento.png' },
     ],
     es: [
       { paraula: 'PERRO',       img: 'animal_perro.png' },
@@ -1245,8 +1261,23 @@
       { paraula: 'SANDIA',      img: 'fruta_sandia.png' },
       { paraula: 'AGUACATE',    img: 'fruta_aguacate.png' },
       { paraula: 'CACAHUETE',   img: 'fruta_cacahuete.png' },
+      { paraula: 'CERDITO',     img: 'porquet_dab.png' },
+      { paraula: 'TIBURON',     img: 'tiburon_contento.png' },
     ]
   };
+
+  function normalitza(s) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  }
+
+  let sopaGrid = [];
+  let sopaMida = 4;
+  let sopaParaulesBuscades = [];
+  let sopaTrobades = 0;
+  let sopaArrossegant = false;
+  let sopaCelInici = null;
+  let sopaSeleccio = [];
+  let sopaNivellActual = 1;
 
   let sopaStats = {};
 
@@ -1275,26 +1306,13 @@
     document.getElementById('dialog-overlay').classList.add('visible');
   }
 
-  function normalitza(s) {
-    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
-  }
-
-  let sopaGrid = [];
-  let sopaMida = 4;
-  let sopaParaulesBuscades = [];
-  let sopaTrobades = 0;
-  let sopaArrossegant = false;
-  let sopaCelInici = null;
-  let sopaSeleccio = [];
-  let sopaNivellActual = 1;
-
   function renderNivellsSopa() {
     const tx = t();
     const stats = carregarStatsSopa();
     const container = document.getElementById('sopa-nivells-container');
     container.innerHTML = '';
     const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
-    const paraulesNivell = [2,4,6,8,10];
+    const paraulesNivell = [2,3,4,5,6];
     sopaNivells.forEach((c, i) => {
       const n = i + 1;
       const st = stats[`n${n}`] || { g: 0, p: 0 };
@@ -1358,21 +1376,31 @@
     const vic = document.getElementById('sopa-victoria');
     vic.classList.remove('visible'); vic.style.display = 'none';
 
-    // ===== ALEATORIEDAD: Barajar y seleccionar palabras =====
+    // ===== SELECCIÓN ALEATORIA DE PALABRAS =====
     const pool = [...sopaParaulesData[langActual]];
     barrejar(pool);
+    
     // Filtrar palabras que quepan en la graella
     const cabibles = pool.filter(p => normalitza(p.paraula).length <= sopaMida);
-    // Seleccionar las primeras cfg.paraules (ahora sí son aleatorias)
-    sopaParaulesBuscades = cabibles.slice(0, cfg.paraules);
-
-    // Si no hay suficientes, repetir con todas
-    if (sopaParaulesBuscades.length < cfg.paraules) {
-      sopaParaulesBuscades = pool.slice(0, cfg.paraules);
+    
+    let seleccionadas;
+    if (cabibles.length >= cfg.paraules) {
+      seleccionadas = cabibles.slice(0, cfg.paraules);
+    } else {
+      seleccionadas = [...cabibles];
+      const resto = pool.filter(p => !cabibles.includes(p));
+      barrejar(resto);
+      while (seleccionadas.length < cfg.paraules && resto.length > 0) {
+        seleccionadas.push(resto.pop());
+      }
     }
+    
+    sopaParaulesBuscades = seleccionadas;
 
+    // Generar la graella
     sopaGrid = generarSopaGrid(sopaMida, sopaParaulesBuscades.map(p => normalitza(p.paraula)));
 
+    // Ajustar tamaño de las celdas
     const maxW = Math.min(window.innerWidth - 40, 380);
     const celMida = Math.floor((maxW - (sopaMida - 1) * 3) / sopaMida);
     const gridEl = document.getElementById('sopa-grid');
@@ -1393,7 +1421,7 @@
       });
     });
 
-    // Events
+    // Limpiar y añadir eventos
     gridEl.removeEventListener('mousedown', sopaPressInici);
     gridEl.removeEventListener('mousemove', sopaPressMove);
     gridEl.removeEventListener('mouseup', sopaPressfi);
@@ -1408,6 +1436,7 @@
     gridEl.addEventListener('touchmove', sopaTouchMove, {passive:false});
     gridEl.addEventListener('touchend', sopaTouchFi, {passive:false});
 
+    // Renderizar imágenes
     const imatgesEl = document.getElementById('sopa-imatges-fila');
     imatgesEl.innerHTML = '';
     sopaParaulesBuscades.forEach(p => {
@@ -1417,6 +1446,7 @@
       imatgesEl.appendChild(slot);
     });
 
+    // Renderizar palabras
     const paraEl = document.getElementById('sopa-paraules');
     paraEl.innerHTML = '';
     sopaParaulesBuscades.forEach(p => {
@@ -1518,7 +1548,10 @@
       return pn === text || pn === textInv;
     });
     if (trobat) {
-      cels.forEach(c => { c.classList.remove('seleccionada'); c.classList.add('trobada'); });
+      cels.forEach(c => { 
+        c.classList.remove('seleccionada'); 
+        c.classList.add('trobada'); 
+      });
       const paraulaEl = document.getElementById('sopa-p-' + normalitza(trobat.paraula));
       if (paraulaEl) paraulaEl.classList.add('trobada');
       sonar('aplauso_corto', 2000);
