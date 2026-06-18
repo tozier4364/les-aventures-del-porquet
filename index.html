@@ -681,8 +681,7 @@
       confirmReset: 'Segur que vols esborrar totes les estadístiques?',
       dialogSi: '✓ Sí', dialogNo: '✗ No',
       sopaTitle: '🔤 Sopa de lletres',
-      sopaVicText: '🎉 Molt bé! 🎉', sopaVicSub: 'Has trobat totes les paraules!',
-      sopaHint: '👆 Passa el dit per les lletres per trobar paraules'
+      sopaVicText: '🎉 Molt bé! 🎉', sopaVicSub: 'Has trobat totes les paraules!'
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -707,14 +706,30 @@
       confirmReset: '¿Seguro que quieres borrar todas las estadísticas?',
       dialogSi: '✓ Sí', dialogNo: '✗ No',
       sopaTitle: '🔤 Sopa de letras',
-      sopaVicText: '🎉 ¡Muy bien! 🎉', sopaVicSub: '¡Has encontrado todas las palabras!',
-      sopaHint: '👆 Desliza el dedo por las letras para encontrar palabras'
+      sopaVicText: '🎉 ¡Muy bien! 🎉', sopaVicSub: '¡Has encontrado todas las palabras!'
     }
   };
 
   function t() { return texts[langActual]; }
-  function ocultar(id) { const el = document.getElementById(id); el.style.display='none'; el.classList.remove('visible'); }
-  function mostrar(id) { const el = document.getElementById(id); el.style.display=''; el.classList.add('visible'); }
+
+  function ocultar(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.display = 'none';
+    el.classList.remove('visible');
+  }
+
+  function mostrar(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('visible');
+    // Forzar display correcto según la pantalla
+    if (id === 'pantalla-sopa') {
+      el.style.display = 'flex';
+    } else {
+      el.style.display = '';
+    }
+  }
 
   function setLang(btn, lang) {
     langActual = lang;
@@ -785,6 +800,7 @@
     ocultar('pantalla-memoria');
     ocultar('pantalla-puzzle');
     ocultar('pantalla-puzzle-nivells');
+    ocultar('pantalla-sopa');
     mostrar('pantalla-menu');
   }
 
@@ -1061,11 +1077,9 @@
     grid.style.gridTemplateRows = `repeat(${cfg.files}, 1fr)`;
     grid.style.display = 'grid';
 
-    // Calculamos la altura de cada celda según el espacio disponible
     const container = document.querySelector('.puzzle-container');
     const containerH = container.clientHeight;
     const containerW = container.clientWidth;
-    // Mantenemos proporción de la imagen: usamos el espacio disponible
     const cellSize = Math.min(Math.floor(containerW / cfg.cols), Math.floor(containerH / cfg.files));
     grid.style.width = (cellSize * cfg.cols) + 'px';
     grid.style.height = (cellSize * cfg.files) + 'px';
@@ -1111,7 +1125,6 @@
   let _lastTouchTime = 0;
 
   function onPieceTap(e) {
-    // Si acaba de haber un touch, ignorar el click sintético
     if (Date.now() - _lastTouchTime < 400) return;
     seleccionarPeca(e.currentTarget);
   }
@@ -1122,7 +1135,6 @@
   }
 
   function seleccionarPeca(piece) {
-
     if (!piecaSeleccionada) {
       piecaSeleccionada = piece;
       piece.classList.add('seleccionada');
@@ -1223,7 +1235,6 @@
     ]
   };
 
-  // Eliminar accents per comparar
   function normalitza(s) {
     return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
   }
@@ -1239,8 +1250,11 @@
   let sopaNivellActual = 1;
 
   function anarNivellsSopa() {
-    const tx = t();
     ocultar('pantalla-menu');
+    mostrar('pantalla-sopa');
+    // Forçar display flex per si de cas
+    const sopa = document.getElementById('pantalla-sopa');
+    sopa.style.display = 'flex';
     iniciarSopa(1);
   }
 
@@ -1270,14 +1284,9 @@
     const vic = document.getElementById('sopa-victoria');
     vic.classList.remove('visible'); vic.style.display = 'none';
 
-    // Ocultar imatge
-    const img = document.getElementById('sopa-imatge');
-    img.style.display = 'none';
-
     // Triar paraules aleatories
     const pool = [...sopaParaulesData[langActual]];
     barrejar(pool);
-    // Filtrar paraules que cabsin a la graella
     const cabibles = pool.filter(p => normalitza(p.paraula).length <= sopaMida);
     sopaParaulesBuscades = cabibles.slice(0, cfg.paraules);
 
@@ -1335,7 +1344,6 @@
     });
 
     actualitzarSopaInfo();
-    ocultar('pantalla-menu');
     mostrar('pantalla-sopa');
   }
 
@@ -1343,7 +1351,6 @@
     document.getElementById('sopa-info').textContent = `${sopaTrobades} / ${sopaParaulesBuscades.length}`;
   }
 
-  // Generador de graella
   function generarSopaGrid(mida, paraules) {
     const lletres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const grid = Array.from({length: mida}, () => Array(mida).fill(''));
@@ -1366,7 +1373,6 @@
       }
     });
 
-    // Omplir buits
     for (let r = 0; r < mida; r++)
       for (let c = 0; c < mida; c++)
         if (!grid[r][c]) grid[r][c] = lletres[Math.floor(Math.random() * lletres.length)];
@@ -1384,7 +1390,6 @@
     return true;
   }
 
-  // Obtenció de la cel·la per posició
   function celPerPosicio(x, y) {
     const gridEl = document.getElementById('sopa-grid');
     const cels = gridEl.querySelectorAll('.sopa-cel');
@@ -1395,14 +1400,12 @@
     return null;
   }
 
-  // Calcular sel·lecció en línia recta entre dues cel·les
   function cellesEnLinia(inici, fi) {
     const r1 = parseInt(inici.dataset.r), c1 = parseInt(inici.dataset.c);
     const r2 = parseInt(fi.dataset.r),   c2 = parseInt(fi.dataset.c);
     const dr = r2 - r1, dc = c2 - c1;
     const passos = Math.max(Math.abs(dr), Math.abs(dc));
     if (passos === 0) return [inici];
-    // Ha de ser línia recta (horitzontal, vertical o diagonal)
     if (Math.abs(dr) !== Math.abs(dc) && dr !== 0 && dc !== 0) return [inici];
     const sr = dr === 0 ? 0 : dr / Math.abs(dr);
     const sc = dc === 0 ? 0 : dc / Math.abs(dc);
@@ -1433,7 +1436,6 @@
       cels.forEach(c => { c.classList.remove('seleccionada'); c.classList.add('trobada'); });
       document.getElementById('sopa-p-' + normalitza(trobat.paraula)).classList.add('trobada');
       sonar('aplauso_corto', 2000);
-      // Omplir el slot d'aquesta paraula
       const slot = document.getElementById('sopa-slot-' + normalitza(trobat.paraula));
       if (slot) {
         slot.classList.add('omplert');
@@ -1452,13 +1454,11 @@
         }, 600);
       }
     } else {
-      // Deseleccionar
       const gridEl = document.getElementById('sopa-grid');
       gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
     }
   }
 
-  // Mouse events
   function sopaPressInici(e) {
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
@@ -1484,7 +1484,6 @@
     sopaCelInici = null;
   }
 
-  // Touch events
   function sopaTouchInici(e) {
     e.preventDefault();
     const t0 = e.touches[0];
