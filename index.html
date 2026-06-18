@@ -1350,18 +1350,18 @@
     const direccions = [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
 
     paraules.forEach(paraula => {
-      let col·locada = false;
+      let collocada = false;
       let intents = 0;
-      while (!col·locada && intents < 200) {
+      while (!collocada && intents < 200) {
         intents++;
         const dir = direccions[Math.floor(Math.random() * direccions.length)];
         const r = Math.floor(Math.random() * mida);
         const c = Math.floor(Math.random() * mida);
-        if (potCol·locar(grid, paraula, r, c, dir, mida)) {
+        if (potCollocar(grid, paraula, r, c, dir, mida)) {
           for (let i = 0; i < paraula.length; i++) {
             grid[r + dir[0]*i][c + dir[1]*i] = paraula[i];
           }
-          col·locada = true;
+          collocada = true;
         }
       }
     });
@@ -1374,7 +1374,7 @@
     return grid;
   }
 
-  function potCol·locar(grid, paraula, r, c, dir, mida) {
+  function potCollocar(grid, paraula, r, c, dir, mida) {
     for (let i = 0; i < paraula.length; i++) {
       const nr = r + dir[0]*i;
       const nc = c + dir[1]*i;
