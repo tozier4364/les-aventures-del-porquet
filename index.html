@@ -37,15 +37,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(160deg, #FFF0F7 0%, #E8F8FF 50%, #FFF9E6 100%);
+    background: linear-gradient(160deg, #FF6B9D 0%, #FF8C42 40%, #FFD93D 100%);
     position: relative;
     width: 100vw;
     height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .clouds { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-  .cloud { position: absolute; background: white; border-radius: 50px; opacity: 0.5; animation: floatCloud linear infinite; }
-  .cloud::before, .cloud::after { content: ''; position: absolute; background: white; border-radius: 50%; }
+  .cloud { position: absolute; background: rgba(255,255,255,0.7); border-radius: 50px; opacity: 0.6; animation: floatCloud linear infinite; }
+  .cloud::before, .cloud::after { content: ''; position: absolute; background: rgba(255,255,255,0.7); border-radius: 50%; }
   .c1 { width:120px; height:40px; top:8%; left:-140px; animation-duration:22s; }
   .c1::before { width:60px; height:60px; top:-30px; left:15px; }
   .c1::after  { width:45px; height:45px; top:-22px; left:50px; }
@@ -61,6 +63,10 @@
   .star { position: absolute; font-size: 1.4rem; animation: twinkle 2.5s ease-in-out infinite; }
   @keyframes twinkle { 0%,100% { opacity:.7; transform: scale(1); } 50% { opacity:1; transform: scale(1.3); } }
 
+  /* Burbujas decorativas de fondo */
+  .bubble { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; animation: floatBubble ease-in-out infinite; opacity: 0.15; }
+  @keyframes floatBubble { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }
+
   .screen {
     position: relative; z-index: 10;
     width: 100%;
@@ -71,6 +77,7 @@
     display: flex; flex-direction: column; align-items: center;
     padding: 12px 16px;
     overflow: hidden;
+    border-radius: 0;
   }
 
   /* PORTADA */
@@ -82,6 +89,27 @@
     width: 100%;
     height: 100%;
     padding: 20px;
+    background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  #pantalla-portada::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: -80px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, #FFD93D55, transparent 70%);
+    border-radius: 50%;
+    animation: floatBubble 4s ease-in-out infinite;
+  }
+  #pantalla-portada::after {
+    content: '';
+    position: absolute;
+    bottom: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, #4ECDC455, transparent 70%);
+    border-radius: 50%;
+    animation: floatBubble 5s ease-in-out infinite reverse;
   }
 
   .ribbon { display: flex; gap: 8px; margin-bottom: 10px; font-size: 1.5rem; justify-content: center; width: 100%; }
@@ -92,39 +120,61 @@
   .ribbon span:nth-child(5) { animation-delay:.60s; }
   @keyframes bounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-  .hero { width: min(300px, 60vw); height: min(300px, 60vw); display: flex; align-items: center; justify-content: center; }
-  .hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 10px 20px rgba(255,107,157,0.35)); }
+  .hero { width: min(280px, 58vw); height: min(280px, 58vw); display: flex; align-items: center; justify-content: center; animation: heroFloat 3s ease-in-out infinite; }
+  .hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 15px 25px rgba(255,107,157,0.45)); }
+  @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
 
-  .title-wrap { text-align: center; margin: 6px 0 18px; }
+  .title-wrap { text-align: center; margin: 6px 0 14px; position: relative; z-index: 1; }
   .title-sub { font-family: 'Baloo 2', cursive; font-size: 0.85rem; font-weight: 600; color: var(--blau-fosc); letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; }
-  .title-main { font-family: 'Baloo 2', cursive; font-size: 2rem; font-weight: 800; line-height: 1.1; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-  .title-del { font-size: 1.3rem; }
+  .title-main { font-family: 'Baloo 2', cursive; font-size: 2.2rem; font-weight: 800; line-height: 1.1; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 50%, var(--groc) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; filter: drop-shadow(0 2px 4px rgba(255,107,157,0.2)); }
+  .title-del { font-size: 1.4rem; }
 
   .lang-label { font-size: 0.78rem; font-weight: 700; color: #bbb; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; text-align: center; width: 100%; }
   .lang-selector { display: flex; gap: 14px; margin-bottom: 22px; justify-content: center; }
-  .lang-btn { display: flex; flex-direction: column; align-items: center; background: #FFF0F7; border: 3px solid #ddd; border-radius: 20px; padding: 10px 28px; cursor: pointer; transition: all .2s ease; font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.1rem; color: #999; position: relative; }
-  .lang-btn.active { border-color: var(--rosa); color: var(--rosa); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.2); }
+  .lang-btn { display: flex; flex-direction: column; align-items: center; background: white; border: 3px solid #ddd; border-radius: 20px; padding: 10px 28px; cursor: pointer; transition: all .2s ease; font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.1rem; color: #999; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  .lang-btn.active { border-color: var(--rosa); color: var(--rosa); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,107,157,0.25); background: #fff5f9; }
   .lang-btn.active::after { content: '✓'; position: absolute; top: -10px; right: -8px; background: var(--rosa); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; font-weight: 900; }
 
-  .play-btn { width: 100%; max-width: 280px; padding: 16px 0; display: block; margin: 0 auto; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); border: none; border-radius: 50px; font-family: 'Baloo 2', cursive; font-size: 1.35rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 8px 25px rgba(255,107,157,0.45), 0 3px 0 #c94070; letter-spacing: 1px; animation: pulseBtn 2.5s ease-in-out infinite; }
-  @keyframes pulseBtn { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+  .play-btn { width: 100%; max-width: 280px; padding: 18px 0; display: block; margin: 0 auto; background: linear-gradient(135deg, var(--rosa) 0%, var(--taronja) 100%); border: none; border-radius: 50px; font-family: 'Baloo 2', cursive; font-size: 1.4rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 8px 25px rgba(255,107,157,0.5), 0 4px 0 #c94070; letter-spacing: 1px; animation: pulseBtn 2.5s ease-in-out infinite; position: relative; z-index: 1; }
+  @keyframes pulseBtn { 0%,100% { transform: scale(1); box-shadow: 0 8px 25px rgba(255,107,157,0.5), 0 4px 0 #c94070; } 50% { transform: scale(1.05); box-shadow: 0 12px 35px rgba(255,107,157,0.6), 0 4px 0 #c94070; } }
   .play-btn:active { transform: scale(0.97) !important; }
 
   /* MENÚ */
-  #pantalla-menu { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; padding: 20px 0; }
+  #pantalla-menu { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; padding: 16px 0; background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%); }
   #pantalla-menu.visible { display: flex; }
-  .menu-hero { width: 120px; height: 120px; margin-bottom: 8px; flex-shrink: 0; }
+  .menu-hero { width: 100px; height: 100px; margin-bottom: 4px; flex-shrink: 0; animation: heroFloat 3s ease-in-out infinite; }
   .menu-hero img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 6px 12px rgba(255,107,157,0.3)); }
-  .menu-title { font-family: 'Baloo 2', cursive; font-size: 1.1rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 14px; text-align: center; flex-shrink: 0; }
-  .seccio { width: 100%; max-width: 400px; background: white; border-radius: 22px; border: 3px solid var(--rosa-clar); box-shadow: 0 4px 15px rgba(255,107,157,0.12); margin-bottom: 12px; overflow: hidden; flex-shrink: 0; }
-  .seccio-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: linear-gradient(135deg, #FFF0F7, #E8F8FF); font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--rosa); }
+  .menu-title { font-family: 'Baloo 2', cursive; font-size: 1.15rem; font-weight: 800; color: var(--blau-fosc); margin-bottom: 12px; text-align: center; flex-shrink: 0; }
+
+  .seccio { width: 100%; max-width: 400px; border-radius: 24px; border: none; box-shadow: 0 6px 20px rgba(0,0,0,0.1); margin-bottom: 12px; overflow: hidden; flex-shrink: 0; }
+  .seccio.aprendre { background: linear-gradient(135deg, #FFF0F7, #ffe4f0); border: 3px solid #FFB3CF; }
+  .seccio.jugar { background: linear-gradient(135deg, #F0F8FF, #e0f4ff); border: 3px solid #4ECDC4; }
+
+  .seccio-header { display: flex; align-items: center; gap: 10px; padding: 12px 16px; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; }
+  .seccio.aprendre .seccio-header { background: linear-gradient(135deg, #FFB3CF44, #FF6B9D22); color: var(--rosa); }
+  .seccio.jugar .seccio-header { background: linear-gradient(135deg, #4ECDC444, #2B7A6F22); color: var(--blau-fosc); }
   .seccio-header .ico { font-size: 1.6rem; }
-  .seccio-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px; }
-  .item-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFF9F0; border: 2px solid #FFD93D; border-radius: 14px; padding: 8px 10px; cursor: pointer; transition: all .2s; font-family: 'Nunito', sans-serif; font-size: 0.7rem; font-weight: 700; color: #888; flex: 1; min-width: 65px; }
-  .item-btn .ico2 { font-size: 1.4rem; }
-  .item-btn:active { transform: scale(0.95); border-color: var(--rosa); color: var(--rosa); }
-  .back-btn { margin-top: 6px; background: none; border: 2px solid #ddd; border-radius: 50px; padding: 8px 24px; font-family: 'Nunito', sans-serif; font-size: 0.85rem; font-weight: 700; color: #aaa; cursor: pointer; flex-shrink: 0; }
-  .footer { margin-top: 12px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; }
+
+  .seccio-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px 14px; }
+
+  .item-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; border-radius: 16px; padding: 10px 8px; cursor: pointer; transition: all .2s; font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800; flex: 1; min-width: 65px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .item-btn .ico2 { font-size: 1.6rem; }
+
+  /* Colors per a cada botó */
+  .item-btn.numeros  { background: linear-gradient(135deg, #FFD93D, #FF8C42); color: white; }
+  .item-btn.geo      { background: linear-gradient(135deg, #4ECDC4, #2B7A6F); color: white; }
+  .item-btn.colors   { background: linear-gradient(135deg, #FF6B9D, #FF8C42); color: white; }
+  .item-btn.animals  { background: linear-gradient(135deg, #6BD97A, #2B7A6F); color: white; }
+  .item-btn.puzzle   { background: linear-gradient(135deg, #FF6B9D, #c94070); color: white; }
+  .item-btn.sopa     { background: linear-gradient(135deg, #4ECDC4, #2B7A6F); color: white; }
+  .item-btn.memoria  { background: linear-gradient(135deg, #FFD93D, #FF8C42); color: white; }
+  .item-btn.colorear { background: linear-gradient(135deg, #6BD97A, #2B7A6F); color: white; }
+
+  .item-btn:active { transform: scale(0.92); filter: brightness(0.9); box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+
+  .back-btn { margin-top: 6px; background: white; border: 2px solid #ddd; border-radius: 50px; padding: 8px 28px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all .2s; }
+  .back-btn:active { background: #f5f5f5; transform: scale(0.97); }
+  .footer { margin-top: 10px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; }
 
   /* NIVELLS */
   #pantalla-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
@@ -348,22 +398,22 @@
       <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
     </div>
     <div class="menu-title" id="menu-title">🐷 Què vols fer avui?</div>
-    <div class="seccio">
+    <div class="seccio aprendre">
       <div class="seccio-header"><span class="ico">🎓</span><span id="s-aprendre">Aprèn amb el Porquet</span></div>
       <div class="seccio-items">
-        <div class="item-btn"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
-        <div class="item-btn"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
-        <div class="item-btn"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
-        <div class="item-btn"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
+        <div class="item-btn numeros"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
+        <div class="item-btn geo"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
+        <div class="item-btn colors"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
+        <div class="item-btn animals"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
       </div>
     </div>
-    <div class="seccio">
+    <div class="seccio jugar">
       <div class="seccio-header"><span class="ico">🎮</span><span id="s-jugar">Juga amb el Porquet</span></div>
       <div class="seccio-items">
-        <div class="item-btn" onclick="anarNivellsPuzzle()"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
-        <div class="item-btn"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
-        <div class="item-btn" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
-        <div class="item-btn"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
+        <div class="item-btn puzzle" onclick="anarNivellsPuzzle()"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
+        <div class="item-btn sopa"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
+        <div class="item-btn memoria" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
+        <div class="item-btn colorear"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
       </div>
     </div>
     <button class="back-btn" id="backBtn" onclick="tornarPortada()">← Tornar</button>
