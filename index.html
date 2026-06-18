@@ -239,6 +239,25 @@
   .btn-reintent { background: linear-gradient(135deg, var(--rosa), var(--taronja)); border: none; border-radius: 30px; padding: 12px 20px; font-family: 'Baloo 2', cursive; font-size: 0.95rem; font-weight: 800; color: white; cursor: pointer; box-shadow: 0 6px 18px rgba(255,107,157,0.4); }
   .btn-menu { background: none; border: 2px solid #ddd; border-radius: 30px; padding: 12px 20px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; }
 
+  /* SOPA DE LLETRES */
+  #pantalla-sopa { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 10px 12px; background: linear-gradient(180deg, #fff8fd 0%, #ffeef6 40%, #fff3e0 100%); }
+  #pantalla-sopa.visible { display: flex; }
+  .sopa-header { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 420px; margin-bottom: 4px; flex-shrink: 0; }
+  .sopa-title { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); }
+  .sopa-info { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--rosa); }
+  .sopa-imatge-wrap { display: flex; justify-content: center; align-items: center; height: 72px; margin-bottom: 4px; flex-shrink: 0; }
+  .sopa-imatge-trobada { width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(255,107,157,0.35)); animation: heroFloat 3s ease-in-out infinite; }
+  .sopa-grid-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
+  .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; }
+  .sopa-cel { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; color: var(--blau-fosc); background: white; border-radius: 8px; border: 2px solid #f0d8e8; cursor: pointer; transition: background .12s, color .12s, transform .1s; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
+  .sopa-cel.seleccionada { background: var(--groc); color: #333; transform: scale(1.1); border-color: var(--taronja); }
+  .sopa-cel.trobada { background: var(--rosa); color: white; border-color: #c94070; }
+  .sopa-paraules { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 420px; margin-top: 8px; flex-shrink: 0; }
+  .sopa-paraula { font-family: 'Baloo 2', cursive; font-size: 0.82rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; background: #f0d8e8; color: var(--blau-fosc); border: 2px solid #e0c0d0; transition: all .3s; }
+  .sopa-paraula.trobada { background: var(--rosa); color: white; border-color: #c94070; text-decoration: line-through; opacity: 0.7; }
+  .sopa-victoria { display: none; position: absolute; inset: 0; background: rgba(255,240,247,0.97); z-index: 50; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; border-radius: 40px; }
+  .sopa-victoria.visible { display: flex; }
+
   /* DIALOG CONFIRMACIÓ */
   .dialog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
   .dialog-overlay.visible { display: flex; }
@@ -411,7 +430,7 @@
       <div class="seccio-header"><span class="ico">🎮</span><span id="s-jugar">Juga amb el Porquet</span></div>
       <div class="seccio-items">
         <div class="item-btn puzzle" onclick="anarNivellsPuzzle()"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
-        <div class="item-btn sopa"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
+        <div class="item-btn sopa" onclick="anarNivellsSopa()"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
         <div class="item-btn memoria" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
         <div class="item-btn colorear"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
       </div>
@@ -502,6 +521,31 @@
       <div class="resultat-btns">
         <button class="btn-reintent" id="puzzle-vic-reintent" onclick="repetirPuzzle()">🔄 Repetir</button>
         <button class="btn-menu" id="puzzle-vic-nivells" onclick="tornarNivellsPuzzle()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SOPA DE LLETRES -->
+  <div id="pantalla-sopa">
+    <div class="sopa-header">
+      <div class="sopa-title" id="sopa-title">🔤 Sopa de lletres</div>
+      <div class="sopa-info" id="sopa-info">0 / 0</div>
+      <button class="sortir-btn" onclick="sortirSopa()">✖</button>
+    </div>
+    <div class="sopa-imatge-wrap">
+      <img class="sopa-imatge-trobada" id="sopa-imatge" src="" alt="" style="display:none;">
+    </div>
+    <div class="sopa-grid-wrap">
+      <div class="sopa-grid" id="sopa-grid"></div>
+    </div>
+    <div class="sopa-paraules" id="sopa-paraules"></div>
+    <div class="sopa-victoria" id="sopa-victoria">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" style="width:min(70vw,320px);height:min(70vw,320px);object-fit:contain;filter:drop-shadow(0 12px 24px rgba(255,107,157,0.45));animation:heroFloat 3s ease-in-out infinite;" alt="">
+      <div class="resultat-text" style="color:var(--verd)" id="sopa-vic-text">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="sopa-vic-sub">Has trobat totes les paraules!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" onclick="repetirSopa()" id="sopa-btn-reintent">🔄 Repetir</button>
+        <button class="btn-menu" onclick="sortirSopa()" id="sopa-btn-sortir">← Nivells</button>
       </div>
     </div>
   </div>
@@ -635,7 +679,10 @@
       sortir: '✖ Sortir',
       resetBtn: '🗑️ Esborrar estadístiques',
       confirmReset: 'Segur que vols esborrar totes les estadístiques?',
-      dialogSi: '✓ Sí', dialogNo: '✗ No'
+      dialogSi: '✓ Sí', dialogNo: '✗ No',
+      sopaTitle: '🔤 Sopa de lletres',
+      sopaVicText: '🎉 Molt bé! 🎉', sopaVicSub: 'Has trobat totes les paraules!',
+      sopaHint: '👆 Passa el dit per les lletres per trobar paraules'
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -658,7 +705,10 @@
       sortir: '✖ Salir',
       resetBtn: '🗑️ Borrar estadísticas',
       confirmReset: '¿Seguro que quieres borrar todas las estadísticas?',
-      dialogSi: '✓ Sí', dialogNo: '✗ No'
+      dialogSi: '✓ Sí', dialogNo: '✗ No',
+      sopaTitle: '🔤 Sopa de letras',
+      sopaVicText: '🎉 ¡Muy bien! 🎉', sopaVicSub: '¡Has encontrado todas las palabras!',
+      sopaHint: '👆 Desliza el dedo por las letras para encontrar palabras'
     }
   };
 
@@ -1123,6 +1173,339 @@
     document.getElementById('puzzle-vic-sub').textContent = langActual==='ca' ? 'Has completat el puzzle!' : '¡Has completado el puzzle!';
     document.getElementById('puzzle-grid').style.display = 'none';
     mostrar('puzzle-victoria');
+  }
+
+  // ===== SOPA DE LLETRES =====
+  const sopaNivells = [
+    { mida: 4, paraules: 2 },
+    { mida: 5, paraules: 4 },
+    { mida: 6, paraules: 6 },
+    { mida: 7, paraules: 8 },
+    { mida: 8, paraules: 10 },
+  ];
+
+  const sopaParaulesData = {
+    ca: [
+      { paraula: 'GATO',       img: 'animal_perro.png' },
+      { paraula: 'GOS',        img: 'animal_perro.png' },
+      { paraula: 'ELEFANT',    img: 'animal_elefante.png' },
+      { paraula: 'GIRAFA',     img: 'animal_jirafa.png' },
+      { paraula: 'LLEÓ',       img: 'animal_leon.png' },
+      { paraula: 'MONO',       img: 'animal_mono.png' },
+      { paraula: 'ZEBRA',      img: 'animal_zebra.png' },
+      { paraula: 'COCODRIL',   img: 'animal_cocodrilo.png' },
+      { paraula: 'FORMIGA',    img: 'animal_hormiga.png' },
+      { paraula: 'RINOCERONT', img: 'animal_rinoceronte.png' },
+      { paraula: 'TIGRE',      img: 'animal_tigre.png' },
+      { paraula: 'PLATANO',    img: 'fruta_platano.png' },
+      { paraula: 'TARONJA',    img: 'fruta_naranja.png' },
+      { paraula: 'PINYA',      img: 'fruta_pina.png' },
+      { paraula: 'SINDRIA',    img: 'fruta_sandia.png' },
+      { paraula: 'ALVOCAT',    img: 'fruta_aguacate.png' },
+      { paraula: 'CACAUET',    img: 'fruta_cacahuete.png' },
+    ],
+    es: [
+      { paraula: 'PERRO',       img: 'animal_perro.png' },
+      { paraula: 'ELEFANTE',    img: 'animal_elefante.png' },
+      { paraula: 'JIRAFA',      img: 'animal_jirafa.png' },
+      { paraula: 'LEON',        img: 'animal_leon.png' },
+      { paraula: 'MONO',        img: 'animal_mono.png' },
+      { paraula: 'ZEBRA',       img: 'animal_zebra.png' },
+      { paraula: 'COCODRILO',   img: 'animal_cocodrilo.png' },
+      { paraula: 'HORMIGA',     img: 'animal_hormiga.png' },
+      { paraula: 'RINOCERONTE', img: 'animal_rinoceronte.png' },
+      { paraula: 'TIGRE',       img: 'animal_tigre.png' },
+      { paraula: 'PLATANO',     img: 'fruta_platano.png' },
+      { paraula: 'NARANJA',     img: 'fruta_naranja.png' },
+      { paraula: 'PINA',        img: 'fruta_pina.png' },
+      { paraula: 'SANDIA',      img: 'fruta_sandia.png' },
+      { paraula: 'AGUACATE',    img: 'fruta_aguacate.png' },
+      { paraula: 'CACAHUETE',   img: 'fruta_cacahuete.png' },
+    ]
+  };
+
+  // Eliminar accents per comparar
+  function normalitza(s) {
+    return s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toUpperCase();
+  }
+
+  let sopaGrid = [];
+  let sopaMida = 4;
+  let sopaParaulesBuscades = [];
+  let sopaTrobades = 0;
+  let sopaArrossegant = false;
+  let sopaCelInici = null;
+  let sopaCelActual = null;
+  let sopaSeleccio = [];
+  let sopaNivellActual = 1;
+
+  function anarNivellsSopa() {
+    const tx = t();
+    ocultar('pantalla-menu');
+    iniciarSopa(1);
+  }
+
+  function sortirSopa() {
+    ocultar('pantalla-sopa');
+    mostrar('pantalla-menu');
+  }
+
+  function repetirSopa() {
+    iniciarSopa(sopaNivellActual);
+  }
+
+  function iniciarSopa(nivell) {
+    sopaNivellActual = nivell;
+    const cfg = sopaNivells[nivell - 1];
+    sopaMida = cfg.mida;
+    sopaTrobades = 0;
+
+    const tx = t();
+    document.getElementById('sopa-title').textContent = tx.sopaTitle + ' · ' + (langActual==='ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
+    document.getElementById('sopa-vic-text').textContent = tx.sopaVicText;
+    document.getElementById('sopa-vic-sub').textContent = tx.sopaVicSub;
+    document.getElementById('sopa-btn-reintent').textContent = t().reintent;
+    document.getElementById('sopa-btn-sortir').textContent = langActual==='ca' ? '← Nivells' : '← Niveles';
+
+    // Ocultar victòria
+    const vic = document.getElementById('sopa-victoria');
+    vic.classList.remove('visible'); vic.style.display = 'none';
+
+    // Ocultar imatge
+    const img = document.getElementById('sopa-imatge');
+    img.style.display = 'none';
+
+    // Triar paraules aleatories
+    const pool = [...sopaParaulesData[langActual]];
+    barrejar(pool);
+    // Filtrar paraules que cabsin a la graella
+    const cabibles = pool.filter(p => normalitza(p.paraula).length <= sopaMida);
+    sopaParaulesBuscades = cabibles.slice(0, cfg.paraules);
+
+    // Generar graella
+    sopaGrid = generarSopaGrid(sopaMida, sopaParaulesBuscades.map(p => normalitza(p.paraula)));
+
+    // Ajustar mida de les cel·les
+    const maxW = Math.min(window.innerWidth - 40, 380);
+    const celMida = Math.floor((maxW - (sopaMida - 1) * 3) / sopaMida);
+    const gridEl = document.getElementById('sopa-grid');
+    gridEl.style.gridTemplateColumns = `repeat(${sopaMida}, ${celMida}px)`;
+    gridEl.innerHTML = '';
+
+    sopaGrid.forEach((fila, r) => {
+      fila.forEach((lletra, c) => {
+        const cel = document.createElement('div');
+        cel.className = 'sopa-cel';
+        cel.textContent = lletra;
+        cel.style.width = celMida + 'px';
+        cel.style.height = celMida + 'px';
+        cel.style.fontSize = Math.max(14, celMida * 0.4) + 'px';
+        cel.dataset.r = r;
+        cel.dataset.c = c;
+        gridEl.appendChild(cel);
+      });
+    });
+
+    // Events touch i mouse
+    gridEl.addEventListener('mousedown', sopaPressInici, {passive:false});
+    gridEl.addEventListener('mousemove', sopaPressMove, {passive:false});
+    gridEl.addEventListener('mouseup', sopaPressfi);
+    gridEl.addEventListener('touchstart', sopaTouchInici, {passive:false});
+    gridEl.addEventListener('touchmove', sopaTouchMove, {passive:false});
+    gridEl.addEventListener('touchend', sopaTouchFi, {passive:false});
+
+    // Renderitzar paraules
+    const paraEl = document.getElementById('sopa-paraules');
+    paraEl.innerHTML = '';
+    sopaParaulesBuscades.forEach(p => {
+      const span = document.createElement('span');
+      span.className = 'sopa-paraula';
+      span.id = 'sopa-p-' + normalitza(p.paraula);
+      span.textContent = p.paraula;
+      paraEl.appendChild(span);
+    });
+
+    actualitzarSopaInfo();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-sopa');
+  }
+
+  function actualitzarSopaInfo() {
+    document.getElementById('sopa-info').textContent = `${sopaTrobades} / ${sopaParaulesBuscades.length}`;
+  }
+
+  // Generador de graella
+  function generarSopaGrid(mida, paraules) {
+    const lletres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const grid = Array.from({length: mida}, () => Array(mida).fill(''));
+    const direccions = [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
+
+    paraules.forEach(paraula => {
+      let col·locada = false;
+      let intents = 0;
+      while (!col·locada && intents < 200) {
+        intents++;
+        const dir = direccions[Math.floor(Math.random() * direccions.length)];
+        const r = Math.floor(Math.random() * mida);
+        const c = Math.floor(Math.random() * mida);
+        if (potCol·locar(grid, paraula, r, c, dir, mida)) {
+          for (let i = 0; i < paraula.length; i++) {
+            grid[r + dir[0]*i][c + dir[1]*i] = paraula[i];
+          }
+          col·locada = true;
+        }
+      }
+    });
+
+    // Omplir buits
+    for (let r = 0; r < mida; r++)
+      for (let c = 0; c < mida; c++)
+        if (!grid[r][c]) grid[r][c] = lletres[Math.floor(Math.random() * lletres.length)];
+
+    return grid;
+  }
+
+  function potCol·locar(grid, paraula, r, c, dir, mida) {
+    for (let i = 0; i < paraula.length; i++) {
+      const nr = r + dir[0]*i;
+      const nc = c + dir[1]*i;
+      if (nr < 0 || nr >= mida || nc < 0 || nc >= mida) return false;
+      if (grid[nr][nc] && grid[nr][nc] !== paraula[i]) return false;
+    }
+    return true;
+  }
+
+  // Obtenció de la cel·la per posició
+  function celPerPosicio(x, y) {
+    const gridEl = document.getElementById('sopa-grid');
+    const cels = gridEl.querySelectorAll('.sopa-cel');
+    for (const cel of cels) {
+      const rect = cel.getBoundingClientRect();
+      if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return cel;
+    }
+    return null;
+  }
+
+  // Calcular sel·lecció en línia recta entre dues cel·les
+  function cellesEnLinia(inici, fi) {
+    const r1 = parseInt(inici.dataset.r), c1 = parseInt(inici.dataset.c);
+    const r2 = parseInt(fi.dataset.r),   c2 = parseInt(fi.dataset.c);
+    const dr = r2 - r1, dc = c2 - c1;
+    const passos = Math.max(Math.abs(dr), Math.abs(dc));
+    if (passos === 0) return [inici];
+    // Ha de ser línia recta (horitzontal, vertical o diagonal)
+    if (Math.abs(dr) !== Math.abs(dc) && dr !== 0 && dc !== 0) return [inici];
+    const sr = dr === 0 ? 0 : dr / Math.abs(dr);
+    const sc = dc === 0 ? 0 : dc / Math.abs(dc);
+    const resultat = [];
+    const gridEl = document.getElementById('sopa-grid');
+    for (let i = 0; i <= passos; i++) {
+      const r = r1 + sr*i, c = c1 + sc*i;
+      const cel = gridEl.querySelector(`.sopa-cel[data-r="${r}"][data-c="${c}"]`);
+      if (cel) resultat.push(cel);
+    }
+    return resultat;
+  }
+
+  function actualitzarSeleccioVisual(cels) {
+    const gridEl = document.getElementById('sopa-grid');
+    gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
+    cels.forEach(c => c.classList.add('seleccionada'));
+  }
+
+  function verificarSeleccio(cels) {
+    const text = cels.map(c => c.textContent).join('');
+    const textInv = [...text].reverse().join('');
+    const trobat = sopaParaulesBuscades.find(p => {
+      const pn = normalitza(p.paraula);
+      return pn === text || pn === textInv;
+    });
+    if (trobat) {
+      cels.forEach(c => { c.classList.remove('seleccionada'); c.classList.add('trobada'); });
+      document.getElementById('sopa-p-' + normalitza(trobat.paraula)).classList.add('trobada');
+      sonar('aplauso_corto', 2000);
+      // Mostrar imatge
+      const img = document.getElementById('sopa-imatge');
+      img.src = IMG + trobat.img;
+      img.style.display = 'block';
+      sopaTrobades++;
+      actualitzarSopaInfo();
+      if (sopaTrobades >= sopaParaulesBuscades.length) {
+        setTimeout(() => {
+          sonar('aplauso_largo', 5000);
+          mostrar('sopa-victoria');
+          document.getElementById('sopa-victoria').style.display = 'flex';
+        }, 600);
+      }
+    } else {
+      // Deseleccionar
+      const gridEl = document.getElementById('sopa-grid');
+      gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
+    }
+  }
+
+  // Mouse events
+  function sopaPressInici(e) {
+    const cel = e.target.closest('.sopa-cel');
+    if (!cel) return;
+    sopaArrossegant = true;
+    sopaCelInici = cel;
+    sopaSeleccio = [cel];
+    actualitzarSeleccioVisual(sopaSeleccio);
+  }
+
+  function sopaPressMove(e) {
+    if (!sopaArrossegant || !sopaCelInici) return;
+    const cel = e.target.closest('.sopa-cel');
+    if (!cel) return;
+    sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
+    actualitzarSeleccioVisual(sopaSeleccio);
+  }
+
+  function sopaPressfi(e) {
+    if (!sopaArrossegant) return;
+    sopaArrossegant = false;
+    if (sopaSeleccio.length > 0) verificarSeleccio(sopaSeleccio);
+    sopaSeleccio = [];
+    sopaCelInici = null;
+  }
+
+  // Touch events
+  function sopaTouchInici(e) {
+    e.preventDefault();
+    const t0 = e.touches[0];
+    const cel = celPerPosicio(t0.clientX, t0.clientY);
+    if (!cel) return;
+    sopaArrossegant = true;
+    sopaCelInici = cel;
+    sopaSeleccio = [cel];
+    actualitzarSeleccioVisual(sopaSeleccio);
+  }
+
+  function sopaTouchMove(e) {
+    e.preventDefault();
+    if (!sopaArrossegant || !sopaCelInici) return;
+    const t0 = e.touches[0];
+    const cel = celPerPosicio(t0.clientX, t0.clientY);
+    if (!cel) return;
+    sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
+    actualitzarSeleccioVisual(sopaSeleccio);
+  }
+
+  function sopaTouchFi(e) {
+    e.preventDefault();
+    sopaArrossegant = false;
+    if (sopaSeleccio.length > 0) verificarSeleccio(sopaSeleccio);
+    sopaSeleccio = [];
+    sopaCelInici = null;
+  }
+
+  function barrejar(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
   }
 </script>
   <script>
