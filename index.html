@@ -157,7 +157,7 @@
 
   .seccio-items { display: flex; flex-wrap: wrap; gap: 8px; padding: 10px 12px 14px; }
 
-  .item-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; border-radius: 16px; padding: 10px 8px; cursor: pointer; transition: all .2s; font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800; flex: 1; min-width: 65px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+  .item-btn { display: flex; flex-direction: column; align-items: center; gap: 5px; border-radius: 16px; padding: 10px 8px; cursor: pointer; transition: all .2s; font-family: 'Nunito', sans-serif; font-size: 0.72rem; font-weight: 800; flex: 1; min-width: 65px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; word-break: break-word; hyphens: auto; line-height: 1.2; }
   .item-btn .ico2 { font-size: 1.6rem; }
 
   /* Colors per a cada botó */
@@ -245,8 +245,10 @@
   .sopa-header { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 420px; margin-bottom: 4px; flex-shrink: 0; }
   .sopa-title { font-family: 'Baloo 2', cursive; font-size: 1rem; font-weight: 800; color: var(--blau-fosc); }
   .sopa-info { font-family: 'Nunito', sans-serif; font-size: 0.78rem; font-weight: 700; color: var(--rosa); }
-  .sopa-imatge-wrap { display: flex; justify-content: center; align-items: center; height: 72px; margin-bottom: 4px; flex-shrink: 0; }
-  .sopa-imatge-trobada { width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(255,107,157,0.35)); animation: heroFloat 3s ease-in-out infinite; }
+  .sopa-imatges-fila { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; width: 100%; max-width: 420px; margin-bottom: 4px; flex-shrink: 0; min-height: 56px; }
+  .sopa-slot { width: 52px; height: 52px; border-radius: 10px; border: 2px dashed #e0c0d0; background: #fdf0f6; display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0; transition: border-color .3s; }
+  .sopa-slot.omplert { border: 2px solid var(--rosa); background: white; }
+  .sopa-slot img { width: 100%; height: 100%; object-fit: contain; animation: heroFloat 3s ease-in-out infinite; }
   .sopa-grid-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; }
   .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; }
   .sopa-cel { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; color: var(--blau-fosc); background: white; border-radius: 8px; border: 2px solid #f0d8e8; cursor: pointer; transition: background .12s, color .12s, transform .1s; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
@@ -532,9 +534,7 @@
       <div class="sopa-info" id="sopa-info">0 / 0</div>
       <button class="sortir-btn" onclick="sortirSopa()">✖</button>
     </div>
-    <div class="sopa-imatge-wrap">
-      <img class="sopa-imatge-trobada" id="sopa-imatge" src="" alt="" style="display:none;">
-    </div>
+    <div class="sopa-imatges-fila" id="sopa-imatges-fila"></div>
     <div class="sopa-grid-wrap">
       <div class="sopa-grid" id="sopa-grid"></div>
     </div>
@@ -1186,18 +1186,17 @@
 
   const sopaParaulesData = {
     ca: [
-      { paraula: 'GATO',       img: 'animal_perro.png' },
       { paraula: 'GOS',        img: 'animal_perro.png' },
       { paraula: 'ELEFANT',    img: 'animal_elefante.png' },
       { paraula: 'GIRAFA',     img: 'animal_jirafa.png' },
-      { paraula: 'LLEÓ',       img: 'animal_leon.png' },
+      { paraula: 'LLEO',       img: 'animal_leon.png' },
       { paraula: 'MONO',       img: 'animal_mono.png' },
       { paraula: 'ZEBRA',      img: 'animal_zebra.png' },
       { paraula: 'COCODRIL',   img: 'animal_cocodrilo.png' },
       { paraula: 'FORMIGA',    img: 'animal_hormiga.png' },
       { paraula: 'RINOCERONT', img: 'animal_rinoceronte.png' },
       { paraula: 'TIGRE',      img: 'animal_tigre.png' },
-      { paraula: 'PLATANO',    img: 'fruta_platano.png' },
+      { paraula: 'PLATANER',   img: 'fruta_platano.png' },
       { paraula: 'TARONJA',    img: 'fruta_naranja.png' },
       { paraula: 'PINYA',      img: 'fruta_pina.png' },
       { paraula: 'SINDRIA',    img: 'fruta_sandia.png' },
@@ -1314,6 +1313,16 @@
     gridEl.addEventListener('touchmove', sopaTouchMove, {passive:false});
     gridEl.addEventListener('touchend', sopaTouchFi, {passive:false});
 
+    // Renderitzar fila d'imatges (slots buits)
+    const imatgesEl = document.getElementById('sopa-imatges-fila');
+    imatgesEl.innerHTML = '';
+    sopaParaulesBuscades.forEach(p => {
+      const slot = document.createElement('div');
+      slot.className = 'sopa-slot';
+      slot.id = 'sopa-slot-' + normalitza(p.paraula);
+      imatgesEl.appendChild(slot);
+    });
+
     // Renderitzar paraules
     const paraEl = document.getElementById('sopa-paraules');
     paraEl.innerHTML = '';
@@ -1424,10 +1433,15 @@
       cels.forEach(c => { c.classList.remove('seleccionada'); c.classList.add('trobada'); });
       document.getElementById('sopa-p-' + normalitza(trobat.paraula)).classList.add('trobada');
       sonar('aplauso_corto', 2000);
-      // Mostrar imatge
-      const img = document.getElementById('sopa-imatge');
-      img.src = IMG + trobat.img;
-      img.style.display = 'block';
+      // Omplir el slot d'aquesta paraula
+      const slot = document.getElementById('sopa-slot-' + normalitza(trobat.paraula));
+      if (slot) {
+        slot.classList.add('omplert');
+        const img = document.createElement('img');
+        img.src = IMG + trobat.img;
+        img.alt = trobat.paraula;
+        slot.appendChild(img);
+      }
       sopaTrobades++;
       actualitzarSopaInfo();
       if (sopaTrobades >= sopaParaulesBuscades.length) {
