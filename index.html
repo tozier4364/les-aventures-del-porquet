@@ -258,7 +258,6 @@
   .sopa-grid-wrap { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
   .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; position: relative; }
   .sopa-svg-overlay { position: absolute; top: 0; left: 0; pointer-events: none; z-index: 5; overflow: visible; }
-  .sopa-grid { display: inline-grid; gap: 3px; user-select: none; touch-action: none; }
   .sopa-cel { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-family: 'Baloo 2', cursive; font-size: 1.05rem; font-weight: 800; color: var(--blau-fosc); background: white; border-radius: 8px; border: 2px solid #f0d8e8; cursor: pointer; transition: background .12s, color .12s, transform .1s; box-shadow: 0 2px 4px rgba(0,0,0,0.06); }
   .sopa-cel.seleccionada { background: var(--groc); color: #333; transform: scale(1.1); border-color: var(--taronja); }
   .sopa-cel.trobada { background: white; color: var(--blau-fosc); }
@@ -1576,67 +1575,7 @@
   const COLORS_ENCUADRE = ['#FF6B9D','#4ECDC4','#FFD93D','#6BD97A','#FF8C42','#a78bfa','#f472b6','#34d399','#fb923c','#60a5fa'];
   let colorIdx = 0;
 
-  function dibuixarRect(cels) {
-    const svg = document.getElementById('sopa-svg-overlay');
-    if (!svg || cels.length === 0) return;
-
-    const gap = 3;
-    const cm = sopaCelMida;
-
-    const color = COLORS_ENCUADRE[colorIdx % COLORS_ENCUADRE.length];
-    colorIdx++;
-
-    // Centro de la primera y última celda (funciona en cualquier dirección, incl. diagonal)
-    const primer = cels[0];
-    const ultim = cels[cels.length - 1];
-    const r1 = parseInt(primer.dataset.r), c1 = parseInt(primer.dataset.c);
-    const r2 = parseInt(ultim.dataset.r),  c2 = parseInt(ultim.dataset.c);
-
-    const x1 = c1 * (cm + gap) + cm / 2;
-    const y1 = r1 * (cm + gap) + cm / 2;
-    const x2 = c2 * (cm + gap) + cm / 2;
-    const y2 = r2 * (cm + gap) + cm / 2;
-
-    // Cápsula con solo el contorno marcado y relleno muy suave
-    const capsula = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    capsula.setAttribute('x1', x1);
-    capsula.setAttribute('y1', y1);
-    capsula.setAttribute('x2', x2);
-    capsula.setAttribute('y2', y2);
-    capsula.setAttribute('stroke', color);
-    capsula.setAttribute('stroke-width', cm + 4);
-    capsula.setAttribute('stroke-linecap', 'round');
-    capsula.setAttribute('fill', 'none');
-    capsula.setAttribute('stroke-opacity', '0.16');
-    svg.appendChild(capsula);
-
-    // Contorno marcado: trazo fino siguiendo el perímetro de la cápsula
-    const r = cm / 2 + 2;
-    const dx = x2 - x1, dy = y2 - y1;
-    const len = Math.sqrt(dx*dx + dy*dy);
-    const nx = len === 0 ? 0 : -dy / len * r;
-    const ny = len === 0 ? 0 : dx / len * r;
-
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    let d;
-    if (len === 0) {
-      d = `M ${x1-r} ${y1} A ${r} ${r} 0 1 1 ${x1+r} ${y1} A ${r} ${r} 0 1 1 ${x1-r} ${y1} Z`;
-    } else {
-      d = `M ${x1+nx} ${y1+ny}
-           L ${x2+nx} ${y2+ny}
-           A ${r} ${r} 0 0 1 ${x2-nx} ${y2-ny}
-           L ${x1-nx} ${y1-ny}
-           A ${r} ${r} 0 0 1 ${x1+nx} ${y1+ny}
-           Z`;
-    }
-    path.setAttribute('d', d);
-    path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', color);
-    path.setAttribute('stroke-width', '3');
-    path.setAttribute('stroke-opacity', '0.85');
-    svg.appendChild(path);
-  }
-
+  // ===== FUNCIONES CORREGIDAS =====
   function verificarSeleccio(cels) {
     const text = cels.map(c => c.textContent).join('');
     const textInv = [...text].reverse().join('');
@@ -1645,14 +1584,13 @@
       return pn === text || pn === textInv;
     });
     if (trobat) {
-      cels.forEach(c => { 
-        c.classList.remove('seleccionada'); 
-        c.classList.add('trobada'); 
-      });
+      // NO marcamos las celdas como "trobada" para que se puedan reutilizar
       dibuixarRect(cels);
+      
       const paraulaEl = document.getElementById('sopa-p-' + normalitza(trobat.paraula));
       if (paraulaEl) paraulaEl.classList.add('trobada');
       sonar('aplauso_corto', 2000);
+      
       const slot = document.getElementById('sopa-slot-' + normalitza(trobat.paraula));
       if (slot) {
         slot.classList.add('omplert');
@@ -1663,6 +1601,7 @@
       }
       sopaTrobades++;
       actualitzarSopaInfo();
+      
       if (sopaTrobades >= sopaParaulesBuscades.length) {
         setTimeout(() => {
           sonar('aplauso_largo', 5000);
@@ -1675,6 +1614,61 @@
       const gridEl = document.getElementById('sopa-grid');
       gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
     }
+  }
+
+  function dibuixarRect(cels) {
+    const svg = document.getElementById('sopa-svg-overlay');
+    if (!svg || cels.length === 0) return;
+
+    const gap = 3;
+    const cm = sopaCelMida;
+
+    const color = COLORS_ENCUADRE[colorIdx % COLORS_ENCUADRE.length];
+    colorIdx++;
+
+    // Calcular el rectángulo que envuelve TODAS las celdas seleccionadas
+    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
+    cels.forEach(cel => {
+      const r = parseInt(cel.dataset.r);
+      const c = parseInt(cel.dataset.c);
+      if (r < minR) minR = r;
+      if (r > maxR) maxR = r;
+      if (c < minC) minC = c;
+      if (c > maxC) maxC = c;
+    });
+
+    // Margen interior para que el rectángulo quede centrado en las celdas
+    const padding = 4;
+    const x = minC * (cm + gap) + padding;
+    const y = minR * (cm + gap) + padding;
+    const width = (maxC - minC + 1) * (cm + gap) - gap - padding * 2;
+    const height = (maxR - minR + 1) * (cm + gap) - gap - padding * 2;
+
+    // Rectángulo con bordes redondeados
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    rect.setAttribute('x', x);
+    rect.setAttribute('y', y);
+    rect.setAttribute('width', width);
+    rect.setAttribute('height', height);
+    rect.setAttribute('rx', cm / 2 + 2);
+    rect.setAttribute('ry', cm / 2 + 2);
+    rect.setAttribute('fill', 'none');
+    rect.setAttribute('stroke', color);
+    rect.setAttribute('stroke-width', '4');
+    rect.setAttribute('stroke-opacity', '0.85');
+    svg.appendChild(rect);
+
+    // Relleno suave interior
+    const fillRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    fillRect.setAttribute('x', x);
+    fillRect.setAttribute('y', y);
+    fillRect.setAttribute('width', width);
+    fillRect.setAttribute('height', height);
+    fillRect.setAttribute('rx', cm / 2 + 2);
+    fillRect.setAttribute('ry', cm / 2 + 2);
+    fillRect.setAttribute('fill', color);
+    fillRect.setAttribute('opacity', '0.12');
+    svg.appendChild(fillRect);
   }
 
   function sopaPressInici(e) {
