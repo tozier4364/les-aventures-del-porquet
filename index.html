@@ -1215,7 +1215,7 @@
     mostrar('puzzle-victoria');
   }
 
-  // ===== SOPA DE LLETRES =====
+  // ===== SOPA DE LLETRES - PALABRAS CORREGIDAS =====
   const sopaNivells = [
     { mida: 4, paraules: 2 },
     { mida: 5, paraules: 3 },
@@ -1229,41 +1229,41 @@
       { paraula: 'GOS',        img: 'animal_perro.png' },
       { paraula: 'ELEFANT',    img: 'animal_elefante.png' },
       { paraula: 'GIRAFA',     img: 'animal_jirafa.png' },
-      { paraula: 'LLEO',       img: 'animal_leon.png' },
+      { paraula: 'LLEÓ',       img: 'animal_leon.png' },
       { paraula: 'MONO',       img: 'animal_mono.png' },
       { paraula: 'ZEBRA',      img: 'animal_zebra.png' },
       { paraula: 'COCODRIL',   img: 'animal_cocodrilo.png' },
       { paraula: 'FORMIGA',    img: 'animal_hormiga.png' },
       { paraula: 'RINOCERONT', img: 'animal_rinoceronte.png' },
       { paraula: 'TIGRE',      img: 'animal_tigre.png' },
-      { paraula: 'PLATANER',   img: 'fruta_platano.png' },
+      { paraula: 'PLÀTAN',     img: 'fruta_platano.png' },
       { paraula: 'TARONJA',    img: 'fruta_naranja.png' },
       { paraula: 'PINYA',      img: 'fruta_pina.png' },
-      { paraula: 'SINDRIA',    img: 'fruta_sandia.png' },
+      { paraula: 'SÍNDRIA',    img: 'fruta_sandia.png' },
       { paraula: 'ALVOCAT',    img: 'fruta_aguacate.png' },
       { paraula: 'CACAUET',    img: 'fruta_cacahuete.png' },
       { paraula: 'PORQUET',    img: 'porquet_dab.png' },
-      { paraula: 'TIBURON',    img: 'tiburon_contento.png' },
+      { paraula: 'TAURÓ',      img: 'tiburon_contento.png' },
     ],
     es: [
       { paraula: 'PERRO',       img: 'animal_perro.png' },
       { paraula: 'ELEFANTE',    img: 'animal_elefante.png' },
       { paraula: 'JIRAFA',      img: 'animal_jirafa.png' },
-      { paraula: 'LEON',        img: 'animal_leon.png' },
+      { paraula: 'LEÓN',        img: 'animal_leon.png' },
       { paraula: 'MONO',        img: 'animal_mono.png' },
-      { paraula: 'ZEBRA',       img: 'animal_zebra.png' },
+      { paraula: 'CEBRA',       img: 'animal_zebra.png' },
       { paraula: 'COCODRILO',   img: 'animal_cocodrilo.png' },
       { paraula: 'HORMIGA',     img: 'animal_hormiga.png' },
       { paraula: 'RINOCERONTE', img: 'animal_rinoceronte.png' },
       { paraula: 'TIGRE',       img: 'animal_tigre.png' },
-      { paraula: 'PLATANO',     img: 'fruta_platano.png' },
+      { paraula: 'PLÁTANO',     img: 'fruta_platano.png' },
       { paraula: 'NARANJA',     img: 'fruta_naranja.png' },
-      { paraula: 'PINA',        img: 'fruta_pina.png' },
-      { paraula: 'SANDIA',      img: 'fruta_sandia.png' },
+      { paraula: 'PIÑA',        img: 'fruta_pina.png' },
+      { paraula: 'SANDÍA',      img: 'fruta_sandia.png' },
       { paraula: 'AGUACATE',    img: 'fruta_aguacate.png' },
       { paraula: 'CACAHUETE',   img: 'fruta_cacahuete.png' },
       { paraula: 'CERDITO',     img: 'porquet_dab.png' },
-      { paraula: 'TIBURON',     img: 'tiburon_contento.png' },
+      { paraula: 'TIBURÓN',     img: 'tiburon_contento.png' },
     ]
   };
 
@@ -1575,7 +1575,6 @@
   const COLORS_ENCUADRE = ['#FF6B9D','#4ECDC4','#FFD93D','#6BD97A','#FF8C42','#a78bfa','#f472b6','#34d399','#fb923c','#60a5fa'];
   let colorIdx = 0;
 
-  // ===== FUNCIÓN CORREGIDA: LÍNEA DISCONTINUA EN DIAGONAL =====
   function dibuixarRect(cels) {
     const svg = document.getElementById('sopa-svg-overlay');
     if (!svg || cels.length === 0) return;
