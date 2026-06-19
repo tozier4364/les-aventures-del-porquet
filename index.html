@@ -1481,16 +1481,13 @@
     const lletres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const direccions = [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
 
-    // Ordenar de más larga a más corta: las largas son más difíciles de colocar
     const ordenades = [...paraules].sort((a,b) => b.length - a.length);
 
-    // Reintentar la graella sencera fins que totes les paraules càpiguen
     for (let intentGraella = 0; intentGraella < 60; intentGraella++) {
       const grid = Array.from({length: mida}, () => Array(mida).fill(''));
       let totesColocades = true;
 
       for (const paraula of ordenades) {
-        // Generar totes les posicions/direccions possibles i barrejar-les
         const candidats = [];
         for (let r = 0; r < mida; r++) {
           for (let c = 0; c < mida; c++) {
@@ -1519,7 +1516,6 @@
       }
     }
 
-    // Fallback molt improbable: graella buida amb lletres aleatòries (no hauria de passar)
     const grid = Array.from({length: mida}, () => Array(mida).fill(''));
     for (let r = 0; r < mida; r++)
       for (let c = 0; c < mida; c++)
@@ -1568,23 +1564,75 @@
 
   function actualitzarSeleccioVisual(cels) {
     const gridEl = document.getElementById('sopa-grid');
-    gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
+    gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
     cels.forEach(c => c.classList.add('seleccionada'));
   }
 
   const COLORS_ENCUADRE = ['#FF6B9D','#4ECDC4','#FFD93D','#6BD97A','#FF8C42','#a78bfa','#f472b6','#34d399','#fb923c','#60a5fa'];
   let colorIdx = 0;
 
-  // ===== FUNCIONES CORREGIDAS =====
+  // ===== FUNCIÓN CORREGIDA: DIBUJA UNA LÍNEA, NO UN RECTÁNGULO =====
+  function dibuixarRect(cels) {
+    const svg = document.getElementById('sopa-svg-overlay');
+    if (!svg || cels.length === 0) return;
+
+    const gap = 3;
+    const cm = sopaCelMida;
+
+    const color = COLORS_ENCUADRE[colorIdx % COLORS_ENCUADRE.length];
+    colorIdx++;
+
+    // Primera y última celda
+    const primer = cels[0];
+    const ultim = cels[cels.length - 1];
+    
+    const r1 = parseInt(primer.dataset.r);
+    const c1 = parseInt(primer.dataset.c);
+    const r2 = parseInt(ultim.dataset.r);
+    const c2 = parseInt(ultim.dataset.c);
+
+    // Centro de cada celda
+    const x1 = c1 * (cm + gap) + cm / 2;
+    const y1 = r1 * (cm + gap) + cm / 2;
+    const x2 = c2 * (cm + gap) + cm / 2;
+    const y2 = r2 * (cm + gap) + cm / 2;
+
+    // Línea gruesa con relleno suave
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', cm + 4);
+    line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('opacity', '0.15');
+    svg.appendChild(line);
+
+    // Contorno fino y marcado
+    const outline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    outline.setAttribute('x1', x1);
+    outline.setAttribute('y1', y1);
+    outline.setAttribute('x2', x2);
+    outline.setAttribute('y2', y2);
+    outline.setAttribute('stroke', color);
+    outline.setAttribute('stroke-width', '4');
+    outline.setAttribute('stroke-linecap', 'round');
+    outline.setAttribute('opacity', '0.9');
+    svg.appendChild(outline);
+  }
+
   function verificarSeleccio(cels) {
+    if (cels.length === 0) return;
+    
     const text = cels.map(c => c.textContent).join('');
     const textInv = [...text].reverse().join('');
     const trobat = sopaParaulesBuscades.find(p => {
       const pn = normalitza(p.paraula);
       return pn === text || pn === textInv;
     });
+    
     if (trobat) {
-      // NO marcamos las celdas como "trobada" para que se puedan reutilizar
       dibuixarRect(cels);
       
       const paraulaEl = document.getElementById('sopa-p-' + normalitza(trobat.paraula));
@@ -1599,6 +1647,7 @@
         img.alt = trobat.paraula;
         slot.appendChild(img);
       }
+      
       sopaTrobades++;
       actualitzarSopaInfo();
       
@@ -1612,69 +1661,13 @@
       }
     } else {
       const gridEl = document.getElementById('sopa-grid');
-      gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
+      gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
     }
-  }
-
-  function dibuixarRect(cels) {
-    const svg = document.getElementById('sopa-svg-overlay');
-    if (!svg || cels.length === 0) return;
-
-    const gap = 3;
-    const cm = sopaCelMida;
-
-    const color = COLORS_ENCUADRE[colorIdx % COLORS_ENCUADRE.length];
-    colorIdx++;
-
-    // Calcular el rectángulo que envuelve TODAS las celdas seleccionadas
-    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-    cels.forEach(cel => {
-      const r = parseInt(cel.dataset.r);
-      const c = parseInt(cel.dataset.c);
-      if (r < minR) minR = r;
-      if (r > maxR) maxR = r;
-      if (c < minC) minC = c;
-      if (c > maxC) maxC = c;
-    });
-
-    // Margen interior para que el rectángulo quede centrado en las celdas
-    const padding = 4;
-    const x = minC * (cm + gap) + padding;
-    const y = minR * (cm + gap) + padding;
-    const width = (maxC - minC + 1) * (cm + gap) - gap - padding * 2;
-    const height = (maxR - minR + 1) * (cm + gap) - gap - padding * 2;
-
-    // Rectángulo con bordes redondeados
-    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('x', x);
-    rect.setAttribute('y', y);
-    rect.setAttribute('width', width);
-    rect.setAttribute('height', height);
-    rect.setAttribute('rx', cm / 2 + 2);
-    rect.setAttribute('ry', cm / 2 + 2);
-    rect.setAttribute('fill', 'none');
-    rect.setAttribute('stroke', color);
-    rect.setAttribute('stroke-width', '4');
-    rect.setAttribute('stroke-opacity', '0.85');
-    svg.appendChild(rect);
-
-    // Relleno suave interior
-    const fillRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    fillRect.setAttribute('x', x);
-    fillRect.setAttribute('y', y);
-    fillRect.setAttribute('width', width);
-    fillRect.setAttribute('height', height);
-    fillRect.setAttribute('rx', cm / 2 + 2);
-    fillRect.setAttribute('ry', cm / 2 + 2);
-    fillRect.setAttribute('fill', color);
-    fillRect.setAttribute('opacity', '0.12');
-    svg.appendChild(fillRect);
   }
 
   function sopaPressInici(e) {
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
-    if (cel.classList.contains('trobada')) return;
     sopaArrossegant = true;
     sopaCelInici = cel;
     sopaSeleccio = [cel];
@@ -1685,7 +1678,6 @@
     if (!sopaArrossegant || !sopaCelInici) return;
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
-    if (cel.classList.contains('trobada')) return;
     sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
     actualitzarSeleccioVisual(sopaSeleccio);
   }
@@ -1693,7 +1685,9 @@
   function sopaPressfi(e) {
     if (!sopaArrossegant) return;
     sopaArrossegant = false;
-    if (sopaSeleccio.length > 0) verificarSeleccio(sopaSeleccio);
+    if (sopaSeleccio.length > 1) verificarSeleccio(sopaSeleccio);
+    const gridEl = document.getElementById('sopa-grid');
+    gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
     sopaSeleccio = [];
     sopaCelInici = null;
   }
@@ -1703,7 +1697,6 @@
     const t0 = e.touches[0];
     const cel = celPerPosicio(t0.clientX, t0.clientY);
     if (!cel) return;
-    if (cel.classList.contains('trobada')) return;
     sopaArrossegant = true;
     sopaCelInici = cel;
     sopaSeleccio = [cel];
@@ -1716,7 +1709,6 @@
     const t0 = e.touches[0];
     const cel = celPerPosicio(t0.clientX, t0.clientY);
     if (!cel) return;
-    if (cel.classList.contains('trobada')) return;
     sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
     actualitzarSeleccioVisual(sopaSeleccio);
   }
@@ -1724,7 +1716,9 @@
   function sopaTouchFi(e) {
     e.preventDefault();
     sopaArrossegant = false;
-    if (sopaSeleccio.length > 0) verificarSeleccio(sopaSeleccio);
+    if (sopaSeleccio.length > 1) verificarSeleccio(sopaSeleccio);
+    const gridEl = document.getElementById('sopa-grid');
+    gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
     sopaSeleccio = [];
     sopaCelInici = null;
   }
