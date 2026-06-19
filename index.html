@@ -606,14 +606,20 @@
     a.preload = 'auto';
     sons[nom] = a;
   });
+  let sonTimeoutId = null;
   function sonar(nom, duracioMs) {
     const s = sons[nom];
     if (!s) return;
     s.currentTime = 0;
     s.play().catch(() => {});
+    if (sonTimeoutId) { clearTimeout(sonTimeoutId); sonTimeoutId = null; }
     if (duracioMs) {
-      setTimeout(() => { s.pause(); s.currentTime = 0; }, duracioMs);
+      sonTimeoutId = setTimeout(() => { s.pause(); s.currentTime = 0; sonTimeoutId = null; }, duracioMs);
     }
+  }
+  function aturarSons() {
+    if (sonTimeoutId) { clearTimeout(sonTimeoutId); sonTimeoutId = null; }
+    Object.values(sons).forEach(s => { s.pause(); s.currentTime = 0; });
   }
 
   // ===== ESTADÍSTIQUES (localStorage) =====
@@ -669,10 +675,10 @@
   ];
 
   const configNivells = [
-    { parelles: 3,  fallosMax: 3,   cols: 'cols-3' },
-    { parelles: 6,  fallosMax: 6,   cols: 'cols-4' },
-    { parelles: 10, fallosMax: 9,   cols: 'cols-5' },
-    { parelles: 18, fallosMax: 12,  cols: 'cols-6' },
+    { parelles: 3,  fallosMax: 5,   cols: 'cols-3' },
+    { parelles: 6,  fallosMax: 10,  cols: 'cols-4' },
+    { parelles: 10, fallosMax: 15,  cols: 'cols-5' },
+    { parelles: 18, fallosMax: 999, cols: 'cols-6' },
     { parelles: 30, fallosMax: 999, cols: 'cols-6' },
   ];
 
@@ -824,6 +830,7 @@
   }
 
   function tornarMenu() {
+    aturarSons();
     ocultar('pantalla-nivells');
     ocultar('pantalla-memoria');
     ocultar('pantalla-puzzle');
@@ -834,18 +841,20 @@
   }
 
   function tornarPortada() {
+    aturarSons();
     ocultar('pantalla-menu');
     document.getElementById('pantalla-portada').style.display = 'flex';
   }
 
   function tornarNivells() {
+    aturarSons();
     ocultar('pantalla-memoria');
     document.getElementById('nivells-title').textContent = t().nivellsTitol;
     renderNivells();
     mostrar('pantalla-nivells');
   }
 
-  function repetirNivell() { iniciarMemoria(nivellActual); }
+  function repetirNivell() { aturarSons(); iniciarMemoria(nivellActual); }
 
   function sortirAMitges() {
     incrementStat(nivellActual, 'p');
@@ -941,7 +950,7 @@
   function mostrarDerrota() {
     const tx = t();
     incrementStat(nivellActual, 'p');
-    sonar('llanto');
+    sonar('llanto', 5000);
     document.getElementById('der-text').textContent = tx.derText;
     document.getElementById('der-sub').textContent = tx.derSub;
     document.getElementById('der-reintent').textContent = tx.tornarIntent;
@@ -1058,12 +1067,14 @@
   }
 
   function tornarNivellsPuzzle() {
+    aturarSons();
     ocultar('pantalla-puzzle');
     renderNivellsPuzzle();
     mostrar('pantalla-puzzle-nivells');
   }
 
   function tornarMenuDesPuzzleNivells() {
+    aturarSons();
     ocultar('pantalla-puzzle-nivells');
     mostrar('pantalla-menu');
   }
@@ -1073,7 +1084,7 @@
     tornarNivellsPuzzle();
   }
 
-  function repetirPuzzle() { iniciarPuzzle(puzzleNivellActual); }
+  function repetirPuzzle() { aturarSons(); iniciarPuzzle(puzzleNivellActual); }
 
   function iniciarPuzzle(nivell) {
     puzzleNivellActual = nivell;
@@ -1351,11 +1362,13 @@
   }
 
   function tornarMenuDesSopaNivells() {
+    aturarSons();
     ocultar('pantalla-sopa-nivells');
     mostrar('pantalla-menu');
   }
 
   function sortirSopa() {
+    aturarSons();
     incrementStatSopa(sopaNivellActual, 'p');
     ocultar('pantalla-sopa');
     renderNivellsSopa();
@@ -1363,6 +1376,7 @@
   }
 
   function repetirSopa() {
+    aturarSons();
     iniciarSopa(sopaNivellActual);
   }
 
