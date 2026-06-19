@@ -392,6 +392,10 @@
 
   #puzzle-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
   .back-btn { flex-shrink: 0; }
+
+  .sopa-svg-overlay line {
+    transition: opacity 0.1s ease;
+  }
 </style>
 </head>
 <body>
@@ -1564,14 +1568,14 @@
 
   function actualitzarSeleccioVisual(cels) {
     const gridEl = document.getElementById('sopa-grid');
-    gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
+    gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
     cels.forEach(c => c.classList.add('seleccionada'));
   }
 
   const COLORS_ENCUADRE = ['#FF6B9D','#4ECDC4','#FFD93D','#6BD97A','#FF8C42','#a78bfa','#f472b6','#34d399','#fb923c','#60a5fa'];
   let colorIdx = 0;
 
-  // ===== FUNCIÓN CORREGIDA: DIBUJA UNA LÍNEA, NO UN RECTÁNGULO =====
+  // ===== FUNCIÓN CORREGIDA: LÍNEA DISCONTINUA EN DIAGONAL =====
   function dibuixarRect(cels) {
     const svg = document.getElementById('sopa-svg-overlay');
     if (!svg || cels.length === 0) return;
@@ -1597,7 +1601,7 @@
     const x2 = c2 * (cm + gap) + cm / 2;
     const y2 = r2 * (cm + gap) + cm / 2;
 
-    // Línea gruesa con relleno suave
+    // Línea gruesa con relleno suave (discontinua)
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', x1);
     line.setAttribute('y1', y1);
@@ -1606,19 +1610,21 @@
     line.setAttribute('stroke', color);
     line.setAttribute('stroke-width', cm + 4);
     line.setAttribute('stroke-linecap', 'round');
-    line.setAttribute('opacity', '0.15');
+    line.setAttribute('stroke-dasharray', '8,6');
+    line.setAttribute('opacity', '0.12');
     svg.appendChild(line);
 
-    // Contorno fino y marcado
+    // Contorno fino y marcado (también discontinuo)
     const outline = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     outline.setAttribute('x1', x1);
     outline.setAttribute('y1', y1);
     outline.setAttribute('x2', x2);
     outline.setAttribute('y2', y2);
     outline.setAttribute('stroke', color);
-    outline.setAttribute('stroke-width', '4');
+    outline.setAttribute('stroke-width', '3');
     outline.setAttribute('stroke-linecap', 'round');
-    outline.setAttribute('opacity', '0.9');
+    outline.setAttribute('stroke-dasharray', '6,4');
+    outline.setAttribute('opacity', '0.85');
     svg.appendChild(outline);
   }
 
@@ -1661,13 +1667,14 @@
       }
     } else {
       const gridEl = document.getElementById('sopa-grid');
-      gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
+      gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
     }
   }
 
   function sopaPressInici(e) {
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
+    if (cel.classList.contains('trobada')) return;
     sopaArrossegant = true;
     sopaCelInici = cel;
     sopaSeleccio = [cel];
@@ -1678,6 +1685,7 @@
     if (!sopaArrossegant || !sopaCelInici) return;
     const cel = e.target.closest('.sopa-cel');
     if (!cel) return;
+    if (cel.classList.contains('trobada')) return;
     sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
     actualitzarSeleccioVisual(sopaSeleccio);
   }
@@ -1687,7 +1695,7 @@
     sopaArrossegant = false;
     if (sopaSeleccio.length > 1) verificarSeleccio(sopaSeleccio);
     const gridEl = document.getElementById('sopa-grid');
-    gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
+    gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
     sopaSeleccio = [];
     sopaCelInici = null;
   }
@@ -1697,6 +1705,7 @@
     const t0 = e.touches[0];
     const cel = celPerPosicio(t0.clientX, t0.clientY);
     if (!cel) return;
+    if (cel.classList.contains('trobada')) return;
     sopaArrossegant = true;
     sopaCelInici = cel;
     sopaSeleccio = [cel];
@@ -1709,6 +1718,7 @@
     const t0 = e.touches[0];
     const cel = celPerPosicio(t0.clientX, t0.clientY);
     if (!cel) return;
+    if (cel.classList.contains('trobada')) return;
     sopaSeleccio = cellesEnLinia(sopaCelInici, cel);
     actualitzarSeleccioVisual(sopaSeleccio);
   }
@@ -1718,7 +1728,7 @@
     sopaArrossegant = false;
     if (sopaSeleccio.length > 1) verificarSeleccio(sopaSeleccio);
     const gridEl = document.getElementById('sopa-grid');
-    gridEl.querySelectorAll('.sopa-cel').forEach(c => c.classList.remove('seleccionada'));
+    gridEl.querySelectorAll('.sopa-cel:not(.trobada)').forEach(c => c.classList.remove('seleccionada'));
     sopaSeleccio = [];
     sopaCelInici = null;
   }
