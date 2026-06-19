@@ -1582,41 +1582,59 @@
 
     const gap = 3;
     const cm = sopaCelMida;
-    const pad = 4; // padding alrededor
-
-    // Calcular bounding box de todas las celdas
-    let minR = Infinity, maxR = -Infinity, minC = Infinity, maxC = -Infinity;
-    cels.forEach(cel => {
-      const r = parseInt(cel.dataset.r);
-      const c = parseInt(cel.dataset.c);
-      if (r < minR) minR = r;
-      if (r > maxR) maxR = r;
-      if (c < minC) minC = c;
-      if (c > maxC) maxC = c;
-    });
-
-    const x = minC * (cm + gap) - pad;
-    const y = minR * (cm + gap) - pad;
-    const w = (maxC - minC) * (cm + gap) + cm + pad * 2;
-    const h = (maxR - minR) * (cm + gap) + cm + pad * 2;
-    const rx = (cm / 2) + pad; // border-radius
 
     const color = COLORS_ENCUADRE[colorIdx % COLORS_ENCUADRE.length];
     colorIdx++;
 
-    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('x', x);
-    rect.setAttribute('y', y);
-    rect.setAttribute('width', w);
-    rect.setAttribute('height', h);
-    rect.setAttribute('rx', rx);
-    rect.setAttribute('ry', rx);
-    rect.setAttribute('fill', color);
-    rect.setAttribute('fill-opacity', '0.25');
-    rect.setAttribute('stroke', color);
-    rect.setAttribute('stroke-width', '3');
-    rect.setAttribute('stroke-opacity', '0.8');
-    svg.appendChild(rect);
+    // Centro de la primera y última celda (funciona en cualquier dirección, incl. diagonal)
+    const primer = cels[0];
+    const ultim = cels[cels.length - 1];
+    const r1 = parseInt(primer.dataset.r), c1 = parseInt(primer.dataset.c);
+    const r2 = parseInt(ultim.dataset.r),  c2 = parseInt(ultim.dataset.c);
+
+    const x1 = c1 * (cm + gap) + cm / 2;
+    const y1 = r1 * (cm + gap) + cm / 2;
+    const x2 = c2 * (cm + gap) + cm / 2;
+    const y2 = r2 * (cm + gap) + cm / 2;
+
+    // Cápsula con solo el contorno marcado y relleno muy suave
+    const capsula = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    capsula.setAttribute('x1', x1);
+    capsula.setAttribute('y1', y1);
+    capsula.setAttribute('x2', x2);
+    capsula.setAttribute('y2', y2);
+    capsula.setAttribute('stroke', color);
+    capsula.setAttribute('stroke-width', cm + 4);
+    capsula.setAttribute('stroke-linecap', 'round');
+    capsula.setAttribute('fill', 'none');
+    capsula.setAttribute('stroke-opacity', '0.16');
+    svg.appendChild(capsula);
+
+    // Contorno marcado: trazo fino siguiendo el perímetro de la cápsula
+    const r = cm / 2 + 2;
+    const dx = x2 - x1, dy = y2 - y1;
+    const len = Math.sqrt(dx*dx + dy*dy);
+    const nx = len === 0 ? 0 : -dy / len * r;
+    const ny = len === 0 ? 0 : dx / len * r;
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    let d;
+    if (len === 0) {
+      d = `M ${x1-r} ${y1} A ${r} ${r} 0 1 1 ${x1+r} ${y1} A ${r} ${r} 0 1 1 ${x1-r} ${y1} Z`;
+    } else {
+      d = `M ${x1+nx} ${y1+ny}
+           L ${x2+nx} ${y2+ny}
+           A ${r} ${r} 0 0 1 ${x2-nx} ${y2-ny}
+           L ${x1-nx} ${y1-ny}
+           A ${r} ${r} 0 0 1 ${x1+nx} ${y1+ny}
+           Z`;
+    }
+    path.setAttribute('d', d);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width', '3');
+    path.setAttribute('stroke-opacity', '0.85');
+    svg.appendChild(path);
   }
 
   function verificarSeleccio(cels) {
