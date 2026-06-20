@@ -2071,14 +2071,10 @@
       try {
         const c = configFruita[fruitaNivellActual - 1];
         const actives = comptarFruitesActives();
-        const hintEl = document.getElementById('fruita-hint');
-        if (hintEl) hintEl.textContent = `DEBUG cicles:${fruitaCicles} actives:${actives}/${c.maxSimultanies}`;
         if (actives < c.maxSimultanies) {
           crearElementFruita();
         }
       } catch (err) {
-        const hintEl = document.getElementById('fruita-hint');
-        if (hintEl) hintEl.textContent = 'ERROR: ' + (err && err.message ? err.message : err);
         console.error('Error creant fruita:', err);
       }
     }, 700);
@@ -2111,13 +2107,18 @@
     el.style.height = mida + 'px';
     el.style.left = x + 'px';
     el.style.top = '-' + mida + 'px';
-    el.style.transition = `top ${durada}s linear`;
     el.innerHTML = `<img src="${IMG}${nom}.png" alt="">`;
     cont.appendChild(el);
     fruitaActives++;
 
+    // Forçar reflow perquè el navegador apliqui la posició inicial
+    // abans d'activar la transició, si no l'animació no s'arriba a veure mai.
+    void el.offsetHeight;
+    el.style.transition = `top ${durada}s linear`;
     requestAnimationFrame(() => {
-      el.style.top = (alcada + mida) + 'px';
+      requestAnimationFrame(() => {
+        el.style.top = (alcada + mida) + 'px';
+      });
     });
 
     const handleTap = (ev) => {
