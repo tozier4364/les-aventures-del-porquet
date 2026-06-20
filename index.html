@@ -550,6 +550,48 @@
   @keyframes numerosShake {
     0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); }
   }
+
+  /* ===== COLORS ===== */
+  #pantalla-colors-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-colors-nivells.visible { display: flex; }
+  #colors-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+
+  #pantalla-colors { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; position: relative; }
+  #pantalla-colors.visible { display: flex; }
+
+  .colors-opcio {
+    width: 76px;
+    height: 76px;
+    border-radius: 20px;
+    border: 4px solid white;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .colors-opcio:active { transform: scale(0.92); }
+  .colors-opcio.correcta { border-color: var(--verd); box-shadow: 0 0 0 4px rgba(43,122,111,0.35), 0 4px 12px rgba(0,0,0,0.2); animation: numerosPop 0.4s ease; }
+  .colors-opcio.incorrecta { border-color: #e85d75; box-shadow: 0 0 0 4px rgba(232,93,117,0.35), 0 4px 12px rgba(0,0,0,0.2); animation: numerosShake 0.4s ease; }
+  .colors-opcio.deshabilitat { pointer-events: none; opacity: 0.55; }
+  .colors-opcio .marca { font-size: 1.8rem; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.4)); }
+
+  .colors-mostra {
+    width: 90px;
+    height: 90px;
+    border-radius: 24px;
+    border: 5px solid white;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    margin: 0 auto;
+  }
+
+  .colors-objecte-emoji {
+    font-size: 3.4rem;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  }
 </style>
 </head>
 <body>
@@ -595,7 +637,7 @@
       <div class="seccio-items">
         <div class="item-btn numeros" onclick="anarNivellsNumeros()"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
         <div class="item-btn geo"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
-        <div class="item-btn colors"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
+        <div class="item-btn colors" onclick="anarNivellsColors()"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
         <div class="item-btn animals"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
       </div>
     </div>
@@ -834,6 +876,59 @@
     </div>
   </div>
 
+  <!-- COLORS: NIVELLS -->
+  <div id="pantalla-colors-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="colors-nivells-title">🎨 Tria el nivell</div>
+    <div id="colors-nivells-container"></div>
+    <button class="reset-btn" id="colors-reset-btn" onclick="resetStatsColors()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="colors-nivells-back" onclick="tornarMenuDesColorsNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- COLORS: JOC -->
+  <div id="pantalla-colors">
+    <div class="puzzle-header">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="colors-title">🎨 Colors</div>
+        <div style="display:flex;gap:8px;align-self:flex-start;">
+          <div class="puzzle-progress" id="colors-encerts" style="background:#e3fff0;color:#2B7A6F;">✅ 0/6</div>
+          <div class="puzzle-progress" id="colors-fallos" style="background:#ffe3ea;color:#e85d75;">❌ 0/6</div>
+        </div>
+        <div class="puzzle-hint" id="colors-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <button class="sortir-btn" id="colors-sortir-btn" onclick="sortirColors()">✖</button>
+      </div>
+    </div>
+    <div class="numeros-container" id="colors-container">
+      <div class="numeros-pregunta" id="colors-pregunta"></div>
+      <div class="numeros-objectes" id="colors-objectes"></div>
+      <div class="numeros-opcions" id="colors-opcions"></div>
+    </div>
+
+    <div class="resultat" id="colors-victoria" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="colors-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="colors-vic-sub">Has completat el nivell!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="colors-vic-reintent" onclick="repetirColors()">🔄 Repetir</button>
+        <button class="btn-menu" id="colors-vic-nivells" onclick="tornarNivellsColors()">← Nivells</button>
+      </div>
+    </div>
+
+    <div class="resultat" id="colors-derrota" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id="colors-der-text" style="color:#e85d75">😅 Quasi ho tens!</div>
+      <div class="resultat-sub" id="colors-der-sub">Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="colors-der-reintent" onclick="repetirColors()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" id="colors-der-nivells" onclick="tornarNivellsColors()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIALOG CONFIRMACIÓ -->
   <div class="dialog-overlay" id="dialog-overlay">
     <div class="dialog-box">
@@ -1004,6 +1099,20 @@
       numerosVicSub: 'Has completat el nivell!',
       numerosDerText: '😅 Quasi ho tens!',
       numerosDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
+      colorsTitle: '🎨 Colors',
+      colorsNivellsTitol: '🎨 Tria el nivell',
+      colorsMecReconeixer: 'Reconeix el color',
+      colorsMecAssociar: 'De quin color és?',
+      colorsMecMix: 'Repàs final',
+      colorsEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      colorsFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
+      colorsPreguntaReconeixer: (nom) => `On és el color ${nom}?`,
+      colorsHintReconeixer: '👆 Toca el color correcte',
+      colorsHintAssociar: '👆 Toca el color que toca',
+      colorsVicText: '🎉 Molt bé! 🎉',
+      colorsVicSub: 'Has completat el nivell!',
+      colorsDerText: '😅 Quasi ho tens!',
+      colorsDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -1061,6 +1170,20 @@
       numerosVicSub: '¡Has completado el nivel!',
       numerosDerText: '😅 ¡Casi lo tienes!',
       numerosDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
+      colorsTitle: '🎨 Colores',
+      colorsNivellsTitol: '🎨 Elige el nivel',
+      colorsMecReconeixer: 'Reconoce el color',
+      colorsMecAssociar: '¿De qué color es?',
+      colorsMecMix: 'Repaso final',
+      colorsEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      colorsFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
+      colorsPreguntaReconeixer: (nom) => `¿Dónde está el color ${nom}?`,
+      colorsHintReconeixer: '👆 Toca el color correcto',
+      colorsHintAssociar: '👆 Toca el color que corresponde',
+      colorsVicText: '🎉 ¡Muy bien! 🎉',
+      colorsVicSub: '¡Has completado el nivel!',
+      colorsDerText: '😅 ¡Casi lo tienes!',
+      colorsDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
     }
   };
 
@@ -1077,7 +1200,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('visible');
-    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells') {
+    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells' || id === 'pantalla-colors' || id === 'pantalla-colors-nivells') {
       el.style.display = 'flex';
     } else {
       el.style.display = '';
@@ -1160,6 +1283,8 @@
     ocultar('pantalla-fruita-nivells');
     ocultar('pantalla-numeros');
     ocultar('pantalla-numeros-nivells');
+    ocultar('pantalla-colors');
+    ocultar('pantalla-colors-nivells');
     mostrar('pantalla-menu');
   }
 
@@ -2680,6 +2805,290 @@
       document.getElementById('numeros-der-reintent').textContent = tx.tornarIntent;
       document.getElementById('numeros-der-nivells').textContent = tx.nivells;
       mostrar('numeros-derrota');
+      sonar('llanto', 1500);
+    }
+  }
+
+  // ===== COLORS =====
+  const COLORS_LIMIT = 6; // aciertos o fallos necesarios para acabar la partida
+
+  // Cada color: nom (ca/es), hex, i un emoji d'un objecte inequívocament d'aquest color
+  const colorsLlista = [
+    { id: 'vermell',  ca: 'vermell',  es: 'rojo',     hex: '#E84545', emoji: '🍓' },
+    { id: 'blau',     ca: 'blau',     es: 'azul',     hex: '#3B82F6', emoji: '💧' },
+    { id: 'groc',     ca: 'groc',     es: 'amarillo', hex: '#FFD93D', emoji: '🌞' },
+    { id: 'verd',     ca: 'verd',     es: 'verde',    hex: '#22C55E', emoji: '🐸' },
+    { id: 'taronja',  ca: 'taronja',  es: 'naranja',  hex: '#FF8C42', emoji: '🍊' },
+    { id: 'morat',    ca: 'morat',    es: 'morado',   hex: '#9B5DE5', emoji: '🍇' },
+    { id: 'rosa',     ca: 'rosa',     es: 'rosa',     hex: '#FF6FB5', emoji: '🌸' },
+    { id: 'marro',    ca: 'marró',    es: 'marrón',   hex: '#8B5A2B', emoji: '🐻' },
+    { id: 'negre',    ca: 'negre',    es: 'negro',    hex: '#2B2B2B', emoji: '🦇' },
+    { id: 'blanc',    ca: 'blanc',    es: 'blanco',   hex: '#FFFFFF', emoji: '☁️' },
+    { id: 'gris',     ca: 'gris',     es: 'gris',     hex: '#9CA3AF', emoji: '🐘' },
+    { id: 'celeste',  ca: 'celeste',  es: 'celeste',  hex: '#7DD3FC', emoji: '🦋' },
+  ];
+
+  const colorsNivells = [
+    { tipus: 'reconeixer', n: 4 },
+    { tipus: 'reconeixer', n: 8 },
+    { tipus: 'associar',   n: 8 },
+    { tipus: 'reconeixer', n: 12 },
+    { tipus: 'associar',   n: 12 },
+    { tipus: 'mix',        n: 12 },
+  ];
+
+  let colorsNivellActual = 1;
+  let colorsEncerts = 0;
+  let colorsFallos = 0;
+  let colorsBloquejat = false;
+  let colorsMixComptador = 0;
+  let colorsPreguntaActual = null;
+
+  function carregarStatsColors() {
+    try { return JSON.parse(localStorage.getItem('porquet_colors_stats')) || {}; } catch { return {}; }
+  }
+  function guardarStatsColors(stats) {
+    try { localStorage.setItem('porquet_colors_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStatColors(nivell, tipus) {
+    const stats = carregarStatsColors();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsColors(stats);
+  }
+  function resetStatsColors() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_colors_stats');
+      renderNivellsColors();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function colorsNomMecanica(tipus, tx) {
+    if (tipus === 'reconeixer') return tx.colorsMecReconeixer;
+    if (tipus === 'associar') return tx.colorsMecAssociar;
+    return tx.colorsMecMix;
+  }
+
+  function renderNivellsColors() {
+    const tx = t();
+    const stats = carregarStatsColors();
+    const container = document.getElementById('colors-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐','⭐⭐⭐⭐⭐⭐'];
+    colorsNivells.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarColors(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${colorsNomMecanica(c.tipus, tx)} · ${c.n} colors</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('colors-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('colors-nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivellsColors() {
+    document.getElementById('colors-nivells-title').textContent = t().colorsNivellsTitol;
+    renderNivellsColors();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-colors-nivells');
+  }
+
+  function tornarMenuDesColorsNivells() {
+    aturarSons();
+    ocultar('pantalla-colors-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function tornarNivellsColors() {
+    aturarSons();
+    ocultar('pantalla-colors');
+    document.getElementById('colors-nivells-title').textContent = t().colorsNivellsTitol;
+    renderNivellsColors();
+    mostrar('pantalla-colors-nivells');
+  }
+
+  function sortirColors() {
+    aturarSons();
+    incrementStatColors(colorsNivellActual, 'p');
+    ocultar('pantalla-colors');
+    renderNivellsColors();
+    mostrar('pantalla-colors-nivells');
+  }
+
+  function repetirColors() {
+    aturarSons();
+    iniciarColors(colorsNivellActual);
+  }
+
+  // Genera una pregunta segons el tipus de mecànica
+  function generarPreguntaColors(tipus, n) {
+    const pool = colorsLlista.slice(0, n);
+    const correcteIdx = Math.floor(Math.random() * pool.length);
+    const correcte = pool[correcteIdx];
+    const opcionsSet = new Set([correcte.id]);
+    const opcionsObj = [correcte];
+    while (opcionsObj.length < 3) {
+      const cand = pool[Math.floor(Math.random() * pool.length)];
+      if (!opcionsSet.has(cand.id)) {
+        opcionsSet.add(cand.id);
+        opcionsObj.push(cand);
+      }
+    }
+    return { tipus, correcte, opcions: barrejar(opcionsObj) };
+  }
+
+  function generarSeguentPreguntaColors(cfg) {
+    let tipusReal = cfg.tipus;
+    if (cfg.tipus === 'mix') {
+      tipusReal = ['reconeixer', 'associar'][colorsMixComptador % 2];
+      colorsMixComptador++;
+    }
+    return generarPreguntaColors(tipusReal, cfg.n);
+  }
+
+  function iniciarColors(nivell) {
+    colorsNivellActual = nivell;
+    colorsEncerts = 0;
+    colorsFallos = 0;
+    colorsBloquejat = false;
+    colorsMixComptador = 0;
+    colorsPreguntaActual = null;
+
+    const tx = t();
+    document.getElementById('colors-title').textContent = tx.colorsTitle + ' · ' + (langActual === 'ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
+    document.getElementById('colors-vic-reintent').textContent = tx.reintent;
+    document.getElementById('colors-vic-nivells').textContent = tx.nivells;
+    document.getElementById('colors-der-reintent').textContent = tx.tornarIntent;
+    document.getElementById('colors-der-nivells').textContent = tx.nivells;
+
+    document.getElementById('colors-victoria').classList.remove('visible');
+    document.getElementById('colors-derrota').classList.remove('visible');
+    document.getElementById('colors-encerts').textContent = tx.colorsEncertsLabel(0, COLORS_LIMIT);
+    document.getElementById('colors-fallos').textContent = tx.colorsFallosLabel(0, COLORS_LIMIT);
+
+    ocultar('pantalla-colors-nivells');
+    mostrar('pantalla-colors');
+
+    mostrarPreguntaColors();
+  }
+
+  function mostrarPreguntaColors() {
+    const tx = t();
+    const cfg = colorsNivells[colorsNivellActual - 1];
+    const p = generarSeguentPreguntaColors(cfg);
+    colorsPreguntaActual = p;
+    colorsBloquejat = false;
+
+    document.getElementById('colors-encerts').textContent = tx.colorsEncertsLabel(colorsEncerts, COLORS_LIMIT);
+    document.getElementById('colors-fallos').textContent = tx.colorsFallosLabel(colorsFallos, COLORS_LIMIT);
+
+    const preguntaEl = document.getElementById('colors-pregunta');
+    const objectesEl = document.getElementById('colors-objectes');
+    const opcionsEl = document.getElementById('colors-opcions');
+    const hintEl = document.getElementById('colors-hint');
+    objectesEl.innerHTML = '';
+    opcionsEl.innerHTML = '';
+
+    const nomColor = langActual === 'ca' ? p.correcte.ca : p.correcte.es;
+
+    if (p.tipus === 'reconeixer') {
+      preguntaEl.textContent = tx.colorsPreguntaReconeixer(nomColor);
+      hintEl.textContent = tx.colorsHintReconeixer;
+    } else if (p.tipus === 'associar') {
+      preguntaEl.textContent = '';
+      hintEl.textContent = tx.colorsHintAssociar;
+      const span = document.createElement('div');
+      span.className = 'colors-objecte-emoji';
+      span.textContent = p.correcte.emoji;
+      objectesEl.appendChild(span);
+    }
+
+    p.opcions.forEach(color => {
+      const btn = document.createElement('button');
+      btn.className = 'colors-opcio';
+      btn.style.background = color.hex;
+      btn.dataset.colorId = color.id;
+      if (color.id === 'blanc') btn.style.borderColor = '#cfd8dc'; // contrast visual pel blanc
+      btn.onclick = () => respondreColors(btn, color.id, p.correcte.id);
+      opcionsEl.appendChild(btn);
+    });
+  }
+
+  function respondreColors(btn, colorId, correcteId) {
+    if (colorsBloquejat) return;
+    colorsBloquejat = true;
+
+    const tx = t();
+    const tots = document.querySelectorAll('#colors-opcions .colors-opcio');
+    tots.forEach(b => b.classList.add('deshabilitat'));
+
+    if (colorId === correcteId) {
+      btn.classList.add('correcta');
+      btn.innerHTML = '<span class="marca">✔️</span>';
+      sonar('aplauso_corto', 900);
+      colorsEncerts++;
+      document.getElementById('colors-encerts').textContent = tx.colorsEncertsLabel(colorsEncerts, COLORS_LIMIT);
+    } else {
+      btn.classList.add('incorrecta');
+      btn.innerHTML = '<span class="marca">❌</span>';
+      sonar('carta_error');
+      tots.forEach(b => {
+        if (b.dataset.colorId === correcteId) {
+          b.classList.add('correcta');
+          b.innerHTML = '<span class="marca">✔️</span>';
+        }
+      });
+      colorsFallos++;
+      document.getElementById('colors-fallos').textContent = tx.colorsFallosLabel(colorsFallos, COLORS_LIMIT);
+    }
+
+    setTimeout(() => {
+      if (colorsEncerts >= COLORS_LIMIT || colorsFallos >= COLORS_LIMIT) {
+        finalitzarColors();
+      } else {
+        mostrarPreguntaColors();
+      }
+    }, 900);
+  }
+
+  function finalitzarColors() {
+    const tx = t();
+    const victoria = colorsEncerts >= COLORS_LIMIT;
+
+    if (victoria) {
+      incrementStatColors(colorsNivellActual, 'g');
+      document.getElementById('colors-vic-text').textContent = tx.colorsVicText;
+      document.getElementById('colors-vic-sub').textContent = tx.colorsVicSub + ` (${colorsEncerts}/${COLORS_LIMIT})`;
+      document.getElementById('colors-vic-reintent').textContent = tx.reintent;
+      document.getElementById('colors-vic-nivells').textContent = tx.nivells;
+      mostrar('colors-victoria');
+      sonar('aplauso_largo', 5000);
+    } else {
+      incrementStatColors(colorsNivellActual, 'p');
+      document.getElementById('colors-der-text').textContent = tx.colorsDerText;
+      document.getElementById('colors-der-sub').textContent = tx.colorsDerSub(colorsEncerts, colorsFallos);
+      document.getElementById('colors-der-reintent').textContent = tx.tornarIntent;
+      document.getElementById('colors-der-nivells').textContent = tx.nivells;
+      mostrar('colors-derrota');
       sonar('llanto', 1500);
     }
   }
