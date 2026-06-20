@@ -797,8 +797,10 @@
     <div class="puzzle-header">
       <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
         <div class="puzzle-title" id="numeros-title">🔢 Números</div>
-        <div class="puzzle-progress" id="numeros-progress" style="align-self:flex-start;">0 / 6</div>
-        <div class="puzzle-progress" id="numeros-encerts" style="align-self:flex-start;background:#e3fff0;color:#2B7A6F;">✅ 0</div>
+        <div style="display:flex;gap:8px;align-self:flex-start;">
+          <div class="puzzle-progress" id="numeros-encerts" style="background:#e3fff0;color:#2B7A6F;">✅ 0/6</div>
+          <div class="puzzle-progress" id="numeros-fallos" style="background:#ffe3ea;color:#e85d75;">❌ 0/6</div>
+        </div>
         <div class="puzzle-hint" id="numeros-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
@@ -990,8 +992,8 @@
       numerosMecComptar: 'Compta i tria',
       numerosMecSeq: 'Quin número falta?',
       numerosMecMix: 'Repàs final',
-      numerosProgress: (act, total) => `❓ ${act} / ${total}`,
-      numerosEncertsLabel: (n) => `✅ ${n}`,
+      numerosEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      numerosFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
       numerosPreguntaReconeixer: (n) => `On és el ${n}?`,
       numerosPreguntaComptar: '¿Quants porquets veus?',
       numerosPreguntaSeq: 'Quin número falta?',
@@ -1001,7 +1003,7 @@
       numerosVicText: '🎉 Molt bé! 🎉',
       numerosVicSub: 'Has completat el nivell!',
       numerosDerText: '😅 Quasi ho tens!',
-      numerosDerSub: (enc, total) => `Has encertat ${enc} de ${total}. Torna-ho a intentar!`,
+      numerosDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -1047,8 +1049,8 @@
       numerosMecComptar: 'Cuenta y elige',
       numerosMecSeq: '¿Qué número falta?',
       numerosMecMix: 'Repaso final',
-      numerosProgress: (act, total) => `❓ ${act} / ${total}`,
-      numerosEncertsLabel: (n) => `✅ ${n}`,
+      numerosEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      numerosFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
       numerosPreguntaReconeixer: (n) => `¿Dónde está el ${n}?`,
       numerosPreguntaComptar: '¿Cuántos cerditos ves?',
       numerosPreguntaSeq: '¿Qué número falta?',
@@ -1058,7 +1060,7 @@
       numerosVicText: '🎉 ¡Muy bien! 🎉',
       numerosVicSub: '¡Has completado el nivel!',
       numerosDerText: '😅 ¡Casi lo tienes!',
-      numerosDerSub: (enc, total) => `Has acertado ${enc} de ${total}. ¡Inténtalo de nuevo!`,
+      numerosDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
     }
   };
 
@@ -2389,19 +2391,20 @@
 
   // ===== NÚMEROS =====
   const numerosNivells = [
-    { tipus: 'reconeixer', min: 1, max: 3,  preguntes: 6 },
-    { tipus: 'reconeixer', min: 1, max: 5,  preguntes: 6 },
-    { tipus: 'comptar',    min: 1, max: 5,  preguntes: 6 },
-    { tipus: 'comptar',    min: 1, max: 10, preguntes: 6 },
-    { tipus: 'seq',        min: 1, max: 10, preguntes: 6 },
-    { tipus: 'mix',        min: 1, max: 10, preguntes: 8 },
+    { tipus: 'reconeixer', min: 1, max: 3 },
+    { tipus: 'reconeixer', min: 1, max: 5 },
+    { tipus: 'comptar',    min: 1, max: 5 },
+    { tipus: 'comptar',    min: 1, max: 10 },
+    { tipus: 'seq',        min: 1, max: 10 },
+    { tipus: 'mix',        min: 1, max: 10 },
   ];
+  const NUMEROS_LIMIT = 6; // aciertos o fallos necesarios para acabar la partida
 
   let numerosNivellActual = 1;
-  let numerosPreguntaActual = 0;
   let numerosEncerts = 0;
+  let numerosFallos = 0;
   let numerosBloquejat = false;
-  let numerosSequenciaPreguntes = [];
+  let numerosPreguntaActual = null; // pregunta generada bajo demanda (objeto), no array
 
   function carregarStatsNumeros() {
     try { return JSON.parse(localStorage.getItem('porquet_numeros_stats')) || {}; } catch { return {}; }
@@ -2533,25 +2536,24 @@
     return { tipus: 'seq', seq, buitIdx, correcte, opcions: barrejar([...opcions]) };
   }
 
-  function generarSequenciaPreguntesNumeros(cfg) {
-    const llista = [];
-    for (let i = 0; i < cfg.preguntes; i++) {
-      let tipusReal = cfg.tipus;
-      if (cfg.tipus === 'mix') {
-        tipusReal = ['reconeixer', 'comptar', 'seq'][i % 3];
-      }
-      llista.push(generarPreguntaNumeros(tipusReal, cfg.min, cfg.max));
+  let numerosMixComptador = 0; // para alternar tipos en el nivell "mix"
+
+  function generarSeguentPreguntaNumeros(cfg) {
+    let tipusReal = cfg.tipus;
+    if (cfg.tipus === 'mix') {
+      tipusReal = ['reconeixer', 'comptar', 'seq'][numerosMixComptador % 3];
+      numerosMixComptador++;
     }
-    return llista;
+    return generarPreguntaNumeros(tipusReal, cfg.min, cfg.max);
   }
 
   function iniciarNumeros(nivell) {
     numerosNivellActual = nivell;
-    const cfg = numerosNivells[nivell - 1];
-    numerosPreguntaActual = 0;
     numerosEncerts = 0;
+    numerosFallos = 0;
     numerosBloquejat = false;
-    numerosSequenciaPreguntes = generarSequenciaPreguntesNumeros(cfg);
+    numerosMixComptador = 0;
+    numerosPreguntaActual = null;
 
     const tx = t();
     document.getElementById('numeros-title').textContent = tx.numerosTitle + ' · ' + (langActual === 'ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
@@ -2562,7 +2564,8 @@
 
     document.getElementById('numeros-victoria').classList.remove('visible');
     document.getElementById('numeros-derrota').classList.remove('visible');
-    document.getElementById('numeros-encerts').textContent = t().numerosEncertsLabel(0);
+    document.getElementById('numeros-encerts').textContent = tx.numerosEncertsLabel(0, NUMEROS_LIMIT);
+    document.getElementById('numeros-fallos').textContent = tx.numerosFallosLabel(0, NUMEROS_LIMIT);
 
     ocultar('pantalla-numeros-nivells');
     mostrar('pantalla-numeros');
@@ -2572,11 +2575,13 @@
 
   function mostrarPreguntaNumeros() {
     const tx = t();
-    const p = numerosSequenciaPreguntes[numerosPreguntaActual];
+    const cfg = numerosNivells[numerosNivellActual - 1];
+    const p = generarSeguentPreguntaNumeros(cfg);
+    numerosPreguntaActual = p;
     numerosBloquejat = false;
 
-    document.getElementById('numeros-progress').textContent = tx.numerosProgress(numerosPreguntaActual, numerosSequenciaPreguntes.length);
-    document.getElementById('numeros-encerts').textContent = tx.numerosEncertsLabel(numerosEncerts);
+    document.getElementById('numeros-encerts').textContent = tx.numerosEncertsLabel(numerosEncerts, NUMEROS_LIMIT);
+    document.getElementById('numeros-fallos').textContent = tx.numerosFallosLabel(numerosFallos, NUMEROS_LIMIT);
 
     const preguntaEl = document.getElementById('numeros-pregunta');
     const objectesEl = document.getElementById('numeros-objectes');
@@ -2630,6 +2635,7 @@
     if (numerosBloquejat) return;
     numerosBloquejat = true;
 
+    const tx = t();
     const tots = document.querySelectorAll('#numeros-opcions .numeros-opcio');
     tots.forEach(b => b.classList.add('deshabilitat'));
 
@@ -2637,16 +2643,17 @@
       btn.classList.add('correcta');
       sonar('aplauso_corto', 900);
       numerosEncerts++;
-      document.getElementById('numeros-encerts').textContent = t().numerosEncertsLabel(numerosEncerts);
+      document.getElementById('numeros-encerts').textContent = tx.numerosEncertsLabel(numerosEncerts, NUMEROS_LIMIT);
     } else {
       btn.classList.add('incorrecta');
       sonar('carta_error');
       tots.forEach(b => { if (Number(b.textContent) === correcte) b.classList.add('correcta'); });
+      numerosFallos++;
+      document.getElementById('numeros-fallos').textContent = tx.numerosFallosLabel(numerosFallos, NUMEROS_LIMIT);
     }
 
     setTimeout(() => {
-      numerosPreguntaActual++;
-      if (numerosPreguntaActual >= numerosSequenciaPreguntes.length) {
+      if (numerosEncerts >= NUMEROS_LIMIT || numerosFallos >= NUMEROS_LIMIT) {
         finalitzarNumeros();
       } else {
         mostrarPreguntaNumeros();
@@ -2656,13 +2663,12 @@
 
   function finalitzarNumeros() {
     const tx = t();
-    const total = numerosSequenciaPreguntes.length;
-    const victoria = numerosEncerts / total >= 0.7;
+    const victoria = numerosEncerts >= NUMEROS_LIMIT;
 
     if (victoria) {
       incrementStatNumeros(numerosNivellActual, 'g');
       document.getElementById('numeros-vic-text').textContent = tx.numerosVicText;
-      document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub + ` (${numerosEncerts}/${total})`;
+      document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub + ` (${numerosEncerts}/${NUMEROS_LIMIT})`;
       document.getElementById('numeros-vic-reintent').textContent = tx.reintent;
       document.getElementById('numeros-vic-nivells').textContent = tx.nivells;
       mostrar('numeros-victoria');
@@ -2670,7 +2676,7 @@
     } else {
       incrementStatNumeros(numerosNivellActual, 'p');
       document.getElementById('numeros-der-text').textContent = tx.numerosDerText;
-      document.getElementById('numeros-der-sub').textContent = tx.numerosDerSub(numerosEncerts, total);
+      document.getElementById('numeros-der-sub').textContent = tx.numerosDerSub(numerosEncerts, numerosFallos);
       document.getElementById('numeros-der-reintent').textContent = tx.tornarIntent;
       document.getElementById('numeros-der-nivells').textContent = tx.nivells;
       mostrar('numeros-derrota');
