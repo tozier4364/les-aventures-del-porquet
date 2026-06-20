@@ -468,6 +468,88 @@
     0% { transform: translateY(0); opacity: 1; }
     100% { transform: translateY(-40px); opacity: 0; }
   }
+
+  /* ===== NÚMEROS ===== */
+  #pantalla-numeros-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-numeros-nivells.visible { display: flex; }
+  #numeros-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+
+  #pantalla-numeros { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; position: relative; }
+  #pantalla-numeros.visible { display: flex; }
+
+  .numeros-container {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #fff8e0 0%, #fff0d6 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,0.6);
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .numeros-pregunta {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: clamp(1.3rem, 6vw, 1.8rem);
+    color: var(--blau-fosc);
+    text-align: center;
+  }
+
+  .numeros-objectes {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 64px;
+    max-width: 320px;
+  }
+  .numeros-objectes img {
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.15));
+  }
+
+  .numeros-opcions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .numeros-opcio {
+    width: 76px;
+    height: 76px;
+    border-radius: 20px;
+    border: none;
+    background: linear-gradient(135deg, #FFD93D, #FF8C42);
+    color: white;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 2rem;
+    box-shadow: 0 4px 12px rgba(255,140,66,0.35);
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .numeros-opcio:active { transform: scale(0.92); filter: brightness(0.95); }
+  .numeros-opcio.correcta { background: linear-gradient(135deg, #6BD97A, #2B7A6F); animation: numerosPop 0.4s ease; }
+  .numeros-opcio.incorrecta { background: linear-gradient(135deg, #e85d75, #c94070); animation: numerosShake 0.4s ease; }
+  .numeros-opcio.deshabilitat { pointer-events: none; opacity: 0.55; }
+
+  @keyframes numerosPop {
+    0% { transform: scale(1); } 50% { transform: scale(1.15); } 100% { transform: scale(1); }
+  }
+  @keyframes numerosShake {
+    0%,100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); }
+  }
 </style>
 </head>
 <body>
@@ -511,7 +593,7 @@
     <div class="seccio aprendre">
       <div class="seccio-header"><span class="ico">🎓</span><span id="s-aprendre">Aprèn amb el Porquet</span></div>
       <div class="seccio-items">
-        <div class="item-btn numeros"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
+        <div class="item-btn numeros" onclick="anarNivellsNumeros()"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
         <div class="item-btn geo"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
         <div class="item-btn colors"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
         <div class="item-btn animals"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
@@ -699,6 +781,46 @@
     </div>
   </div>
 
+  <!-- NÚMEROS: NIVELLS -->
+  <div id="pantalla-numeros-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="numeros-nivells-title">🔢 Tria el nivell</div>
+    <div id="numeros-nivells-container"></div>
+    <button class="reset-btn" id="numeros-reset-btn" onclick="resetStatsNumeros()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="numeros-nivells-back" onclick="tornarMenuDesNumerosNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- NÚMEROS: JOC -->
+  <div id="pantalla-numeros">
+    <div class="puzzle-header">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="numeros-title">🔢 Números</div>
+        <div class="puzzle-progress" id="numeros-progress" style="align-self:flex-start;">0 / 6</div>
+        <div class="puzzle-hint" id="numeros-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <button class="sortir-btn" id="numeros-sortir-btn" onclick="sortirNumeros()">✖</button>
+      </div>
+    </div>
+    <div class="numeros-container" id="numeros-container">
+      <div class="numeros-pregunta" id="numeros-pregunta"></div>
+      <div class="numeros-objectes" id="numeros-objectes"></div>
+      <div class="numeros-opcions" id="numeros-opcions"></div>
+    </div>
+
+    <div class="resultat" id="numeros-victoria" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="numeros-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="numeros-vic-sub">Has completat el nivell!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="numeros-vic-reintent" onclick="repetirNumeros()">🔄 Repetir</button>
+        <button class="btn-menu" id="numeros-vic-nivells" onclick="tornarNivellsNumeros()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIALOG CONFIRMACIÓ -->
   <div class="dialog-overlay" id="dialog-overlay">
     <div class="dialog-box">
@@ -849,7 +971,23 @@
       fruitaDerText: '⏰ S\'ha acabat el temps!',
       fruitaDerSub: (act, meta) => `Has atrapat ${act} de ${meta} fruites. Torna-ho a intentar!`,
       fruitaDerTextDolents: '😅 Massa coses dolentes!',
-      fruitaDerSubDolents: (max) => `Has tocat ${max} objectes dolents. Torna-ho a intentar!`
+      fruitaDerSubDolents: (max) => `Has tocat ${max} objectes dolents. Torna-ho a intentar!`,
+      numerosTitle: '🔢 Números',
+      numerosNivellsTitol: '🔢 Tria el nivell',
+      numerosNivellDesc: (mec) => mec,
+      numerosMecReconeixer: 'Reconeix el número',
+      numerosMecComptar: 'Compta i tria',
+      numerosMecSeq: 'Quin número falta?',
+      numerosMecMix: 'Repàs final',
+      numerosProgress: (act, total) => `${act} / ${total}`,
+      numerosPreguntaReconeixer: (n) => `On és el ${n}?`,
+      numerosPreguntaComptar: '¿Quants porquets veus?',
+      numerosPreguntaSeq: 'Quin número falta?',
+      numerosHintReconeixer: '👆 Toca el número correcte',
+      numerosHintComptar: '👆 Compta i toca la resposta',
+      numerosHintSeq: '👆 Toca el número que falta',
+      numerosVicText: '🎉 Molt bé! 🎉',
+      numerosVicSub: 'Has completat el nivell!',
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -887,7 +1025,23 @@
       fruitaDerText: '⏰ ¡Se acabó el tiempo!',
       fruitaDerSub: (act, meta) => `Has atrapado ${act} de ${meta} frutas. ¡Inténtalo de nuevo!`,
       fruitaDerTextDolents: '😅 ¡Demasiadas cosas malas!',
-      fruitaDerSubDolents: (max) => `Has tocado ${max} objetos malos. ¡Inténtalo de nuevo!`
+      fruitaDerSubDolents: (max) => `Has tocado ${max} objetos malos. ¡Inténtalo de nuevo!`,
+      numerosTitle: '🔢 Números',
+      numerosNivellsTitol: '🔢 Elige el nivel',
+      numerosNivellDesc: (mec) => mec,
+      numerosMecReconeixer: 'Reconoce el número',
+      numerosMecComptar: 'Cuenta y elige',
+      numerosMecSeq: '¿Qué número falta?',
+      numerosMecMix: 'Repaso final',
+      numerosProgress: (act, total) => `${act} / ${total}`,
+      numerosPreguntaReconeixer: (n) => `¿Dónde está el ${n}?`,
+      numerosPreguntaComptar: '¿Cuántos cerditos ves?',
+      numerosPreguntaSeq: '¿Qué número falta?',
+      numerosHintReconeixer: '👆 Toca el número correcto',
+      numerosHintComptar: '👆 Cuenta y toca la respuesta',
+      numerosHintSeq: '👆 Toca el número que falta',
+      numerosVicText: '🎉 ¡Muy bien! 🎉',
+      numerosVicSub: '¡Has completado el nivel!',
     }
   };
 
@@ -904,7 +1058,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('visible');
-    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells') {
+    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells') {
       el.style.display = 'flex';
     } else {
       el.style.display = '';
@@ -985,6 +1139,8 @@
     ocultar('pantalla-sopa-nivells');
     ocultar('pantalla-fruita');
     ocultar('pantalla-fruita-nivells');
+    ocultar('pantalla-numeros');
+    ocultar('pantalla-numeros-nivells');
     mostrar('pantalla-menu');
   }
 
@@ -2212,6 +2368,278 @@
       mostrar('fruita-derrota');
       sonar('llanto', 5000);
     }
+  }
+
+  // ===== NÚMEROS =====
+  const numerosNivells = [
+    { tipus: 'reconeixer', min: 1, max: 3,  preguntes: 6 },
+    { tipus: 'reconeixer', min: 1, max: 5,  preguntes: 6 },
+    { tipus: 'comptar',    min: 1, max: 5,  preguntes: 6 },
+    { tipus: 'comptar',    min: 1, max: 10, preguntes: 6 },
+    { tipus: 'seq',        min: 1, max: 10, preguntes: 6 },
+    { tipus: 'mix',        min: 1, max: 10, preguntes: 8 },
+  ];
+
+  let numerosNivellActual = 1;
+  let numerosPreguntaActual = 0;
+  let numerosEncerts = 0;
+  let numerosBloquejat = false;
+  let numerosSequenciaPreguntes = [];
+
+  function carregarStatsNumeros() {
+    try { return JSON.parse(localStorage.getItem('porquet_numeros_stats')) || {}; } catch { return {}; }
+  }
+  function guardarStatsNumeros(stats) {
+    try { localStorage.setItem('porquet_numeros_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStatNumeros(nivell, tipus) {
+    const stats = carregarStatsNumeros();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsNumeros(stats);
+  }
+  function resetStatsNumeros() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_numeros_stats');
+      renderNivellsNumeros();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function numerosNomMecanica(tipus, tx) {
+    if (tipus === 'reconeixer') return tx.numerosMecReconeixer;
+    if (tipus === 'comptar') return tx.numerosMecComptar;
+    if (tipus === 'seq') return tx.numerosMecSeq;
+    return tx.numerosMecMix;
+  }
+
+  function renderNivellsNumeros() {
+    const tx = t();
+    const stats = carregarStatsNumeros();
+    const container = document.getElementById('numeros-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐','⭐⭐⭐⭐⭐⭐'];
+    numerosNivells.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarNumeros(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${numerosNomMecanica(c.tipus, tx)} · 1-${c.max}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('numeros-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('numeros-nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivellsNumeros() {
+    document.getElementById('numeros-nivells-title').textContent = t().numerosNivellsTitol;
+    renderNivellsNumeros();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-numeros-nivells');
+  }
+
+  function tornarMenuDesNumerosNivells() {
+    aturarSons();
+    ocultar('pantalla-numeros-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function tornarNivellsNumeros() {
+    aturarSons();
+    ocultar('pantalla-numeros');
+    document.getElementById('numeros-nivells-title').textContent = t().numerosNivellsTitol;
+    renderNivellsNumeros();
+    mostrar('pantalla-numeros-nivells');
+  }
+
+  function sortirNumeros() {
+    aturarSons();
+    incrementStatNumeros(numerosNivellActual, 'p');
+    ocultar('pantalla-numeros');
+    renderNivellsNumeros();
+    mostrar('pantalla-numeros-nivells');
+  }
+
+  function repetirNumeros() {
+    aturarSons();
+    iniciarNumeros(numerosNivellActual);
+  }
+
+  // Genera una pregunta segons el tipus de mecànica
+  function generarPreguntaNumeros(tipus, min, max) {
+    if (tipus === 'reconeixer') {
+      const correcte = min + Math.floor(Math.random() * (max - min + 1));
+      const opcions = new Set([correcte]);
+      while (opcions.size < 3) {
+        opcions.add(min + Math.floor(Math.random() * (max - min + 1)));
+      }
+      return { tipus: 'reconeixer', correcte, opcions: barrejar([...opcions]) };
+    }
+    if (tipus === 'comptar') {
+      const correcte = Math.max(1, min) + Math.floor(Math.random() * (max - Math.max(1, min) + 1));
+      const opcions = new Set([correcte]);
+      while (opcions.size < 3) {
+        let cand = correcte + (Math.floor(Math.random() * 5) - 2);
+        if (cand < 1) cand = correcte + Math.floor(Math.random() * 3) + 1;
+        if (cand >= 1 && cand <= Math.max(max, 10)) opcions.add(cand);
+      }
+      return { tipus: 'comptar', correcte, opcions: barrejar([...opcions]) };
+    }
+    // seq: seqüència de 4 números consecutius amb un buit
+    const inici = min + Math.floor(Math.random() * Math.max(1, (max - min + 1) - 4));
+    const buitIdx = 1 + Math.floor(Math.random() * 3); // mai el primer, per donar context
+    const seq = [inici, inici + 1, inici + 2, inici + 3];
+    const correcte = seq[buitIdx];
+    const opcions = new Set([correcte]);
+    while (opcions.size < 3) {
+      let cand = correcte + (Math.floor(Math.random() * 5) - 2);
+      if (cand < 1 || seq.includes(cand)) cand = correcte + Math.floor(Math.random() * 4) + 1;
+      if (cand >= 1) opcions.add(cand);
+    }
+    return { tipus: 'seq', seq, buitIdx, correcte, opcions: barrejar([...opcions]) };
+  }
+
+  function generarSequenciaPreguntesNumeros(cfg) {
+    const llista = [];
+    for (let i = 0; i < cfg.preguntes; i++) {
+      let tipusReal = cfg.tipus;
+      if (cfg.tipus === 'mix') {
+        tipusReal = ['reconeixer', 'comptar', 'seq'][i % 3];
+      }
+      llista.push(generarPreguntaNumeros(tipusReal, cfg.min, cfg.max));
+    }
+    return llista;
+  }
+
+  function iniciarNumeros(nivell) {
+    numerosNivellActual = nivell;
+    const cfg = numerosNivells[nivell - 1];
+    numerosPreguntaActual = 0;
+    numerosEncerts = 0;
+    numerosBloquejat = false;
+    numerosSequenciaPreguntes = generarSequenciaPreguntesNumeros(cfg);
+
+    const tx = t();
+    document.getElementById('numeros-title').textContent = tx.numerosTitle + ' · ' + (langActual === 'ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
+    document.getElementById('numeros-vic-text').textContent = tx.numerosVicText;
+    document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub;
+    document.getElementById('numeros-vic-reintent').textContent = tx.reintent;
+    document.getElementById('numeros-vic-nivells').textContent = tx.nivells;
+
+    const vic = document.getElementById('numeros-victoria');
+    vic.classList.remove('visible'); vic.style.display = 'none';
+
+    ocultar('pantalla-numeros-nivells');
+    mostrar('pantalla-numeros');
+
+    mostrarPreguntaNumeros();
+  }
+
+  function mostrarPreguntaNumeros() {
+    const tx = t();
+    const p = numerosSequenciaPreguntes[numerosPreguntaActual];
+    numerosBloquejat = false;
+
+    document.getElementById('numeros-progress').textContent = tx.numerosProgress(numerosPreguntaActual, numerosSequenciaPreguntes.length);
+
+    const preguntaEl = document.getElementById('numeros-pregunta');
+    const objectesEl = document.getElementById('numeros-objectes');
+    const opcionsEl = document.getElementById('numeros-opcions');
+    const hintEl = document.getElementById('numeros-hint');
+    objectesEl.innerHTML = '';
+    opcionsEl.innerHTML = '';
+
+    if (p.tipus === 'reconeixer') {
+      preguntaEl.textContent = tx.numerosPreguntaReconeixer(p.correcte);
+      hintEl.textContent = tx.numerosHintReconeixer;
+    } else if (p.tipus === 'comptar') {
+      preguntaEl.textContent = tx.numerosPreguntaComptar;
+      hintEl.textContent = tx.numerosHintComptar;
+      for (let i = 0; i < p.correcte; i++) {
+        const img = document.createElement('img');
+        img.src = IMG + 'porquet_dab.png';
+        img.alt = '';
+        objectesEl.appendChild(img);
+      }
+    } else if (p.tipus === 'seq') {
+      preguntaEl.textContent = tx.numerosPreguntaSeq;
+      hintEl.textContent = tx.numerosHintSeq;
+      const seqWrap = document.createElement('div');
+      seqWrap.style.display = 'flex';
+      seqWrap.style.gap = '10px';
+      seqWrap.style.fontFamily = "'Baloo 2', cursive";
+      seqWrap.style.fontWeight = '800';
+      seqWrap.style.fontSize = '1.8rem';
+      seqWrap.style.color = 'var(--blau-fosc)';
+      p.seq.forEach((num, idx) => {
+        const span = document.createElement('span');
+        span.style.minWidth = '40px';
+        span.style.textAlign = 'center';
+        span.textContent = idx === p.buitIdx ? '❓' : String(num);
+        seqWrap.appendChild(span);
+      });
+      objectesEl.appendChild(seqWrap);
+    }
+
+    p.opcions.forEach(opcio => {
+      const btn = document.createElement('button');
+      btn.className = 'numeros-opcio';
+      btn.textContent = String(opcio);
+      btn.onclick = () => respondreNumeros(btn, opcio, p.correcte);
+      opcionsEl.appendChild(btn);
+    });
+  }
+
+  function respondreNumeros(btn, opcio, correcte) {
+    if (numerosBloquejat) return;
+    numerosBloquejat = true;
+
+    const tots = document.querySelectorAll('#numeros-opcions .numeros-opcio');
+    tots.forEach(b => b.classList.add('deshabilitat'));
+
+    if (opcio === correcte) {
+      btn.classList.add('correcta');
+      sonar('aplauso_corto', 900);
+      numerosEncerts++;
+    } else {
+      btn.classList.add('incorrecta');
+      sonar('carta_error');
+      tots.forEach(b => { if (Number(b.textContent) === correcte) b.classList.add('correcta'); });
+    }
+
+    setTimeout(() => {
+      numerosPreguntaActual++;
+      if (numerosPreguntaActual >= numerosSequenciaPreguntes.length) {
+        finalitzarNumeros();
+      } else {
+        mostrarPreguntaNumeros();
+      }
+    }, 900);
+  }
+
+  function finalitzarNumeros() {
+    const tx = t();
+    incrementStatNumeros(numerosNivellActual, 'g');
+    document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub + ` (${numerosEncerts}/${numerosSequenciaPreguntes.length})`;
+    mostrar('numeros-victoria');
+    sonar('aplauso_largo', 5000);
   }
 </script>
   <script>
