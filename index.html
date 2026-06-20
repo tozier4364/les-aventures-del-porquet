@@ -798,6 +798,7 @@
       <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
         <div class="puzzle-title" id="numeros-title">🔢 Números</div>
         <div class="puzzle-progress" id="numeros-progress" style="align-self:flex-start;">0 / 6</div>
+        <div class="puzzle-progress" id="numeros-encerts" style="align-self:flex-start;background:#e3fff0;color:#2B7A6F;">✅ 0</div>
         <div class="puzzle-hint" id="numeros-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
@@ -817,6 +818,16 @@
       <div class="resultat-btns">
         <button class="btn-reintent" id="numeros-vic-reintent" onclick="repetirNumeros()">🔄 Repetir</button>
         <button class="btn-menu" id="numeros-vic-nivells" onclick="tornarNivellsNumeros()">← Nivells</button>
+      </div>
+    </div>
+
+    <div class="resultat" id="numeros-derrota" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id="numeros-der-text" style="color:#e85d75">😅 Quasi ho tens!</div>
+      <div class="resultat-sub" id="numeros-der-sub">Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="numeros-der-reintent" onclick="repetirNumeros()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" id="numeros-der-nivells" onclick="tornarNivellsNumeros()">← Nivells</button>
       </div>
     </div>
   </div>
@@ -979,7 +990,8 @@
       numerosMecComptar: 'Compta i tria',
       numerosMecSeq: 'Quin número falta?',
       numerosMecMix: 'Repàs final',
-      numerosProgress: (act, total) => `${act} / ${total}`,
+      numerosProgress: (act, total) => `❓ ${act} / ${total}`,
+      numerosEncertsLabel: (n) => `✅ ${n}`,
       numerosPreguntaReconeixer: (n) => `On és el ${n}?`,
       numerosPreguntaComptar: '¿Quants porquets veus?',
       numerosPreguntaSeq: 'Quin número falta?',
@@ -988,6 +1000,8 @@
       numerosHintSeq: '👆 Toca el número que falta',
       numerosVicText: '🎉 Molt bé! 🎉',
       numerosVicSub: 'Has completat el nivell!',
+      numerosDerText: '😅 Quasi ho tens!',
+      numerosDerSub: (enc, total) => `Has encertat ${enc} de ${total}. Torna-ho a intentar!`,
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -1033,7 +1047,8 @@
       numerosMecComptar: 'Cuenta y elige',
       numerosMecSeq: '¿Qué número falta?',
       numerosMecMix: 'Repaso final',
-      numerosProgress: (act, total) => `${act} / ${total}`,
+      numerosProgress: (act, total) => `❓ ${act} / ${total}`,
+      numerosEncertsLabel: (n) => `✅ ${n}`,
       numerosPreguntaReconeixer: (n) => `¿Dónde está el ${n}?`,
       numerosPreguntaComptar: '¿Cuántos cerditos ves?',
       numerosPreguntaSeq: '¿Qué número falta?',
@@ -1042,6 +1057,8 @@
       numerosHintSeq: '👆 Toca el número que falta',
       numerosVicText: '🎉 ¡Muy bien! 🎉',
       numerosVicSub: '¡Has completado el nivel!',
+      numerosDerText: '😅 ¡Casi lo tienes!',
+      numerosDerSub: (enc, total) => `Has acertado ${enc} de ${total}. ¡Inténtalo de nuevo!`,
     }
   };
 
@@ -2538,13 +2555,14 @@
 
     const tx = t();
     document.getElementById('numeros-title').textContent = tx.numerosTitle + ' · ' + (langActual === 'ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
-    document.getElementById('numeros-vic-text').textContent = tx.numerosVicText;
-    document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub;
     document.getElementById('numeros-vic-reintent').textContent = tx.reintent;
     document.getElementById('numeros-vic-nivells').textContent = tx.nivells;
+    document.getElementById('numeros-der-reintent').textContent = tx.tornarIntent;
+    document.getElementById('numeros-der-nivells').textContent = tx.nivells;
 
-    const vic = document.getElementById('numeros-victoria');
-    vic.classList.remove('visible'); vic.style.display = 'none';
+    document.getElementById('numeros-victoria').classList.remove('visible');
+    document.getElementById('numeros-derrota').classList.remove('visible');
+    document.getElementById('numeros-encerts').textContent = t().numerosEncertsLabel(0);
 
     ocultar('pantalla-numeros-nivells');
     mostrar('pantalla-numeros');
@@ -2558,6 +2576,7 @@
     numerosBloquejat = false;
 
     document.getElementById('numeros-progress').textContent = tx.numerosProgress(numerosPreguntaActual, numerosSequenciaPreguntes.length);
+    document.getElementById('numeros-encerts').textContent = tx.numerosEncertsLabel(numerosEncerts);
 
     const preguntaEl = document.getElementById('numeros-pregunta');
     const objectesEl = document.getElementById('numeros-objectes');
@@ -2618,6 +2637,7 @@
       btn.classList.add('correcta');
       sonar('aplauso_corto', 900);
       numerosEncerts++;
+      document.getElementById('numeros-encerts').textContent = t().numerosEncertsLabel(numerosEncerts);
     } else {
       btn.classList.add('incorrecta');
       sonar('carta_error');
@@ -2636,10 +2656,26 @@
 
   function finalitzarNumeros() {
     const tx = t();
-    incrementStatNumeros(numerosNivellActual, 'g');
-    document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub + ` (${numerosEncerts}/${numerosSequenciaPreguntes.length})`;
-    mostrar('numeros-victoria');
-    sonar('aplauso_largo', 5000);
+    const total = numerosSequenciaPreguntes.length;
+    const victoria = numerosEncerts / total >= 0.7;
+
+    if (victoria) {
+      incrementStatNumeros(numerosNivellActual, 'g');
+      document.getElementById('numeros-vic-text').textContent = tx.numerosVicText;
+      document.getElementById('numeros-vic-sub').textContent = tx.numerosVicSub + ` (${numerosEncerts}/${total})`;
+      document.getElementById('numeros-vic-reintent').textContent = tx.reintent;
+      document.getElementById('numeros-vic-nivells').textContent = tx.nivells;
+      mostrar('numeros-victoria');
+      sonar('aplauso_largo', 5000);
+    } else {
+      incrementStatNumeros(numerosNivellActual, 'p');
+      document.getElementById('numeros-der-text').textContent = tx.numerosDerText;
+      document.getElementById('numeros-der-sub').textContent = tx.numerosDerSub(numerosEncerts, total);
+      document.getElementById('numeros-der-reintent').textContent = tx.tornarIntent;
+      document.getElementById('numeros-der-nivells').textContent = tx.nivells;
+      mostrar('numeros-derrota');
+      sonar('llanto', 1500);
+    }
   }
 </script>
   <script>
