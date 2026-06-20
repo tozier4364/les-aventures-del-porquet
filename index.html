@@ -424,7 +424,7 @@
     flex: 1;
     overflow: hidden;
     border-radius: 28px;
-    background: linear-gradient(180deg, #d6f0ff 0%, #eafcff 55%, #fff8e8 100%);
+    background: url('https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/escena_campo.png') center bottom / cover no-repeat, linear-gradient(180deg, #d6f0ff 0%, #eafcff 55%, #fff8e8 100%);
     box-shadow: inset 0 0 0 3px rgba(255,255,255,0.6);
   }
 
@@ -2045,14 +2045,24 @@
     programarSpawnFruita();
   }
 
+  function comptarFruitesActives() {
+    const cont = document.getElementById('fruita-container');
+    if (!cont) return 0;
+    return cont.querySelectorAll('.fruita-item:not(.tocada)').length;
+  }
+
   function programarSpawnFruita() {
     if (!fruitaJocActiu) return;
-    const c = configFruita[fruitaNivellActual - 1];
-    if (fruitaActives < c.maxSimultanies) {
-      crearElementFruita();
-    }
     const espera = 550 + Math.random() * 650;
     fruitaSpawnTimeoutId = setTimeout(programarSpawnFruita, espera);
+    try {
+      const c = configFruita[fruitaNivellActual - 1];
+      if (comptarFruitesActives() < c.maxSimultanies) {
+        crearElementFruita();
+      }
+    } catch (err) {
+      console.error('Error creant fruita:', err);
+    }
   }
 
   function crearElementFruita() {
