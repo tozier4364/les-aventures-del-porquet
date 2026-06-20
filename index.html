@@ -396,6 +396,78 @@
   .sopa-svg-overlay line {
     transition: opacity 0.1s ease;
   }
+
+  /* ===== PLUJA DE FRUITA ===== */
+  #pantalla-fruita-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-fruita-nivells.visible { display: flex; }
+  #fruita-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+
+  #pantalla-fruita { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; position: relative; }
+  #pantalla-fruita.visible { display: flex; }
+
+  .fruita-temps {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--blau-fosc);
+    background: #E8F8FF;
+    border-radius: 20px;
+    padding: 4px 10px;
+    white-space: nowrap;
+  }
+  .fruita-temps.urgent { color: #e85d75; background: #ffe3ea; animation: fruitaPulse 0.6s ease-in-out infinite; }
+  @keyframes fruitaPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+  .fruita-container {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    overflow: hidden;
+    border-radius: 28px;
+    background: linear-gradient(180deg, #d6f0ff 0%, #eafcff 55%, #fff8e8 100%);
+    box-shadow: inset 0 0 0 3px rgba(255,255,255,0.6);
+  }
+
+  .fruita-item {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  .fruita-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.18));
+    pointer-events: none;
+  }
+  .fruita-item.tocada {
+    animation: fruitaPop 0.35s ease forwards;
+    pointer-events: none;
+  }
+  @keyframes fruitaPop {
+    0% { transform: scale(1); opacity: 1; }
+    60% { transform: scale(1.4); opacity: 1; }
+    100% { transform: scale(0.2); opacity: 0; }
+  }
+
+  .fruita-puntuacio-flotant {
+    position: absolute;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 1.2rem;
+    pointer-events: none;
+    animation: fruitaFloatUp 0.7s ease-out forwards;
+    z-index: 20;
+  }
+  .fruita-puntuacio-flotant.bona { color: var(--verd); }
+  .fruita-puntuacio-flotant.dolenta { color: #e85d75; }
+  @keyframes fruitaFloatUp {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-40px); opacity: 0; }
+  }
 </style>
 </head>
 <body>
@@ -451,7 +523,7 @@
         <div class="item-btn puzzle" onclick="anarNivellsPuzzle()"><span class="ico2">🧩</span><span id="i-puzzle">Trencaclosques</span></div>
         <div class="item-btn sopa" onclick="anarNivellsSopa()"><span class="ico2">🔤</span><span id="i-sopa">Sopa de lletres</span></div>
         <div class="item-btn memoria" onclick="anarNivells()"><span class="ico2">🃏</span><span id="i-memoria">Memòria</span></div>
-        <div class="item-btn colorear"><span class="ico2">🖌️</span><span id="i-coloreja">Coloreja</span></div>
+        <div class="item-btn colorear" onclick="anarNivellsFruita()"><span class="ico2">🍉</span><span id="i-coloreja">Pluja de fruita</span></div>
       </div>
     </div>
     <button class="back-btn" id="backBtn" onclick="tornarPortada()">← Tornar</button>
@@ -577,6 +649,53 @@
     </div>
   </div>
 
+  <!-- PLUJA DE FRUITA: NIVELLS -->
+  <div id="pantalla-fruita-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_sorpresa.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="fruita-nivells-title">🍉 Tria el nivell</div>
+    <div id="fruita-nivells-container"></div>
+    <button class="reset-btn" id="fruita-reset-btn" onclick="resetStatsFruita()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="fruita-nivells-back" onclick="tornarMenuDesFruitaNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- PLUJA DE FRUITA: JOC -->
+  <div id="pantalla-fruita">
+    <div class="puzzle-header">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="fruita-title">🍉 Pluja de fruita</div>
+        <div class="puzzle-progress" id="fruita-progress" style="align-self:flex-start;">🍓 0 / 8</div>
+        <div class="puzzle-hint" id="fruita-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la fruita! Evita els objectes dolents</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <div class="fruita-temps" id="fruita-temps">⏱️ 60s</div>
+        <button class="sortir-btn" id="fruita-sortir-btn" onclick="sortirFruita()">✖</button>
+      </div>
+    </div>
+    <div class="fruita-container" id="fruita-container"></div>
+
+    <div class="resultat" id="fruita-victoria" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="fruita-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="fruita-vic-sub">Has atrapat totes les fruites!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="fruita-vic-reintent" onclick="repetirFruita()">🔄 Repetir</button>
+        <button class="btn-menu" id="fruita-vic-nivells" onclick="tornarNivellsFruita()">← Nivells</button>
+      </div>
+    </div>
+
+    <div class="resultat" id="fruita-derrota" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id="fruita-der-text" style="color:#e85d75">⏰ S'ha acabat el temps!</div>
+      <div class="resultat-sub" id="fruita-der-sub">Has atrapat 0 de 8 fruites. Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="fruita-der-reintent" onclick="repetirFruita()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" id="fruita-der-nivells" onclick="tornarNivellsFruita()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIALOG CONFIRMACIÓ -->
   <div class="dialog-overlay" id="dialog-overlay">
     <div class="dialog-box">
@@ -696,7 +815,7 @@
       menuTitle: '🐷 Què vols fer avui?',
       sAprendre: 'Aprèn amb el Porquet', sJugar: 'Juga amb el Porquet',
       numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Animals',
-      puzzle: 'Trencaclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Coloreja',
+      puzzle: 'Trencaclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Pluja de fruita',
       back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat',
       nivellsTitol: '🃏 Tria el nivell',
       sopaNivellsTitol: '🔤 Tria el nivell',
@@ -715,14 +834,23 @@
       confirmReset: 'Segur que vols esborrar totes les estadístiques?',
       dialogSi: '✓ Sí', dialogNo: '✗ No',
       sopaTitle: '🔤 Sopa de lletres',
-      sopaVicText: '🎉 Molt bé! 🎉', sopaVicSub: 'Has trobat totes les paraules!'
+      sopaVicText: '🎉 Molt bé! 🎉', sopaVicSub: 'Has trobat totes les paraules!',
+      fruitaTitle: '🍉 Pluja de fruita',
+      fruitaNivellsTitol: '🍉 Tria el nivell',
+      fruitaNivellDesc: (meta, temps) => `Atrapa ${meta} fruites · ${temps}s`,
+      fruitaProgress: (act, meta) => `🍓 ${act} / ${meta}`,
+      fruitaHint: '👆 Toca la fruita! Evita els objectes dolents',
+      fruitaVicText: '🎉 Molt bé! 🎉',
+      fruitaVicSub: 'Has atrapat totes les fruites!',
+      fruitaDerText: '⏰ S\'ha acabat el temps!',
+      fruitaDerSub: (act, meta) => `Has atrapat ${act} de ${meta} fruites. Torna-ho a intentar!`
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
       menuTitle: '🐷 ¿Qué quieres hacer hoy?',
       sAprendre: 'Aprende con el Porquet', sJugar: 'Juega con el Porquet',
       numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Animales',
-      puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Colorear',
+      puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Lluvia de fruta',
       back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad',
       nivellsTitol: '🃏 Elige el nivel',
       sopaNivellsTitol: '🔤 Elige el nivel',
@@ -741,7 +869,16 @@
       confirmReset: '¿Seguro que quieres borrar todas las estadísticas?',
       dialogSi: '✓ Sí', dialogNo: '✗ No',
       sopaTitle: '🔤 Sopa de letras',
-      sopaVicText: '🎉 ¡Muy bien! 🎉', sopaVicSub: '¡Has encontrado todas las palabras!'
+      sopaVicText: '🎉 ¡Muy bien! 🎉', sopaVicSub: '¡Has encontrado todas las palabras!',
+      fruitaTitle: '🍉 Lluvia de fruta',
+      fruitaNivellsTitol: '🍉 Elige el nivel',
+      fruitaNivellDesc: (meta, temps) => `Atrapa ${meta} frutas · ${temps}s`,
+      fruitaProgress: (act, meta) => `🍓 ${act} / ${meta}`,
+      fruitaHint: '👆 ¡Toca la fruta! Evita los objetos malos',
+      fruitaVicText: '🎉 ¡Muy bien! 🎉',
+      fruitaVicSub: '¡Has atrapado todas las frutas!',
+      fruitaDerText: '⏰ ¡Se acabó el tiempo!',
+      fruitaDerSub: (act, meta) => `Has atrapado ${act} de ${meta} frutas. ¡Inténtalo de nuevo!`
     }
   };
 
@@ -758,7 +895,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('visible');
-    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells') {
+    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells') {
       el.style.display = 'flex';
     } else {
       el.style.display = '';
@@ -837,6 +974,8 @@
     ocultar('pantalla-puzzle-nivells');
     ocultar('pantalla-sopa');
     ocultar('pantalla-sopa-nivells');
+    ocultar('pantalla-fruita');
+    ocultar('pantalla-fruita-nivells');
     mostrar('pantalla-menu');
   }
 
@@ -1745,6 +1884,285 @@
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
+  }
+
+  // ===== PLUJA DE FRUITA =====
+  const fruitesBones = ['fruta_aguacate','fruta_cacahuete','fruta_naranja','fruta_pina','fruta_platano','fruta_sandia'];
+  const objectesDolents = ['malo_bota','malo_rata','malo_telefono','malo_coche'];
+
+  const configFruita = [
+    { meta: 8,  temps: 60, velMin: 5.5, velMax: 7.5, pctDolent: 0.15, maxSimultanies: 1 },
+    { meta: 12, temps: 55, velMin: 4.5, velMax: 6.3, pctDolent: 0.20, maxSimultanies: 1 },
+    { meta: 16, temps: 50, velMin: 3.6, velMax: 5.2, pctDolent: 0.25, maxSimultanies: 2 },
+    { meta: 20, temps: 45, velMin: 3.0, velMax: 4.4, pctDolent: 0.30, maxSimultanies: 2 },
+    { meta: 25, temps: 45, velMin: 2.4, velMax: 3.6, pctDolent: 0.35, maxSimultanies: 3 },
+  ];
+
+  let fruitaNivellActual = 1;
+  let fruitaEncerts = 0;
+  let fruitaTempsRestant = 0;
+  let fruitaInterval = null;
+  let fruitaSpawnTimeoutId = null;
+  let fruitaActives = 0;
+  let fruitaJocActiu = false;
+  let fruitaIdSeguent = 0;
+
+  function carregarStatsFruita() {
+    try { return JSON.parse(localStorage.getItem('porquet_fruita_stats')) || {}; } catch { return {}; }
+  }
+
+  function guardarStatsFruita(stats) {
+    try { localStorage.setItem('porquet_fruita_stats', JSON.stringify(stats)); } catch {}
+  }
+
+  function incrementStatFruita(nivell, tipus) {
+    const stats = carregarStatsFruita();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsFruita(stats);
+  }
+
+  function resetStatsFruita() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_fruita_stats');
+      renderNivellsFruita();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function renderNivellsFruita() {
+    const tx = t();
+    const stats = carregarStatsFruita();
+    const container = document.getElementById('fruita-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
+    configFruita.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarFruita(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${tx.fruitaNivellDesc(c.meta, c.temps)}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('fruita-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('fruita-nivells-back').textContent = tx.tornar;
+    document.getElementById('fruita-nivells-title').textContent = tx.fruitaNivellsTitol;
+  }
+
+  function anarNivellsFruita() {
+    aturarSons();
+    ocultar('pantalla-menu');
+    renderNivellsFruita();
+    mostrar('pantalla-fruita-nivells');
+  }
+
+  function tornarMenuDesFruitaNivells() {
+    aturarSons();
+    ocultar('pantalla-fruita-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function tornarNivellsFruita() {
+    aturarSons();
+    aturarJocFruita();
+    ocultar('pantalla-fruita');
+    renderNivellsFruita();
+    mostrar('pantalla-fruita-nivells');
+  }
+
+  function sortirFruita() {
+    aturarSons();
+    aturarJocFruita();
+    incrementStatFruita(fruitaNivellActual, 'p');
+    ocultar('pantalla-fruita');
+    renderNivellsFruita();
+    mostrar('pantalla-fruita-nivells');
+  }
+
+  function repetirFruita() {
+    aturarSons();
+    iniciarFruita(fruitaNivellActual);
+  }
+
+  function aturarJocFruita() {
+    fruitaJocActiu = false;
+    if (fruitaInterval) { clearInterval(fruitaInterval); fruitaInterval = null; }
+    if (fruitaSpawnTimeoutId) { clearTimeout(fruitaSpawnTimeoutId); fruitaSpawnTimeoutId = null; }
+    const cont = document.getElementById('fruita-container');
+    if (cont) cont.querySelectorAll('.fruita-item').forEach(el => el.remove());
+    fruitaActives = 0;
+  }
+
+  function iniciarFruita(nivell) {
+    const tx = t();
+    fruitaNivellActual = nivell;
+    const c = configFruita[nivell - 1];
+    fruitaEncerts = 0;
+    fruitaTempsRestant = c.temps;
+    fruitaJocActiu = true;
+    fruitaActives = 0;
+
+    ocultar('pantalla-fruita-nivells');
+    document.getElementById('fruita-title').textContent = `🍉 ${tx.fruitaTitle.replace(/^🍉\s*/,'')} — ${tx.nivellNom(nivell)}`;
+    document.getElementById('fruita-hint').textContent = tx.fruitaHint;
+    document.getElementById('fruita-progress').textContent = tx.fruitaProgress(0, c.meta);
+    document.getElementById('fruita-temps').textContent = `⏱️ ${c.temps}s`;
+    document.getElementById('fruita-temps').classList.remove('urgent');
+    document.getElementById('fruita-victoria').classList.remove('visible');
+    document.getElementById('fruita-derrota').classList.remove('visible');
+    const cont = document.getElementById('fruita-container');
+    cont.querySelectorAll('.fruita-item').forEach(el => el.remove());
+    mostrar('pantalla-fruita');
+
+    if (fruitaInterval) clearInterval(fruitaInterval);
+    fruitaInterval = setInterval(() => {
+      fruitaTempsRestant--;
+      const tEl = document.getElementById('fruita-temps');
+      tEl.textContent = `⏱️ ${fruitaTempsRestant}s`;
+      if (fruitaTempsRestant <= 10) tEl.classList.add('urgent');
+      if (fruitaTempsRestant <= 0) {
+        finalitzarFruita(false);
+      }
+    }, 1000);
+
+    programarSpawnFruita();
+  }
+
+  function programarSpawnFruita() {
+    if (!fruitaJocActiu) return;
+    const c = configFruita[fruitaNivellActual - 1];
+    if (fruitaActives < c.maxSimultanies) {
+      crearElementFruita();
+    }
+    const espera = 550 + Math.random() * 650;
+    fruitaSpawnTimeoutId = setTimeout(programarSpawnFruita, espera);
+  }
+
+  function crearElementFruita() {
+    const c = configFruita[fruitaNivellActual - 1];
+    const cont = document.getElementById('fruita-container');
+    if (!cont) return;
+    const amplada = cont.clientWidth;
+    const alcada = cont.clientHeight;
+    if (amplada < 10 || alcada < 10) return;
+
+    const esDolent = Math.random() < c.pctDolent;
+    const nom = esDolent
+      ? objectesDolents[Math.floor(Math.random() * objectesDolents.length)]
+      : fruitesBones[Math.floor(Math.random() * fruitesBones.length)];
+
+    const mida = 56 + Math.random() * 18;
+    const x = Math.random() * (amplada - mida);
+    const durada = c.velMin + Math.random() * (c.velMax - c.velMin);
+    const idActual = fruitaIdSeguent++;
+
+    const el = document.createElement('div');
+    el.className = 'fruita-item';
+    el.dataset.id = idActual;
+    el.dataset.dolent = esDolent ? '1' : '0';
+    el.style.width = mida + 'px';
+    el.style.height = mida + 'px';
+    el.style.left = x + 'px';
+    el.style.top = '-' + mida + 'px';
+    el.style.transition = `top ${durada}s linear`;
+    el.innerHTML = `<img src="${IMG}${nom}.png" alt="">`;
+    cont.appendChild(el);
+    fruitaActives++;
+
+    requestAnimationFrame(() => {
+      el.style.top = (alcada + mida) + 'px';
+    });
+
+    const handleTap = (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      tocarFruita(el, esDolent);
+    };
+    el.addEventListener('pointerdown', handleTap, { once: true });
+
+    el._fruitaTimeoutFi = setTimeout(() => {
+      if (el.parentNode) {
+        el.removeEventListener('pointerdown', handleTap);
+        el.remove();
+        fruitaActives = Math.max(0, fruitaActives - 1);
+      }
+    }, durada * 1000 + 80);
+  }
+
+  function tocarFruita(el, esDolent) {
+    if (!fruitaJocActiu || el.classList.contains('tocada')) return;
+    el.classList.add('tocada');
+    if (el._fruitaTimeoutFi) clearTimeout(el._fruitaTimeoutFi);
+
+    const cont = document.getElementById('fruita-container');
+    const rect = el.getBoundingClientRect();
+    const contRect = cont.getBoundingClientRect();
+    const flotant = document.createElement('div');
+    flotant.className = 'fruita-puntuacio-flotant ' + (esDolent ? 'dolenta' : 'bona');
+    flotant.textContent = esDolent ? '❌' : '+1';
+    flotant.style.left = (rect.left - contRect.left + rect.width / 2 - 12) + 'px';
+    flotant.style.top = (rect.top - contRect.top) + 'px';
+    cont.appendChild(flotant);
+    setTimeout(() => flotant.remove(), 750);
+
+    if (esDolent) {
+      sonar('carta_error');
+    } else {
+      sonar('carta_girar');
+      fruitaEncerts++;
+      const c = configFruita[fruitaNivellActual - 1];
+      document.getElementById('fruita-progress').textContent = t().fruitaProgress(fruitaEncerts, c.meta);
+      if (fruitaEncerts >= c.meta) {
+        finalitzarFruita(true);
+      }
+    }
+
+    setTimeout(() => {
+      if (el.parentNode) el.remove();
+      fruitaActives = Math.max(0, fruitaActives - 1);
+    }, 360);
+  }
+
+  function finalitzarFruita(victoria) {
+    if (!fruitaJocActiu) return;
+    aturarJocFruita();
+    const tx = t();
+    const c = configFruita[fruitaNivellActual - 1];
+
+    if (victoria) {
+      incrementStatFruita(fruitaNivellActual, 'g');
+      document.getElementById('fruita-vic-text').textContent = tx.fruitaVicText;
+      document.getElementById('fruita-vic-sub').textContent = tx.fruitaVicSub;
+      document.getElementById('fruita-vic-reintent').textContent = tx.reintent;
+      document.getElementById('fruita-vic-nivells').textContent = tx.nivells;
+      mostrar('fruita-victoria');
+      sonar('aplauso_corto', 5000);
+    } else {
+      incrementStatFruita(fruitaNivellActual, 'p');
+      document.getElementById('fruita-der-text').textContent = tx.fruitaDerText;
+      document.getElementById('fruita-der-sub').textContent = tx.fruitaDerSub(fruitaEncerts, c.meta);
+      document.getElementById('fruita-der-reintent').textContent = tx.tornarIntent;
+      document.getElementById('fruita-der-nivells').textContent = tx.nivells;
+      mostrar('fruita-derrota');
+      sonar('llanto', 5000);
+    }
   }
 </script>
   <script>
