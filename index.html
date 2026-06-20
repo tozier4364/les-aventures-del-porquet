@@ -665,7 +665,10 @@
     <div class="puzzle-header">
       <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
         <div class="puzzle-title" id="fruita-title">🍉 Pluja de fruita</div>
-        <div class="puzzle-progress" id="fruita-progress" style="align-self:flex-start;">🍓 0 / 8</div>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+          <div class="puzzle-progress" id="fruita-progress">🍓 0 / 8</div>
+          <div class="puzzle-progress fruita-progress-mal" id="fruita-progress-mal" style="background:#ffe3ea;color:#e85d75;">❌ 0/5</div>
+        </div>
         <div class="puzzle-hint" id="fruita-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la fruita! Evita els objectes dolents</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
@@ -839,11 +842,14 @@
       fruitaNivellsTitol: '🍉 Tria el nivell',
       fruitaNivellDesc: (meta, temps) => `Atrapa ${meta} fruites · ${temps}s`,
       fruitaProgress: (act, meta) => `🍓 ${act} / ${meta}`,
+      fruitaProgressMal: (act, max) => `❌ ${act}/${max}`,
       fruitaHint: '👆 Toca la fruita! Evita els objectes dolents',
       fruitaVicText: '🎉 Molt bé! 🎉',
       fruitaVicSub: 'Has atrapat totes les fruites!',
       fruitaDerText: '⏰ S\'ha acabat el temps!',
-      fruitaDerSub: (act, meta) => `Has atrapat ${act} de ${meta} fruites. Torna-ho a intentar!`
+      fruitaDerSub: (act, meta) => `Has atrapat ${act} de ${meta} fruites. Torna-ho a intentar!`,
+      fruitaDerTextDolents: '😅 Massa coses dolentes!',
+      fruitaDerSubDolents: (max) => `Has tocat ${max} objectes dolents. Torna-ho a intentar!`
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -874,11 +880,14 @@
       fruitaNivellsTitol: '🍉 Elige el nivel',
       fruitaNivellDesc: (meta, temps) => `Atrapa ${meta} frutas · ${temps}s`,
       fruitaProgress: (act, meta) => `🍓 ${act} / ${meta}`,
+      fruitaProgressMal: (act, max) => `❌ ${act}/${max}`,
       fruitaHint: '👆 ¡Toca la fruta! Evita los objetos malos',
       fruitaVicText: '🎉 ¡Muy bien! 🎉',
       fruitaVicSub: '¡Has atrapado todas las frutas!',
       fruitaDerText: '⏰ ¡Se acabó el tiempo!',
-      fruitaDerSub: (act, meta) => `Has atrapado ${act} de ${meta} frutas. ¡Inténtalo de nuevo!`
+      fruitaDerSub: (act, meta) => `Has atrapado ${act} de ${meta} frutas. ¡Inténtalo de nuevo!`,
+      fruitaDerTextDolents: '😅 ¡Demasiadas cosas malas!',
+      fruitaDerSubDolents: (max) => `Has tocado ${max} objetos malos. ¡Inténtalo de nuevo!`
     }
   };
 
@@ -1891,15 +1900,16 @@
   const objectesDolents = ['malo_bota','malo_rata','malo_telefono','malo_coche'];
 
   const configFruita = [
-    { meta: 8,  temps: 60, velMin: 5.5, velMax: 7.5, pctDolent: 0.15, maxSimultanies: 1 },
-    { meta: 12, temps: 55, velMin: 4.5, velMax: 6.3, pctDolent: 0.20, maxSimultanies: 1 },
-    { meta: 16, temps: 50, velMin: 3.6, velMax: 5.2, pctDolent: 0.25, maxSimultanies: 2 },
-    { meta: 20, temps: 45, velMin: 3.0, velMax: 4.4, pctDolent: 0.30, maxSimultanies: 2 },
-    { meta: 25, temps: 45, velMin: 2.4, velMax: 3.6, pctDolent: 0.35, maxSimultanies: 3 },
+    { meta: 8,  temps: 60, velMin: 5.5, velMax: 7.5, pctDolent: 0.15, maxSimultanies: 1, maxDolents: 5 },
+    { meta: 12, temps: 55, velMin: 4.5, velMax: 6.3, pctDolent: 0.20, maxSimultanies: 1, maxDolents: 4 },
+    { meta: 16, temps: 50, velMin: 3.6, velMax: 5.2, pctDolent: 0.25, maxSimultanies: 2, maxDolents: 3 },
+    { meta: 20, temps: 45, velMin: 3.0, velMax: 4.4, pctDolent: 0.30, maxSimultanies: 2, maxDolents: 3 },
+    { meta: 25, temps: 45, velMin: 2.4, velMax: 3.6, pctDolent: 0.35, maxSimultanies: 3, maxDolents: 2 },
   ];
 
   let fruitaNivellActual = 1;
   let fruitaEncerts = 0;
+  let fruitaDolentsTocats = 0;
   let fruitaTempsRestant = 0;
   let fruitaInterval = null;
   let fruitaSpawnIntervalId = null;
@@ -2015,6 +2025,7 @@
     fruitaNivellActual = nivell;
     const c = configFruita[nivell - 1];
     fruitaEncerts = 0;
+    fruitaDolentsTocats = 0;
     fruitaTempsRestant = c.temps;
     fruitaJocActiu = true;
     fruitaActives = 0;
@@ -2023,6 +2034,7 @@
     document.getElementById('fruita-title').textContent = `🍉 ${tx.fruitaTitle.replace(/^🍉\s*/,'')} — ${tx.nivellNom(nivell)}`;
     document.getElementById('fruita-hint').textContent = tx.fruitaHint;
     document.getElementById('fruita-progress').textContent = tx.fruitaProgress(0, c.meta);
+    document.getElementById('fruita-progress-mal').textContent = tx.fruitaProgressMal(0, c.maxDolents);
     document.getElementById('fruita-temps').textContent = `⏱️ ${c.temps}s`;
     document.getElementById('fruita-temps').classList.remove('urgent');
     document.getElementById('fruita-victoria').classList.remove('visible');
@@ -2153,6 +2165,12 @@
 
     if (esDolent) {
       sonar('carta_error');
+      fruitaDolentsTocats++;
+      const c = configFruita[fruitaNivellActual - 1];
+      document.getElementById('fruita-progress-mal').textContent = t().fruitaProgressMal(fruitaDolentsTocats, c.maxDolents);
+      if (fruitaDolentsTocats >= c.maxDolents) {
+        finalitzarFruita(false, true);
+      }
     } else {
       sonar('carta_girar');
       fruitaEncerts++;
@@ -2169,7 +2187,7 @@
     }, 360);
   }
 
-  function finalitzarFruita(victoria) {
+  function finalitzarFruita(victoria, perDolents) {
     if (!fruitaJocActiu) return;
     aturarJocFruita();
     const tx = t();
@@ -2185,8 +2203,10 @@
       sonar('aplauso_corto', 5000);
     } else {
       incrementStatFruita(fruitaNivellActual, 'p');
-      document.getElementById('fruita-der-text').textContent = tx.fruitaDerText;
-      document.getElementById('fruita-der-sub').textContent = tx.fruitaDerSub(fruitaEncerts, c.meta);
+      document.getElementById('fruita-der-text').textContent = perDolents ? tx.fruitaDerTextDolents : tx.fruitaDerText;
+      document.getElementById('fruita-der-sub').textContent = perDolents
+        ? tx.fruitaDerSubDolents(c.maxDolents)
+        : tx.fruitaDerSub(fruitaEncerts, c.meta);
       document.getElementById('fruita-der-reintent').textContent = tx.tornarIntent;
       document.getElementById('fruita-der-nivells').textContent = tx.nivells;
       mostrar('fruita-derrota');
