@@ -1902,7 +1902,7 @@
   let fruitaEncerts = 0;
   let fruitaTempsRestant = 0;
   let fruitaInterval = null;
-  let fruitaSpawnTimeoutId = null;
+  let fruitaSpawnIntervalId = null;
   let fruitaActives = 0;
   let fruitaJocActiu = false;
   let fruitaIdSeguent = 0;
@@ -2004,7 +2004,7 @@
   function aturarJocFruita() {
     fruitaJocActiu = false;
     if (fruitaInterval) { clearInterval(fruitaInterval); fruitaInterval = null; }
-    if (fruitaSpawnTimeoutId) { clearTimeout(fruitaSpawnTimeoutId); fruitaSpawnTimeoutId = null; }
+    if (fruitaSpawnIntervalId) { clearInterval(fruitaSpawnIntervalId); fruitaSpawnIntervalId = null; }
     const cont = document.getElementById('fruita-container');
     if (cont) cont.querySelectorAll('.fruita-item').forEach(el => el.remove());
     fruitaActives = 0;
@@ -2057,18 +2057,31 @@
     return actives;
   }
 
+  let fruitaCicles = 0;
   function programarSpawnFruita() {
-    if (!fruitaJocActiu) return;
-    const espera = 550 + Math.random() * 650;
-    fruitaSpawnTimeoutId = setTimeout(programarSpawnFruita, espera);
-    try {
-      const c = configFruita[fruitaNivellActual - 1];
-      if (comptarFruitesActives() < c.maxSimultanies) {
-        crearElementFruita();
+    if (fruitaSpawnIntervalId) { clearInterval(fruitaSpawnIntervalId); fruitaSpawnIntervalId = null; }
+    fruitaCicles = 0;
+    fruitaSpawnIntervalId = setInterval(() => {
+      if (!fruitaJocActiu) {
+        clearInterval(fruitaSpawnIntervalId);
+        fruitaSpawnIntervalId = null;
+        return;
       }
-    } catch (err) {
-      console.error('Error creant fruita:', err);
-    }
+      fruitaCicles++;
+      try {
+        const c = configFruita[fruitaNivellActual - 1];
+        const actives = comptarFruitesActives();
+        const hintEl = document.getElementById('fruita-hint');
+        if (hintEl) hintEl.textContent = `DEBUG cicles:${fruitaCicles} actives:${actives}/${c.maxSimultanies}`;
+        if (actives < c.maxSimultanies) {
+          crearElementFruita();
+        }
+      } catch (err) {
+        const hintEl = document.getElementById('fruita-hint');
+        if (hintEl) hintEl.textContent = 'ERROR: ' + (err && err.message ? err.message : err);
+        console.error('Error creant fruita:', err);
+      }
+    }, 700);
   }
 
   function crearElementFruita() {
