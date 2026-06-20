@@ -2048,7 +2048,13 @@
   function comptarFruitesActives() {
     const cont = document.getElementById('fruita-container');
     if (!cont) return 0;
-    return cont.querySelectorAll('.fruita-item:not(.tocada)').length;
+    const ara = Date.now();
+    let actives = 0;
+    cont.querySelectorAll('.fruita-item:not(.tocada)').forEach(el => {
+      const fi = Number(el.dataset.fiCaiguda || 0);
+      if (fi > ara) actives++;
+    });
+    return actives;
   }
 
   function programarSpawnFruita() {
@@ -2087,6 +2093,7 @@
     el.className = 'fruita-item';
     el.dataset.id = idActual;
     el.dataset.dolent = esDolent ? '1' : '0';
+    el.dataset.fiCaiguda = String(Date.now() + durada * 1000);
     el.style.width = mida + 'px';
     el.style.height = mida + 'px';
     el.style.left = x + 'px';
@@ -2108,11 +2115,9 @@
     el.addEventListener('pointerdown', handleTap, { once: true });
 
     el._fruitaTimeoutFi = setTimeout(() => {
-      if (el.parentNode) {
-        el.removeEventListener('pointerdown', handleTap);
-        el.remove();
-        fruitaActives = Math.max(0, fruitaActives - 1);
-      }
+      el.removeEventListener('pointerdown', handleTap);
+      if (el.parentNode) el.remove();
+      fruitaActives = Math.max(0, fruitaActives - 1);
     }, durada * 1000 + 80);
   }
 
