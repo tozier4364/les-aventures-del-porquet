@@ -611,8 +611,9 @@
     box-shadow: 0 6px 18px rgba(0,0,0,0.2);
     position: relative;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
+    background: linear-gradient(180deg, #fff8e0 0%, #ffe9c2 100%);
   }
   .geo-escena img.geo-fons { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
   .geo-escena img.geo-protagonista {
@@ -3355,9 +3356,9 @@
   const geoNivells = [
     { tipus: 'habitat-animal', opcions: 3, veins: false },
     { tipus: 'animal-habitat', opcions: 3, veins: false },
-    { tipus: 'habitat-animal', opcions: 3, veins: true },
-    { tipus: 'animal-habitat', opcions: 4, veins: true },
-    { tipus: 'mix',            opcions: 4, veins: true },
+    { tipus: 'habitat-animal', opcions: 5, veins: true },
+    { tipus: 'animal-habitat', opcions: 5, veins: true },
+    { tipus: 'mix',            opcions: 5, veins: true },
   ];
 
   let geoNivellActual = 1;
@@ -3462,26 +3463,26 @@
     iniciarGeo(geoNivellActual);
   }
 
-  // Tria distractors per a un animal correcte. Si veins=true, prioritza animals
-  // de la mateixa categoria (p.ex. salvatge) per fer-ho més difícil; si no n'hi ha
-  // prou, completa amb la resta. Si veins=false, distractors totalment aleatoris.
+  // Tria distractors per a un animal correcte. SEMPRE exclou animals del mateix
+  // hàbitat (no té sentit que dos "respostes possibles" siguin del mateix lloc).
+  // Si veins=true, prioritza animals de la mateixa categoria (p.ex. salvatge) per
+  // fer-ho més difícil; si no n'hi ha prou, completa amb la resta d'hàbitats diferents.
   function triarDistractorsAnimal(correcte, quants, veins) {
-    const resta = geoAnimals.filter(a => a.id !== correcte.id);
-    let candidats = resta;
+    const restaAltresHabitats = geoAnimals.filter(a => a.habitat !== correcte.habitat);
+    let candidats;
     if (veins) {
-      const mateixaCategoria = resta.filter(a => a.categoria === correcte.categoria && a.habitat !== correcte.habitat);
-      candidats = barrejar(mateixaCategoria.slice());
-      const altres = barrejar(resta.filter(a => !candidats.includes(a)));
-      candidats = candidats.concat(altres);
+      const mateixaCategoria = barrejar(restaAltresHabitats.filter(a => a.categoria === correcte.categoria));
+      const altres = barrejar(restaAltresHabitats.filter(a => a.categoria !== correcte.categoria));
+      candidats = mateixaCategoria.concat(altres);
     } else {
-      candidats = barrejar(resta.slice());
+      candidats = barrejar(restaAltresHabitats.slice());
     }
-    return candidats.slice(0, quants);
+    return candidats.slice(0, Math.min(quants, candidats.length));
   }
 
   function triarDistractorsHabitat(correcte, quants) {
     const resta = geoHabitats.filter(h => h.id !== correcte.id);
-    return barrejar(resta.slice()).slice(0, quants);
+    return barrejar(resta.slice()).slice(0, Math.min(quants, resta.length));
   }
 
   // Genera una pregunta del tipus 'habitat-animal' (es mostra el fons, cal triar l'animal)
@@ -3557,12 +3558,14 @@
     const protaImg = document.getElementById('geo-prota-img');
     const hintEl = document.getElementById('geo-hint');
     opcionsEl.innerHTML = '';
+    fonsImg.style.filter = ''; // sempre es neteja: cap pregunta ha d'heretar l'estil de l'anterior
 
     if (p.tipus === 'habitat-animal') {
       preguntaEl.textContent = tx.geoPreguntaHabitatAnimal;
       hintEl.textContent = tx.geoHintHabitatAnimal;
       fonsImg.src = IMG + p.habitat.img;
       fonsImg.alt = langActual === 'ca' ? p.habitat.ca : p.habitat.es;
+      fonsImg.style.display = '';
       protaImg.style.display = 'none';
 
       p.opcions.forEach(animal => {
@@ -3577,12 +3580,15 @@
       const nomAnimal = langActual === 'ca' ? p.animal.ca : p.animal.es;
       preguntaEl.textContent = tx.geoPreguntaAnimalHabitat(nomAnimal);
       hintEl.textContent = tx.geoHintAnimalHabitat;
-      fonsImg.src = IMG + p.correcte.img;
-      fonsImg.alt = '';
-      fonsImg.style.filter = 'blur(2px) brightness(0.7)';
+      // No mostrem cap hàbitat de fons: delataria la resposta correcta abans
+      // que la nena miri les opcions. Fons neutre, només l'animal protagonista.
+      fonsImg.style.display = 'none';
       protaImg.src = IMG + p.animal.img;
       protaImg.alt = nomAnimal;
       protaImg.style.display = '';
+      protaImg.style.width = '60%';
+      protaImg.style.maxWidth = '180px';
+      protaImg.style.marginBottom = '0';
 
       p.opcions.forEach(habitat => {
         const btn = document.createElement('button');
@@ -3602,9 +3608,6 @@
     const tx = t();
     const tots = document.querySelectorAll('#geo-opcions .geo-opcio');
     tots.forEach(b => b.classList.add('deshabilitat'));
-
-    // restaurem el fons si estava difuminat (mode animal-habitat)
-    document.getElementById('geo-fons-img').style.filter = '';
 
     if (idTriat === idCorrecte) {
       btn.classList.add('correcta');
