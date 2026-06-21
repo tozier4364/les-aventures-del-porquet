@@ -4233,13 +4233,23 @@
       document.getElementById('lletres-fallos').textContent = tx.lletresFallosLabel(lletresFallos, LLETRES_LIMIT);
     }
 
+    // En el mode "On és la lletra X?" (img), un cop es revela la resposta
+    // mostrem el nom complet de la paraula perquè el nen/a vegi com s'escriu,
+    // i allarguem una mica la pausa per donar temps a llegir-la.
+    let pausaMs = 900;
+    if (mode === 'img' && lletresPreguntaActual) {
+      const preguntaEl = document.getElementById('lletres-pregunta');
+      preguntaEl.textContent = lletresPreguntaActual.correcte.paraula.toUpperCase();
+      pausaMs = 1800;
+    }
+
     setTimeout(() => {
       if (lletresEncerts >= LLETRES_LIMIT || lletresFallos >= LLETRES_LIMIT) {
         finalitzarLletres();
       } else {
         mostrarPreguntaLletres();
       }
-    }, 900);
+    }, pausaMs);
   }
 
   function finalitzarLletres() {
