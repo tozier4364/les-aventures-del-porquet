@@ -174,8 +174,8 @@
 
   .back-btn { margin-top: 6px; background: white; border: 2px solid #ddd; border-radius: 50px; padding: 8px 28px; font-family: 'Nunito', sans-serif; font-size: 0.88rem; font-weight: 700; color: #aaa; cursor: pointer; flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all .2s; }
   .back-btn:active { background: #f5f5f5; transform: scale(0.97); }
-  .footer { margin-top: 10px; font-size: 0.68rem; color: #ccc; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; }
-  .footer-credit { font-size: 0.6rem; color: #ddd; letter-spacing: 0.5px; font-weight: 500; }
+  .footer { margin-top: 10px; font-size: 0.68rem; color: #888; font-weight: 600; letter-spacing: 1px; flex-shrink: 0; text-align: center; }
+  .footer-credit { display: block; font-size: 0.62rem; color: #888; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
 
   /* NIVELLS MEMÒRIA */
   #pantalla-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; overflow-y: auto; padding: 20px 0; }
@@ -695,7 +695,7 @@
       </div>
     </div>
     <button class="back-btn" id="backBtn" onclick="tornarPortada()">← Tornar</button>
-    <div class="footer" id="footer-txt"><span id="footer-linia1">© Les Aventures del Porquet · Sense publicitat</span><br><span class="footer-credit" id="footer-credit">Creat per JBignell</span></div>
+    <div class="footer" id="footer-txt"><span id="footer-linia1">© Les Aventures del Porquet · Sense publicitat</span><span class="footer-credit" id="footer-credit">Creat per JBignell</span></div>
   </div>
 
   <!-- SELECCIÓ DE NIVELLS MEMÒRIA -->
@@ -1097,7 +1097,7 @@
       sAprendre: 'Aprèn amb el Porquet', sJugar: 'Juga amb el Porquet',
       numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Animals',
       puzzle: 'Trenca\u00ADclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Pluja de fruita',
-      back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat',
+      back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat', footerCredit: 'Creat per JBignell',
       nivellsTitol: '🃏 Tria el nivell',
       sopaNivellsTitol: '🔤 Tria el nivell',
       nivellNom: (n) => `Nivell ${n}`,
@@ -1168,7 +1168,7 @@
       sAprendre: 'Aprende con el Porquet', sJugar: 'Juega con el Porquet',
       numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Animales',
       puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Lluvia de fruta',
-      back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad',
+      back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad', footerCredit: 'Creado por JBignell',
       nivellsTitol: '🃏 Elige el nivel',
       sopaNivellsTitol: '🔤 Elige el nivel',
       nivellNom: (n) => `Nivel ${n}`,
@@ -1278,6 +1278,7 @@
     document.getElementById('i-coloreja').textContent = tx.coloreja;
     document.getElementById('backBtn').textContent = tx.back;
     document.getElementById('footer-linia1').textContent = tx.footer;
+    document.getElementById('footer-credit').textContent = tx.footerCredit;
     document.getElementById('pantalla-portada').style.display = 'none';
     mostrar('pantalla-menu');
   }
@@ -3088,6 +3089,8 @@
       const utter = new SpeechSynthesisUtterance(nomColor);
       utter.lang = langActual === 'ca' ? 'ca-ES' : 'es-ES';
       utter.rate = 0.85; // una mica més lent, més clar per a 4 anys
+      utter.volume = 1; // volum màxim explícit (algunes veus catalanes surten més fluixes per defecte)
+      utter.pitch = 1;
       const btn = document.getElementById('colors-altaveu-btn');
       utter.onstart = () => { if (btn) btn.classList.add('parlant'); };
       utter.onend = () => { if (btn) btn.classList.remove('parlant'); };
