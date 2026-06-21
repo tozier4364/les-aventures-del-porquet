@@ -351,15 +351,16 @@
   }
 
   .puzzle-preview { 
-    width: 90px; 
-    border-radius: 8px; 
+    width: 130px; 
+    border-radius: 10px; 
     overflow: hidden; 
-    border: 2px solid var(--rosa-clar); 
+    border: 3px solid var(--rosa-clar); 
     flex-shrink: 0;
     background: white;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
   }
   .puzzle-preview img { 
     width: 100%; 
@@ -1273,6 +1274,24 @@
     Object.values(sons).forEach(s => { s.pause(); s.currentTime = 0; });
   }
 
+  let audioDesbloquejat = false;
+  // A iOS/Safari, els <audio> només es poden reproduir després d'un toc directe
+  // de l'usuari. Aprofitem el primer toc real (el botó "Juguem!") per reproduir
+  // i aturar a l'instant cada so, de manera que quedin "desbloquejats" per a la
+  // resta de la sessió i no fallin silenciosament més endavant.
+  function desbloquejarAudioIOS() {
+    if (audioDesbloquejat) return;
+    audioDesbloquejat = true;
+    Object.values(sons).forEach(s => {
+      try {
+        const p = s.play();
+        if (p && p.catch) p.catch(() => {});
+        s.pause();
+        s.currentTime = 0;
+      } catch (e) {}
+    });
+  }
+
   // ===== ESTADÍSTIQUES (localStorage) =====
   function carregarStats() {
     try {
@@ -1566,7 +1585,53 @@
     } else {
       el.style.display = '';
     }
+    registrarPantallaHistorial(id);
   }
+
+  // ===== BOTÓ "ENRERE" FÍSIC DEL MÒBIL =====
+  // Cada pantalla principal es mapeja a la funció que ja existeix per "sortir/tornar"
+  // d'aquesta pantalla, així reutilitzem tota la lògica que ja neteja sons i stats
+  // sense haver de duplicar-la. pantalla-portada és l'arrel: si hi som, deixem que
+  // el botó físic faci el seu comportament normal (sortir de l'app/navegador).
+  const PANTALLES_TORNAR = {
+    'pantalla-menu':            tornarPortada,
+    'pantalla-nivells':         tornarMenu,
+    'pantalla-memoria':         sortirAMitges,
+    'pantalla-puzzle-nivells':  tornarMenuDesPuzzleNivells,
+    'pantalla-puzzle':          sortirPuzzle,
+    'pantalla-sopa-nivells':    tornarMenuDesSopaNivells,
+    'pantalla-sopa':            sortirSopa,
+    'pantalla-fruita-nivells':  tornarMenuDesFruitaNivells,
+    'pantalla-fruita':          sortirFruita,
+    'pantalla-numeros-nivells': tornarMenuDesNumerosNivells,
+    'pantalla-numeros':         sortirNumeros,
+    'pantalla-colors-nivells':  tornarMenuDesColorsNivells,
+    'pantalla-colors':          sortirColors,
+    'pantalla-geo-nivells':     tornarMenuDesGeoNivells,
+    'pantalla-geo':             sortirGeo,
+    'pantalla-lletres-nivells': tornarMenuDesLletresNivells,
+    'pantalla-lletres':         sortirLletres,
+  };
+  let pantallaActualHistorial = 'pantalla-portada';
+  let dinsNavegacioHistorial = false; // evita pushState en cadena quan responem a popstate
+
+  function registrarPantallaHistorial(id) {
+    if (!PANTALLES_TORNAR[id] || id === pantallaActualHistorial) return;
+    pantallaActualHistorial = id;
+    if (dinsNavegacioHistorial) return; // ja venim d'un popstate, no cal apilar de nou
+    try { history.pushState({ porquetPantalla: id }, ''); } catch (e) {}
+  }
+
+  window.addEventListener('popstate', () => {
+    const fn = PANTALLES_TORNAR[pantallaActualHistorial];
+    if (fn) {
+      dinsNavegacioHistorial = true;
+      fn();
+      dinsNavegacioHistorial = false;
+    }
+    // Si no hi ha funció (estem a portada), no fem res: deixem que el navegador
+    // continuï enrere normalment (sortir de l'app).
+  });
 
   function setLang(btn, lang) {
     langActual = lang;
@@ -1577,6 +1642,7 @@
   }
 
   function entrarMenu() {
+    desbloquejarAudioIOS();
     const tx = t();
     document.getElementById('menu-title').textContent = tx.menuTitle;
     document.getElementById('s-aprendre').textContent = tx.sAprendre;
@@ -1654,6 +1720,7 @@
     aturarSons();
     ocultar('pantalla-menu');
     document.getElementById('pantalla-portada').style.display = 'flex';
+    pantallaActualHistorial = 'pantalla-portada';
   }
 
   function tornarNivells() {
@@ -2089,10 +2156,15 @@
   };
 
   // ===== FUNCIÓN normalitza CORREGIDA =====
-  // Conserva la ñ y la ç, solo elimina tildes
+  // Conserva la ñ (la protegim abans de descompondre, ja que el seu diacrític
+  // també cauria dins el rang de marques combinants que eliminem per a la resta
+  // de tildes), i elimina la resta d'accents normalment.
   function normalitza(s) {
-    return s.normalize('NFD')
+    return s
+        .replace(/Ñ/g, '§')
+        .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
+        .replace(/§/g, 'Ñ')
         .toUpperCase();
   }
 
@@ -2303,7 +2375,9 @@
   }
 
   function generarSopaGrid(mida, paraules) {
-    const lletres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    // Alfabet de farciment: el castellà necessita la Ñ perquè pugui aparèixer
+    // fora de paraules com "PIÑA" (si no, mai sortiria al tauler).
+    const lletres = langActual === 'es' ? 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const direccions = [[0,1],[1,0],[1,1],[1,-1],[0,-1],[-1,0],[-1,-1],[-1,1]];
 
     const ordenades = [...paraules].sort((a,b) => b.length - a.length);
@@ -2459,7 +2533,6 @@
       
       const paraulaEl = document.getElementById('sopa-p-' + normalitza(trobat.paraula));
       if (paraulaEl) paraulaEl.classList.add('trobada');
-      sonar('aplauso_corto', 2000);
       
       const slot = document.getElementById('sopa-slot-' + normalitza(trobat.paraula));
       if (slot) {
@@ -2474,12 +2547,16 @@
       actualitzarSopaInfo();
       
       if (sopaTrobades >= sopaParaulesBuscades.length) {
+        // És l'última paraula: no toquem l'aplaudiment curt, anem directes a la
+        // victòria. Dos sons d'àudio seguits en 600ms són poc fiables a iOS/Safari.
         setTimeout(() => {
           sonar('aplauso_largo', 5000);
           incrementStatSopa(sopaNivellActual, 'g');
           document.getElementById('sopa-victoria').style.display = 'flex';
           document.getElementById('sopa-victoria').classList.add('visible');
         }, 600);
+      } else {
+        sonar('aplauso_corto', 2000);
       }
     } else {
       const gridEl = document.getElementById('sopa-grid');
@@ -2862,7 +2939,7 @@
       document.getElementById('fruita-vic-reintent').textContent = tx.reintent;
       document.getElementById('fruita-vic-nivells').textContent = tx.nivells;
       mostrar('fruita-victoria');
-      sonar('aplauso_corto', 5000);
+      sonar('aplauso_largo', 5000);
     } else {
       incrementStatFruita(fruitaNivellActual, 'p');
       document.getElementById('fruita-der-text').textContent = perDolents ? tx.fruitaDerTextDolents : tx.fruitaDerText;
@@ -3866,7 +3943,6 @@
     { lletra: 'Z', paraula: 'zebra',          img: 'animal_zebra.png' },
   ];
 
-  // Taula CASTELLÀ
   const lletresLlistaEs = [
     { lletra: 'A', paraula: 'aguacate',       img: 'fruta_aguacate.png' },
     { lletra: 'C', paraula: 'cocodrilo',      img: 'animal_cocodrilo.png' },
@@ -3884,7 +3960,6 @@
     { lletra: 'S', paraula: 'sandía',         img: 'fruta_sandia.png' },
     { lletra: 'T', paraula: 'tigre',          img: 'animal_tigre.png' },
     { lletra: 'V', paraula: 'vaca',           img: 'animal_vaca.png' },
-    { lletra: 'Z', paraula: 'zebra',          img: 'animal_zebra.png' },
   ];
 
   function lletresLlista() {
