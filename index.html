@@ -1437,6 +1437,7 @@
       lletresPreguntaReconeixer: (lletra) => `On és la lletra ${lletra}?`,
       lletresPreguntaSo: (paraula) => `Per quina lletra comença "${paraula}"?`,
       lletresHintReconeixer: '👆 Toca la imatge que comença per aquesta lletra',
+      lletresDirLletra: (lletra) => `la lletra ${lletra}`,
       lletresHintSo: '👆 Toca la lletra correcta',
       lletresVicText: '🎉 Molt bé! 🎉',
       lletresVicSub: 'Has completat el nivell!',
@@ -1538,6 +1539,7 @@
       lletresPreguntaReconeixer: (lletra) => `¿Dónde está la letra ${lletra}?`,
       lletresPreguntaSo: (paraula) => `¿Por qué letra empieza "${paraula}"?`,
       lletresHintReconeixer: '👆 Toca la imagen que empieza por esta letra',
+      lletresDirLletra: (lletra) => `la letra ${lletra}`,
       lletresHintSo: '👆 Toca la letra correcta',
       lletresVicText: '🎉 ¡Muy bien! 🎉',
       lletresVicSub: '¡Has completado el nivel!',
@@ -4058,8 +4060,13 @@
   }
 
   function repetirVeuLletres() {
-    if (!lletresPreguntaActual || lletresPreguntaActual.tipus !== 'so') return;
-    dirEnVeuAlta(lletresPreguntaActual.correcte.paraula, 'lletres-altaveu-btn');
+    if (!lletresPreguntaActual) return;
+    const tx = t();
+    if (lletresPreguntaActual.tipus === 'so') {
+      dirEnVeuAlta(lletresPreguntaActual.correcte.paraula, 'lletres-altaveu-btn');
+    } else if (lletresPreguntaActual.tipus === 'reconeixer') {
+      dirEnVeuAlta(tx.lletresDirLletra(lletresPreguntaActual.correcte.lletra), 'lletres-altaveu-btn');
+    }
   }
 
   function mostrarPreguntaLletres() {
@@ -4083,7 +4090,8 @@
     if (p.tipus === 'reconeixer') {
       preguntaEl.textContent = tx.lletresPreguntaReconeixer(p.correcte.lletra);
       hintEl.textContent = tx.lletresHintReconeixer;
-      altaveuBtn.style.display = 'none';
+      altaveuBtn.style.display = 'flex';
+      dirEnVeuAlta(tx.lletresDirLletra(p.correcte.lletra), 'lletres-altaveu-btn');
 
       const span = document.createElement('div');
       span.className = 'lletres-lletra-gran';
