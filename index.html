@@ -592,6 +592,26 @@
     font-size: 3.4rem;
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
   }
+
+  .colors-temps-barra-wrap {
+    width: 100%;
+    max-width: 220px;
+    height: 10px;
+    background: #fff0d6;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 2px rgba(255,255,255,0.6);
+  }
+  .colors-temps-barra {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #6BD97A, #2B7A6F);
+    border-radius: 6px;
+    transition: width 1s linear, background 0.3s ease;
+  }
+  .colors-temps-barra.urgent {
+    background: linear-gradient(90deg, #FF8C42, #e85d75);
+  }
 </style>
 </head>
 <body>
@@ -897,6 +917,7 @@
           <div class="puzzle-progress" id="colors-fallos" style="background:#ffe3ea;color:#e85d75;">❌ 0/6</div>
         </div>
         <div class="puzzle-hint" id="colors-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
+        <div class="colors-temps-barra-wrap"><div class="colors-temps-barra" id="colors-temps-barra"></div></div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
         <button class="sortir-btn" id="colors-sortir-btn" onclick="sortirColors()">✖</button>
@@ -2829,13 +2850,14 @@
   ];
 
   const colorsNivells = [
-    { tipus: 'reconeixer', n: 4 },
-    { tipus: 'reconeixer', n: 8 },
-    { tipus: 'associar',   n: 8 },
-    { tipus: 'reconeixer', n: 12 },
-    { tipus: 'associar',   n: 12 },
-    { tipus: 'mix',        n: 12 },
+    { tipus: 'reconeixer', n: 4,  opcions: 4 },
+    { tipus: 'reconeixer', n: 8,  opcions: 4 },
+    { tipus: 'associar',   n: 8,  opcions: 5 },
+    { tipus: 'reconeixer', n: 12, opcions: 5 },
+    { tipus: 'associar',   n: 12, opcions: 6 },
+    { tipus: 'mix',        n: 12, opcions: 6 },
   ];
+  const COLORS_TEMPS_PREGUNTA = 8; // segons per respondre
 
   let colorsNivellActual = 1;
   let colorsEncerts = 0;
@@ -2843,6 +2865,8 @@
   let colorsBloquejat = false;
   let colorsMixComptador = 0;
   let colorsPreguntaActual = null;
+  let colorsInterval = null;
+  let colorsTempsRestant = 0;
 
   function carregarStatsColors() {
     try { return JSON.parse(localStorage.getItem('porquet_colors_stats')) || {}; } catch { return {}; }
@@ -2928,6 +2952,7 @@
 
   function sortirColors() {
     aturarSons();
+    aturarTemporitzadorColors();
     incrementStatColors(colorsNivellActual, 'p');
     ocultar('pantalla-colors');
     renderNivellsColors();
@@ -2940,18 +2965,21 @@
   }
 
   // Genera una pregunta segons el tipus de mecànica
-  function generarPreguntaColors(tipus, n) {
+  function generarPreguntaColors(tipus, n, numOpcions) {
     const pool = colorsLlista.slice(0, n);
+    const objectiu = Math.min(numOpcions, pool.length); // mai demanar més opcions que colors disponibles
     const correcteIdx = Math.floor(Math.random() * pool.length);
     const correcte = pool[correcteIdx];
     const opcionsSet = new Set([correcte.id]);
     const opcionsObj = [correcte];
-    while (opcionsObj.length < 3) {
+    let intents = 0;
+    while (opcionsObj.length < objectiu && intents < 200) {
       const cand = pool[Math.floor(Math.random() * pool.length)];
       if (!opcionsSet.has(cand.id)) {
         opcionsSet.add(cand.id);
         opcionsObj.push(cand);
       }
+      intents++;
     }
     return { tipus, correcte, opcions: barrejar(opcionsObj) };
   }
@@ -2962,10 +2990,11 @@
       tipusReal = ['reconeixer', 'associar'][colorsMixComptador % 2];
       colorsMixComptador++;
     }
-    return generarPreguntaColors(tipusReal, cfg.n);
+    return generarPreguntaColors(tipusReal, cfg.n, cfg.opcions);
   }
 
   function iniciarColors(nivell) {
+    aturarTemporitzadorColors();
     colorsNivellActual = nivell;
     colorsEncerts = 0;
     colorsFallos = 0;
@@ -2989,6 +3018,33 @@
     mostrar('pantalla-colors');
 
     mostrarPreguntaColors();
+  }
+
+  function aturarTemporitzadorColors() {
+    if (colorsInterval) { clearInterval(colorsInterval); colorsInterval = null; }
+  }
+
+  function iniciarTemporitzadorColors() {
+    aturarTemporitzadorColors();
+    colorsTempsRestant = COLORS_TEMPS_PREGUNTA;
+    const barra = document.getElementById('colors-temps-barra');
+    barra.style.transition = 'none';
+    barra.style.width = '100%';
+    barra.classList.remove('urgent');
+    // forcem reflow perquè la pròxima transició s'apliqui des de l'ample complet
+    void barra.offsetHeight;
+    barra.style.transition = 'width 1s linear, background 0.3s ease';
+
+    colorsInterval = setInterval(() => {
+      colorsTempsRestant--;
+      const pct = Math.max(0, (colorsTempsRestant / COLORS_TEMPS_PREGUNTA) * 100);
+      barra.style.width = pct + '%';
+      if (colorsTempsRestant <= 3) barra.classList.add('urgent');
+      if (colorsTempsRestant <= 0) {
+        aturarTemporitzadorColors();
+        respondreColorsTempsEsgotat();
+      }
+    }, 1000);
   }
 
   function mostrarPreguntaColors() {
@@ -3022,12 +3078,13 @@
       objectesEl.appendChild(span);
     }
 
+    iniciarTemporitzadorColors();
+
     p.opcions.forEach(color => {
       const btn = document.createElement('button');
       btn.className = 'colors-opcio';
       btn.style.background = color.hex;
-      btn.dataset.colorId = color.id;
-      if (color.id === 'blanc') btn.style.borderColor = '#cfd8dc'; // contrast visual pel blanc
+      btn.dataset.colorId = color.id;      if (color.id === 'blanc') btn.style.borderColor = '#cfd8dc'; // contrast visual pel blanc
       btn.onclick = () => respondreColors(btn, color.id, p.correcte.id);
       opcionsEl.appendChild(btn);
     });
@@ -3036,6 +3093,7 @@
   function respondreColors(btn, colorId, correcteId) {
     if (colorsBloquejat) return;
     colorsBloquejat = true;
+    aturarTemporitzadorColors();
 
     const tx = t();
     const tots = document.querySelectorAll('#colors-opcions .colors-opcio');
@@ -3070,7 +3128,36 @@
     }, 900);
   }
 
+  // Quan s'esgota el temps: compta com a fallada, sense so d'error agressiu, només es marca la correcta
+  function respondreColorsTempsEsgotat() {
+    if (colorsBloquejat) return;
+    colorsBloquejat = true;
+
+    const tx = t();
+    const correcteId = colorsPreguntaActual.correcte.id;
+    const tots = document.querySelectorAll('#colors-opcions .colors-opcio');
+    tots.forEach(b => {
+      b.classList.add('deshabilitat');
+      if (b.dataset.colorId === correcteId) {
+        b.classList.add('correcta');
+        b.innerHTML = '<span class="marca">✔️</span>';
+      }
+    });
+    sonar('carta_girar');
+    colorsFallos++;
+    document.getElementById('colors-fallos').textContent = tx.colorsFallosLabel(colorsFallos, COLORS_LIMIT);
+
+    setTimeout(() => {
+      if (colorsEncerts >= COLORS_LIMIT || colorsFallos >= COLORS_LIMIT) {
+        finalitzarColors();
+      } else {
+        mostrarPreguntaColors();
+      }
+    }, 900);
+  }
+
   function finalitzarColors() {
+    aturarTemporitzadorColors();
     const tx = t();
     const victoria = colorsEncerts >= COLORS_LIMIT;
 
