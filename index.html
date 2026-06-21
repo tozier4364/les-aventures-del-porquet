@@ -594,6 +594,76 @@
     filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
   }
 
+  /* ===== GEOGRAFIA ===== */
+  #pantalla-geo-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-geo-nivells.visible { display: flex; }
+  #geo-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+
+  #pantalla-geo { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; position: relative; }
+  #pantalla-geo.visible { display: flex; }
+
+  .geo-escena {
+    width: 100%;
+    max-width: 280px;
+    aspect-ratio: 3/4;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .geo-escena img.geo-fons { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+  .geo-escena img.geo-protagonista {
+    position: relative;
+    width: 42%;
+    max-width: 130px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.35));
+    margin-bottom: 6%;
+  }
+
+  .geo-opcions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .geo-opcio {
+    width: 84px;
+    height: 84px;
+    border-radius: 20px;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    background: #fff8e0;
+    position: relative;
+  }
+  .geo-opcio img { width: 100%; height: 100%; object-fit: cover; }
+  .geo-opcio:active { transform: scale(0.92); }
+  .geo-opcio.correcta { border-color: var(--verd); box-shadow: 0 0 0 4px rgba(43,122,111,0.35), 0 4px 12px rgba(0,0,0,0.2); animation: numerosPop 0.4s ease; }
+  .geo-opcio.incorrecta { border-color: #e85d75; box-shadow: 0 0 0 4px rgba(232,93,117,0.35), 0 4px 12px rgba(0,0,0,0.2); animation: numerosShake 0.4s ease; }
+  .geo-opcio.deshabilitat { pointer-events: none; opacity: 0.55; }
+  .geo-opcio .marca-overlay {
+    position: absolute;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+    background: rgba(255,255,255,0.85);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
   .colors-pregunta-wrap {
     display: flex;
     align-items: center;
@@ -660,7 +730,7 @@
       <div class="seccio-header"><span class="ico">🎓</span><span id="s-aprendre">Aprèn amb el Porquet</span></div>
       <div class="seccio-items">
         <div class="item-btn numeros" onclick="anarNivellsNumeros()"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
-        <div class="item-btn geo"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
+        <div class="item-btn geo" onclick="anarNivellsGeo()"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
         <div class="item-btn colors" onclick="anarNivellsColors()"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
         <div class="item-btn animals"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
       </div>
@@ -956,6 +1026,62 @@
     </div>
   </div>
 
+  <!-- GEOGRAFIA: NIVELLS -->
+  <div id="pantalla-geo-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="geo-nivells-title">🗺️ Tria el nivell</div>
+    <div id="geo-nivells-container"></div>
+    <button class="reset-btn" id="geo-reset-btn" onclick="resetStatsGeo()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="geo-nivells-back" onclick="tornarMenuDesGeoNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- GEOGRAFIA: JOC -->
+  <div id="pantalla-geo">
+    <div class="puzzle-header">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="geo-title">🗺️ Geografia</div>
+        <div style="display:flex;gap:8px;align-self:flex-start;">
+          <div class="puzzle-progress" id="geo-encerts" style="background:#e3fff0;color:#2B7A6F;">✅ 0/6</div>
+          <div class="puzzle-progress" id="geo-fallos" style="background:#ffe3ea;color:#e85d75;">❌ 0/6</div>
+        </div>
+        <div class="puzzle-hint" id="geo-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <button class="sortir-btn" id="geo-sortir-btn" onclick="sortirGeo()">✖</button>
+      </div>
+    </div>
+    <div class="numeros-container" id="geo-container">
+      <div class="numeros-pregunta" id="geo-pregunta"></div>
+      <div class="geo-escena" id="geo-escena">
+        <img class="geo-fons" id="geo-fons-img" src="" alt="">
+        <img class="geo-protagonista" id="geo-prota-img" src="" alt="" style="display:none;">
+      </div>
+      <div class="geo-opcions" id="geo-opcions"></div>
+    </div>
+
+    <div class="resultat" id="geo-victoria" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="geo-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="geo-vic-sub">Has completat el nivell!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="geo-vic-reintent" onclick="repetirGeo()">🔄 Repetir</button>
+        <button class="btn-menu" id="geo-vic-nivells" onclick="tornarNivellsGeo()">← Nivells</button>
+      </div>
+    </div>
+
+    <div class="resultat" id="geo-derrota" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id="geo-der-text" style="color:#e85d75">😅 Quasi ho tens!</div>
+      <div class="resultat-sub" id="geo-der-sub">Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="geo-der-reintent" onclick="repetirGeo()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" id="geo-der-nivells" onclick="tornarNivellsGeo()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIALOG CONFIRMACIÓ -->
   <div class="dialog-overlay" id="dialog-overlay">
     <div class="dialog-box">
@@ -1140,6 +1266,21 @@
       colorsVicSub: 'Has completat el nivell!',
       colorsDerText: '😅 Quasi ho tens!',
       colorsDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
+      geoTitle: '🗺️ Geografia',
+      geoNivellsTitol: '🗺️ Tria el nivell',
+      geoMecHabitatAnimal: 'Qui viu aquí?',
+      geoMecAnimalHabitat: 'On viu?',
+      geoMecMix: 'Repàs final',
+      geoEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      geoFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
+      geoPreguntaHabitatAnimal: '👆 Qui viu aquí?',
+      geoPreguntaAnimalHabitat: (nom) => `On viu ${nom}?`,
+      geoHintHabitatAnimal: '👆 Toca l\'animal correcte',
+      geoHintAnimalHabitat: '👆 Toca l\'hàbitat correcte',
+      geoVicText: '🎉 Molt bé! 🎉',
+      geoVicSub: 'Has completat el nivell!',
+      geoDerText: '😅 Quasi ho tens!',
+      geoDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
@@ -1211,6 +1352,21 @@
       colorsVicSub: '¡Has completado el nivel!',
       colorsDerText: '😅 ¡Casi lo tienes!',
       colorsDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
+      geoTitle: '🗺️ Geografía',
+      geoNivellsTitol: '🗺️ Elige el nivel',
+      geoMecHabitatAnimal: '¿Quién vive aquí?',
+      geoMecAnimalHabitat: '¿Dónde vive?',
+      geoMecMix: 'Repaso final',
+      geoEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      geoFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
+      geoPreguntaHabitatAnimal: '👆 ¿Quién vive aquí?',
+      geoPreguntaAnimalHabitat: (nom) => `¿Dónde vive ${nom}?`,
+      geoHintHabitatAnimal: '👆 Toca el animal correcto',
+      geoHintAnimalHabitat: '👆 Toca el hábitat correcto',
+      geoVicText: '🎉 ¡Muy bien! 🎉',
+      geoVicSub: '¡Has completado el nivel!',
+      geoDerText: '😅 ¡Casi lo tienes!',
+      geoDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
     }
   };
 
@@ -1227,7 +1383,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('visible');
-    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells' || id === 'pantalla-colors' || id === 'pantalla-colors-nivells') {
+    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells' || id === 'pantalla-colors' || id === 'pantalla-colors-nivells' || id === 'pantalla-geo' || id === 'pantalla-geo-nivells') {
       el.style.display = 'flex';
     } else {
       el.style.display = '';
@@ -3155,6 +3311,349 @@
       document.getElementById('colors-der-reintent').textContent = tx.tornarIntent;
       document.getElementById('colors-der-nivells').textContent = tx.nivells;
       mostrar('colors-derrota');
+      sonar('llanto', 1500);
+    }
+  }
+
+  // ===== GEOGRAFIA =====
+  const GEO_LIMIT = 6; // aciertos o fallos necesarios para acabar la partida
+
+  // Cada hàbitat: id, nom ca/es, imatge de fons
+  const geoHabitats = [
+    { id: 'selva',  ca: 'la selva',  es: 'la selva',  img: 'habitat_selva.png' },
+    { id: 'sabana', ca: 'la sabana', es: 'la sabana', img: 'habitat_sabana.png' },
+    { id: 'granja', ca: 'la granja', es: 'la granja', img: 'habitat_granja.png' },
+    { id: 'polo',   ca: 'el pol',    es: 'el polo',   img: 'habitat_polo.png' },
+    { id: 'mar',    ca: 'el mar',    es: 'el mar',    img: 'habitat_mar.png' },
+  ];
+
+  // Cada animal: id, nom ca/es, imatge, hàbitat real, categoria (per triar distractors "veïns")
+  const geoAnimals = [
+    { id: 'mono',           ca: 'el mono',           es: 'el mono',           img: 'animal_mono.png',           habitat: 'selva',  categoria: 'salvatge' },
+    { id: 'cocodrilo',      ca: 'el cocodril',       es: 'el cocodrilo',      img: 'animal_cocodrilo.png',      habitat: 'selva',  categoria: 'salvatge' },
+    { id: 'tigre',          ca: 'el tigre',          es: 'el tigre',          img: 'animal_tigre.png',          habitat: 'selva',  categoria: 'salvatge' },
+    { id: 'loro',           ca: 'el lloro',          es: 'el loro',           img: 'animal_loro.png',           habitat: 'selva',  categoria: 'salvatge' },
+    { id: 'leon',           ca: 'el lleó',           es: 'el león',           img: 'animal_leon.png',           habitat: 'sabana', categoria: 'salvatge' },
+    { id: 'elefante',       ca: 'l\'elefant',        es: 'el elefante',       img: 'animal_elefante.png',       habitat: 'sabana', categoria: 'salvatge' },
+    { id: 'jirafa',         ca: 'la girafa',         es: 'la jirafa',         img: 'animal_jirafa.png',         habitat: 'sabana', categoria: 'salvatge' },
+    { id: 'zebra',          ca: 'la zebra',          es: 'la cebra',          img: 'animal_zebra.png',          habitat: 'sabana', categoria: 'salvatge' },
+    { id: 'rinoceronte',    ca: 'el rinoceront',     es: 'el rinoceronte',    img: 'animal_rinoceronte.png',    habitat: 'sabana', categoria: 'salvatge' },
+    { id: 'perro',          ca: 'el gos',            es: 'el perro',          img: 'animal_perro.png',          habitat: 'granja', categoria: 'granja' },
+    { id: 'gallina',        ca: 'la gallina',        es: 'la gallina',        img: 'animal_gallina.png',        habitat: 'granja', categoria: 'granja' },
+    { id: 'vaca',           ca: 'la vaca',           es: 'la vaca',           img: 'animal_vaca.png',           habitat: 'granja', categoria: 'granja' },
+    { id: 'oveja',          ca: 'l\'ovella',         es: 'la oveja',          img: 'animal_oveja.png',          habitat: 'granja', categoria: 'granja' },
+    { id: 'pinguino',       ca: 'el pingüí',         es: 'el pingüino',       img: 'animal_pinguino.png',       habitat: 'polo',   categoria: 'polar' },
+    { id: 'oso_polar',      ca: 'l\'ós polar',       es: 'el oso polar',      img: 'animal_oso_polar.png',      habitat: 'polo',   categoria: 'polar' },
+    { id: 'foca',           ca: 'la foca',           es: 'la foca',           img: 'animal_foca.png',           habitat: 'polo',   categoria: 'polar' },
+    { id: 'morsa',          ca: 'la morsa',          es: 'la morsa',          img: 'animal_morsa.png',          habitat: 'polo',   categoria: 'polar' },
+    { id: 'pez',            ca: 'el peix',           es: 'el pez',            img: 'animal_pez.png',            habitat: 'mar',    categoria: 'mar' },
+    { id: 'pulpo',          ca: 'el pop',            es: 'el pulpo',          img: 'animal_pulpo.png',          habitat: 'mar',    categoria: 'mar' },
+    { id: 'cangrejo',       ca: 'el cranc',          es: 'el cangrejo',       img: 'animal_cangrejo.png',       habitat: 'mar',    categoria: 'mar' },
+    { id: 'tortuga_marina', ca: 'la tortuga marina', es: 'la tortuga marina', img: 'animal_tortuga_marina.png', habitat: 'mar',    categoria: 'mar' },
+  ];
+
+  const geoNivells = [
+    { tipus: 'habitat-animal', opcions: 3, veins: false },
+    { tipus: 'animal-habitat', opcions: 3, veins: false },
+    { tipus: 'habitat-animal', opcions: 3, veins: true },
+    { tipus: 'animal-habitat', opcions: 4, veins: true },
+    { tipus: 'mix',            opcions: 4, veins: true },
+  ];
+
+  let geoNivellActual = 1;
+  let geoEncerts = 0;
+  let geoFallos = 0;
+  let geoBloquejat = false;
+  let geoMixComptador = 0;
+  let geoPreguntaActual = null;
+
+  function carregarStatsGeo() {
+    try { return JSON.parse(localStorage.getItem('porquet_geo_stats')) || {}; } catch { return {}; }
+  }
+  function guardarStatsGeo(stats) {
+    try { localStorage.setItem('porquet_geo_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStatGeo(nivell, tipus) {
+    const stats = carregarStatsGeo();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsGeo(stats);
+  }
+  function resetStatsGeo() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_geo_stats');
+      renderNivellsGeo();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function geoNomMecanica(tipus, tx) {
+    if (tipus === 'habitat-animal') return tx.geoMecHabitatAnimal;
+    if (tipus === 'animal-habitat') return tx.geoMecAnimalHabitat;
+    return tx.geoMecMix;
+  }
+
+  function renderNivellsGeo() {
+    const tx = t();
+    const stats = carregarStatsGeo();
+    const container = document.getElementById('geo-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
+    geoNivells.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarGeo(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${geoNomMecanica(c.tipus, tx)}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('geo-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('geo-nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivellsGeo() {
+    document.getElementById('geo-nivells-title').textContent = t().geoNivellsTitol;
+    renderNivellsGeo();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-geo-nivells');
+  }
+
+  function tornarMenuDesGeoNivells() {
+    aturarSons();
+    ocultar('pantalla-geo-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function tornarNivellsGeo() {
+    aturarSons();
+    ocultar('pantalla-geo');
+    document.getElementById('geo-nivells-title').textContent = t().geoNivellsTitol;
+    renderNivellsGeo();
+    mostrar('pantalla-geo-nivells');
+  }
+
+  function sortirGeo() {
+    aturarSons();
+    incrementStatGeo(geoNivellActual, 'p');
+    ocultar('pantalla-geo');
+    renderNivellsGeo();
+    mostrar('pantalla-geo-nivells');
+  }
+
+  function repetirGeo() {
+    aturarSons();
+    iniciarGeo(geoNivellActual);
+  }
+
+  // Tria distractors per a un animal correcte. Si veins=true, prioritza animals
+  // de la mateixa categoria (p.ex. salvatge) per fer-ho més difícil; si no n'hi ha
+  // prou, completa amb la resta. Si veins=false, distractors totalment aleatoris.
+  function triarDistractorsAnimal(correcte, quants, veins) {
+    const resta = geoAnimals.filter(a => a.id !== correcte.id);
+    let candidats = resta;
+    if (veins) {
+      const mateixaCategoria = resta.filter(a => a.categoria === correcte.categoria && a.habitat !== correcte.habitat);
+      candidats = barrejar(mateixaCategoria.slice());
+      const altres = barrejar(resta.filter(a => !candidats.includes(a)));
+      candidats = candidats.concat(altres);
+    } else {
+      candidats = barrejar(resta.slice());
+    }
+    return candidats.slice(0, quants);
+  }
+
+  function triarDistractorsHabitat(correcte, quants) {
+    const resta = geoHabitats.filter(h => h.id !== correcte.id);
+    return barrejar(resta.slice()).slice(0, quants);
+  }
+
+  // Genera una pregunta del tipus 'habitat-animal' (es mostra el fons, cal triar l'animal)
+  function generarPreguntaHabitatAnimal(numOpcions, veins) {
+    const habitat = geoHabitats[Math.floor(Math.random() * geoHabitats.length)];
+    const animalsHabitat = geoAnimals.filter(a => a.habitat === habitat.id);
+    const correcte = animalsHabitat[Math.floor(Math.random() * animalsHabitat.length)];
+    const distractors = triarDistractorsAnimal(correcte, numOpcions - 1, veins);
+    const opcions = barrejar([correcte, ...distractors]);
+    return { tipus: 'habitat-animal', habitat, correcte, opcions };
+  }
+
+  // Genera una pregunta del tipus 'animal-habitat' (es mostra l'animal, cal triar l'hàbitat)
+  function generarPreguntaAnimalHabitat(numOpcions) {
+    const animal = geoAnimals[Math.floor(Math.random() * geoAnimals.length)];
+    const correcte = geoHabitats.find(h => h.id === animal.habitat);
+    const distractors = triarDistractorsHabitat(correcte, numOpcions - 1);
+    const opcions = barrejar([correcte, ...distractors]);
+    return { tipus: 'animal-habitat', animal, correcte, opcions };
+  }
+
+  function generarSeguentPreguntaGeo(cfg) {
+    let tipusReal = cfg.tipus;
+    if (cfg.tipus === 'mix') {
+      tipusReal = ['habitat-animal', 'animal-habitat'][geoMixComptador % 2];
+      geoMixComptador++;
+    }
+    if (tipusReal === 'habitat-animal') {
+      return generarPreguntaHabitatAnimal(cfg.opcions, cfg.veins);
+    }
+    return generarPreguntaAnimalHabitat(cfg.opcions);
+  }
+
+  function iniciarGeo(nivell) {
+    geoNivellActual = nivell;
+    geoEncerts = 0;
+    geoFallos = 0;
+    geoBloquejat = false;
+    geoMixComptador = 0;
+    geoPreguntaActual = null;
+
+    const tx = t();
+    document.getElementById('geo-title').textContent = tx.geoTitle + ' · ' + (langActual === 'ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
+    document.getElementById('geo-vic-reintent').textContent = tx.reintent;
+    document.getElementById('geo-vic-nivells').textContent = tx.nivells;
+    document.getElementById('geo-der-reintent').textContent = tx.tornarIntent;
+    document.getElementById('geo-der-nivells').textContent = tx.nivells;
+
+    document.getElementById('geo-victoria').classList.remove('visible');
+    document.getElementById('geo-derrota').classList.remove('visible');
+    document.getElementById('geo-encerts').textContent = tx.geoEncertsLabel(0, GEO_LIMIT);
+    document.getElementById('geo-fallos').textContent = tx.geoFallosLabel(0, GEO_LIMIT);
+
+    ocultar('pantalla-geo-nivells');
+    mostrar('pantalla-geo');
+
+    mostrarPreguntaGeo();
+  }
+
+  function mostrarPreguntaGeo() {
+    const tx = t();
+    const cfg = geoNivells[geoNivellActual - 1];
+    const p = generarSeguentPreguntaGeo(cfg);
+    geoPreguntaActual = p;
+    geoBloquejat = false;
+
+    document.getElementById('geo-encerts').textContent = tx.geoEncertsLabel(geoEncerts, GEO_LIMIT);
+    document.getElementById('geo-fallos').textContent = tx.geoFallosLabel(geoFallos, GEO_LIMIT);
+
+    const preguntaEl = document.getElementById('geo-pregunta');
+    const opcionsEl = document.getElementById('geo-opcions');
+    const fonsImg = document.getElementById('geo-fons-img');
+    const protaImg = document.getElementById('geo-prota-img');
+    const hintEl = document.getElementById('geo-hint');
+    opcionsEl.innerHTML = '';
+
+    if (p.tipus === 'habitat-animal') {
+      preguntaEl.textContent = tx.geoPreguntaHabitatAnimal;
+      hintEl.textContent = tx.geoHintHabitatAnimal;
+      fonsImg.src = IMG + p.habitat.img;
+      fonsImg.alt = langActual === 'ca' ? p.habitat.ca : p.habitat.es;
+      protaImg.style.display = 'none';
+
+      p.opcions.forEach(animal => {
+        const btn = document.createElement('button');
+        btn.className = 'geo-opcio';
+        btn.dataset.id = animal.id;
+        btn.innerHTML = `<img src="${IMG + animal.img}" alt="${langActual === 'ca' ? animal.ca : animal.es}">`;
+        btn.onclick = () => respondreGeo(btn, animal.id, p.correcte.id);
+        opcionsEl.appendChild(btn);
+      });
+    } else {
+      const nomAnimal = langActual === 'ca' ? p.animal.ca : p.animal.es;
+      preguntaEl.textContent = tx.geoPreguntaAnimalHabitat(nomAnimal);
+      hintEl.textContent = tx.geoHintAnimalHabitat;
+      fonsImg.src = IMG + p.correcte.img;
+      fonsImg.alt = '';
+      fonsImg.style.filter = 'blur(2px) brightness(0.7)';
+      protaImg.src = IMG + p.animal.img;
+      protaImg.alt = nomAnimal;
+      protaImg.style.display = '';
+
+      p.opcions.forEach(habitat => {
+        const btn = document.createElement('button');
+        btn.className = 'geo-opcio';
+        btn.dataset.id = habitat.id;
+        btn.innerHTML = `<img src="${IMG + habitat.img}" alt="${langActual === 'ca' ? habitat.ca : habitat.es}">`;
+        btn.onclick = () => respondreGeo(btn, habitat.id, p.correcte.id);
+        opcionsEl.appendChild(btn);
+      });
+    }
+  }
+
+  function respondreGeo(btn, idTriat, idCorrecte) {
+    if (geoBloquejat) return;
+    geoBloquejat = true;
+
+    const tx = t();
+    const tots = document.querySelectorAll('#geo-opcions .geo-opcio');
+    tots.forEach(b => b.classList.add('deshabilitat'));
+
+    // restaurem el fons si estava difuminat (mode animal-habitat)
+    document.getElementById('geo-fons-img').style.filter = '';
+
+    if (idTriat === idCorrecte) {
+      btn.classList.add('correcta');
+      btn.insertAdjacentHTML('beforeend', '<span class="marca-overlay">✔️</span>');
+      sonar('aplauso_corto', 900);
+      geoEncerts++;
+      document.getElementById('geo-encerts').textContent = tx.geoEncertsLabel(geoEncerts, GEO_LIMIT);
+    } else {
+      btn.classList.add('incorrecta');
+      btn.insertAdjacentHTML('beforeend', '<span class="marca-overlay">❌</span>');
+      sonar('carta_error');
+      tots.forEach(b => {
+        if (b.dataset.id === idCorrecte) {
+          b.classList.add('correcta');
+          b.insertAdjacentHTML('beforeend', '<span class="marca-overlay">✔️</span>');
+        }
+      });
+      geoFallos++;
+      document.getElementById('geo-fallos').textContent = tx.geoFallosLabel(geoFallos, GEO_LIMIT);
+    }
+
+    setTimeout(() => {
+      if (geoEncerts >= GEO_LIMIT || geoFallos >= GEO_LIMIT) {
+        finalitzarGeo();
+      } else {
+        mostrarPreguntaGeo();
+      }
+    }, 900);
+  }
+
+  function finalitzarGeo() {
+    const tx = t();
+    const victoria = geoEncerts >= GEO_LIMIT;
+
+    if (victoria) {
+      incrementStatGeo(geoNivellActual, 'g');
+      document.getElementById('geo-vic-text').textContent = tx.geoVicText;
+      document.getElementById('geo-vic-sub').textContent = tx.geoVicSub + ` (${geoEncerts}/${GEO_LIMIT})`;
+      document.getElementById('geo-vic-reintent').textContent = tx.reintent;
+      document.getElementById('geo-vic-nivells').textContent = tx.nivells;
+      mostrar('geo-victoria');
+      sonar('aplauso_largo', 5000);
+    } else {
+      incrementStatGeo(geoNivellActual, 'p');
+      document.getElementById('geo-der-text').textContent = tx.geoDerText;
+      document.getElementById('geo-der-sub').textContent = tx.geoDerSub(geoEncerts, geoFallos);
+      document.getElementById('geo-der-reintent').textContent = tx.tornarIntent;
+      document.getElementById('geo-der-nivells').textContent = tx.nivells;
+      mostrar('geo-derrota');
       sonar('llanto', 1500);
     }
   }
