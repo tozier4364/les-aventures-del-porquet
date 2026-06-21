@@ -665,6 +665,95 @@
     display: flex; align-items: center; justify-content: center;
   }
 
+  /* ===== LLETRES ===== */
+  #pantalla-lletres-nivells { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 20px 0; overflow-y: auto; }
+  #pantalla-lletres-nivells.visible { display: flex; }
+  #lletres-nivells-container { width: 100%; max-width: 400px; flex: 1; overflow-y: auto; }
+
+  #pantalla-lletres { display: none; width: 100%; height: 100%; flex-direction: column; align-items: center; padding: 8px 12px; position: relative; }
+  #pantalla-lletres.visible { display: flex; }
+
+  .lletres-lletra-gran {
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: clamp(3.5rem, 22vw, 5.5rem);
+    color: var(--blau-fosc);
+    line-height: 1;
+    text-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  .lletres-imatge-gran {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.25));
+  }
+
+  .lletres-opcio-lletra {
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #FFD93D, #FF8C42);
+    color: white;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 800;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 12px rgba(255,140,66,0.35);
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lletres-opcio-lletra:active { transform: scale(0.92); filter: brightness(0.95); }
+  .lletres-opcio-lletra.correcta { background: linear-gradient(135deg, #6BD97A, #2B7A6F); animation: numerosPop 0.4s ease; }
+  .lletres-opcio-lletra.incorrecta { background: linear-gradient(135deg, #e85d75, #c94070); animation: numerosShake 0.4s ease; }
+  .lletres-opcio-lletra.deshabilitat { pointer-events: none; opacity: 0.55; }
+
+  .lletres-opcio-img {
+    width: 84px;
+    height: 84px;
+    border-radius: 20px;
+    border: 4px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all .15s;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 0;
+    background: #fff8e0;
+    position: relative;
+  }
+  .lletres-opcio-img img { width: 100%; height: 100%; object-fit: cover; }
+  .lletres-opcio-img:active { transform: scale(0.92); }
+  .lletres-opcio-img.correcta { border-color: var(--verd); box-shadow: 0 0 0 4px rgba(43,122,111,0.35), 0 4px 12px rgba(0,0,0,0.2); animation: numerosPop 0.4s ease; }
+  .lletres-opcio-img.incorrecta { border-color: #e85d75; box-shadow: 0 0 0 4px rgba(232,93,117,0.35), 0 4px 12px rgba(0,0,0,0.2); animation: numerosShake 0.4s ease; }
+  .lletres-opcio-img.deshabilitat { pointer-events: none; opacity: 0.55; }
+  .lletres-opcio-img .marca-overlay {
+    position: absolute;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5));
+    background: rgba(255,255,255,0.85);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .lletres-altaveu-btn {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--rosa), var(--taronja));
+    color: white;
+    font-size: 1.3rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255,107,157,0.4);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .lletres-altaveu-btn.parlant { animation: numerosPop 0.5s ease infinite; }
+
   .colors-pregunta-wrap {
     display: flex;
     align-items: center;
@@ -733,7 +822,7 @@
         <div class="item-btn numeros" onclick="anarNivellsNumeros()"><span class="ico2">🔢</span><span id="i-numeros">Números</span></div>
         <div class="item-btn geo" onclick="anarNivellsGeo()"><span class="ico2">🗺️</span><span id="i-geo">Geografia</span></div>
         <div class="item-btn colors" onclick="anarNivellsColors()"><span class="ico2">🎨</span><span id="i-colors">Colors</span></div>
-        <div class="item-btn animals"><span class="ico2">🐘</span><span id="i-animals">Animals</span></div>
+        <div class="item-btn animals" onclick="anarNivellsLletres()"><span class="ico2">🔤</span><span id="i-animals">Lletres</span></div>
       </div>
     </div>
     <div class="seccio jugar">
@@ -1083,6 +1172,62 @@
     </div>
   </div>
 
+  <!-- LLETRES: NIVELLS -->
+  <div id="pantalla-lletres-nivells">
+    <div class="menu-hero" style="width:100px;height:100px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_pensando.png" alt="Porquet">
+    </div>
+    <div class="nivells-title" id="lletres-nivells-title">🔤 Tria el nivell</div>
+    <div id="lletres-nivells-container"></div>
+    <button class="reset-btn" id="lletres-reset-btn" onclick="resetStatsLletres()">🗑️ Esborrar estadístiques</button>
+    <button class="back-btn" id="lletres-nivells-back" onclick="tornarMenuDesLletresNivells()" style="margin-top:8px">← Tornar</button>
+  </div>
+
+  <!-- LLETRES: JOC -->
+  <div id="pantalla-lletres">
+    <div class="puzzle-header">
+      <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1;">
+        <div class="puzzle-title" id="lletres-title">🔤 Lletres</div>
+        <div style="display:flex;gap:8px;align-self:flex-start;">
+          <div class="puzzle-progress" id="lletres-encerts" style="background:#e3fff0;color:#2B7A6F;">✅ 0/6</div>
+          <div class="puzzle-progress" id="lletres-fallos" style="background:#ffe3ea;color:#e85d75;">❌ 0/6</div>
+        </div>
+        <div class="puzzle-hint" id="lletres-hint" style="margin-bottom:0;align-self:flex-start;">👆 Toca la resposta correcta</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <button class="sortir-btn" id="lletres-sortir-btn" onclick="sortirLletres()">✖</button>
+      </div>
+    </div>
+    <div class="numeros-container" id="lletres-container">
+      <div class="colors-pregunta-wrap">
+        <div class="numeros-pregunta" id="lletres-pregunta"></div>
+        <button class="lletres-altaveu-btn" id="lletres-altaveu-btn" onclick="repetirVeuLletres()" style="display:none;">🔊</button>
+      </div>
+      <div class="numeros-objectes" id="lletres-objectes"></div>
+      <div class="geo-opcions" id="lletres-opcions"></div>
+    </div>
+
+    <div class="resultat" id="lletres-victoria" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_contento.png" alt="Victòria">
+      <div class="resultat-text" id="lletres-vic-text" style="color:var(--verd)">🎉 Molt bé! 🎉</div>
+      <div class="resultat-sub" id="lletres-vic-sub">Has completat el nivell!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="lletres-vic-reintent" onclick="repetirLletres()">🔄 Repetir</button>
+        <button class="btn-menu" id="lletres-vic-nivells" onclick="tornarNivellsLletres()">← Nivells</button>
+      </div>
+    </div>
+
+    <div class="resultat" id="lletres-derrota" style="position:absolute;inset:0;background:rgba(255,240,247,0.95);z-index:50;border-radius:40px;">
+      <img src="https://raw.githubusercontent.com/tozier4364/les-aventures-del-porquet/main/assets/images/porquet_llorando.png" alt="Derrota">
+      <div class="resultat-text" id="lletres-der-text" style="color:#e85d75">😅 Quasi ho tens!</div>
+      <div class="resultat-sub" id="lletres-der-sub">Torna-ho a intentar!</div>
+      <div class="resultat-btns">
+        <button class="btn-reintent" id="lletres-der-reintent" onclick="repetirLletres()">🔄 Tornar a intentar</button>
+        <button class="btn-menu" id="lletres-der-nivells" onclick="tornarNivellsLletres()">← Nivells</button>
+      </div>
+    </div>
+  </div>
+
   <!-- DIALOG CONFIRMACIÓ -->
   <div class="dialog-overlay" id="dialog-overlay">
     <div class="dialog-box">
@@ -1201,7 +1346,7 @@
       titleSub: '🌟 Benvingut a 🌟', play: '🐷 Juguem! ✨',
       menuTitle: '🐷 Què vols fer avui?',
       sAprendre: 'Aprèn amb el Porquet', sJugar: 'Juga amb el Porquet',
-      numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Animals',
+      numeros: 'Números', geo: 'Geografia', colors: 'Colors', animals: 'Lletres',
       puzzle: 'Trenca\u00ADclosques', sopa: 'Sopa de lletres', memoria: 'Memòria', coloreja: 'Pluja de fruita',
       back: '← Tornar', footer: '© Les Aventures del Porquet · Sense publicitat', footerCredit: 'Creat per JBignell',
       nivellsTitol: '🃏 Tria el nivell',
@@ -1282,12 +1427,27 @@
       geoVicSub: 'Has completat el nivell!',
       geoDerText: '😅 Quasi ho tens!',
       geoDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
+      lletresTitle: '🔤 Lletres',
+      lletresNivellsTitol: '🔤 Tria el nivell',
+      lletresMecReconeixer: 'Quina és la lletra?',
+      lletresMecSo: 'Per quina lletra comença?',
+      lletresMecMix: 'Repàs final',
+      lletresEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      lletresFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
+      lletresPreguntaReconeixer: (lletra) => `On és la lletra ${lletra}?`,
+      lletresPreguntaSo: (paraula) => `Per quina lletra comença "${paraula}"?`,
+      lletresHintReconeixer: '👆 Toca la imatge que comença per aquesta lletra',
+      lletresHintSo: '👆 Toca la lletra correcta',
+      lletresVicText: '🎉 Molt bé! 🎉',
+      lletresVicSub: 'Has completat el nivell!',
+      lletresDerText: '😅 Quasi ho tens!',
+      lletresDerSub: (enc, fall) => `Has encertat ${enc}, però has fallat ${fall}. Torna-ho a intentar!`,
     },
     es: {
       titleSub: '🌟 Bienvenido a 🌟', play: '🐷 ¡Juguemos! ✨',
       menuTitle: '🐷 ¿Qué quieres hacer hoy?',
       sAprendre: 'Aprende con el Porquet', sJugar: 'Juega con el Porquet',
-      numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Animales',
+      numeros: 'Números', geo: 'Geografía', colors: 'Colores', animals: 'Letras',
       puzzle: 'Puzzles', sopa: 'Sopa de letras', memoria: 'Memoria', coloreja: 'Lluvia de fruta',
       back: '← Volver', footer: '© Les Aventures del Porquet · Sin publicidad', footerCredit: 'Creado por JBignell',
       nivellsTitol: '🃏 Elige el nivel',
@@ -1368,6 +1528,21 @@
       geoVicSub: '¡Has completado el nivel!',
       geoDerText: '😅 ¡Casi lo tienes!',
       geoDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
+      lletresTitle: '🔤 Letras',
+      lletresNivellsTitol: '🔤 Elige el nivel',
+      lletresMecReconeixer: '¿Cuál es la letra?',
+      lletresMecSo: '¿Por qué letra empieza?',
+      lletresMecMix: 'Repaso final',
+      lletresEncertsLabel: (n, limit) => `✅ ${n}/${limit}`,
+      lletresFallosLabel: (n, limit) => `❌ ${n}/${limit}`,
+      lletresPreguntaReconeixer: (lletra) => `¿Dónde está la letra ${lletra}?`,
+      lletresPreguntaSo: (paraula) => `¿Por qué letra empieza "${paraula}"?`,
+      lletresHintReconeixer: '👆 Toca la imagen que empieza por esta letra',
+      lletresHintSo: '👆 Toca la letra correcta',
+      lletresVicText: '🎉 ¡Muy bien! 🎉',
+      lletresVicSub: '¡Has completado el nivel!',
+      lletresDerText: '😅 ¡Casi lo tienes!',
+      lletresDerSub: (enc, fall) => `Has acertado ${enc}, pero has fallado ${fall}. ¡Inténtalo de nuevo!`,
     }
   };
 
@@ -1384,7 +1559,7 @@
     const el = document.getElementById(id);
     if (!el) return;
     el.classList.add('visible');
-    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells' || id === 'pantalla-colors' || id === 'pantalla-colors-nivells' || id === 'pantalla-geo' || id === 'pantalla-geo-nivells') {
+    if (id === 'pantalla-sopa' || id === 'pantalla-sopa-nivells' || id === 'pantalla-fruita' || id === 'pantalla-fruita-nivells' || id === 'pantalla-numeros' || id === 'pantalla-numeros-nivells' || id === 'pantalla-colors' || id === 'pantalla-colors-nivells' || id === 'pantalla-geo' || id === 'pantalla-geo-nivells' || id === 'pantalla-lletres' || id === 'pantalla-lletres-nivells') {
       el.style.display = 'flex';
     } else {
       el.style.display = '';
@@ -3186,16 +3361,17 @@
     return typeof window.speechSynthesis !== 'undefined';
   }
 
-  function dirColorEnVeuAlta(nomColor) {
+  // Funció TTS genèrica: diu un text en veu alta i (opcionalment) anima un botó d'altaveu.
+  function dirEnVeuAlta(text, btnId) {
     if (!ttsDisponible()) return;
     try {
       window.speechSynthesis.cancel(); // evita superposar veus si es repeteix ràpid
-      const utter = new SpeechSynthesisUtterance(nomColor);
+      const utter = new SpeechSynthesisUtterance(text);
       utter.lang = langActual === 'ca' ? 'ca-ES' : 'es-ES';
       utter.rate = 0.85; // una mica més lent, més clar per a 4 anys
       utter.volume = 1; // volum màxim explícit (algunes veus catalanes surten més fluixes per defecte)
       utter.pitch = 1;
-      const btn = document.getElementById('colors-altaveu-btn');
+      const btn = btnId ? document.getElementById(btnId) : null;
       utter.onstart = () => { if (btn) btn.classList.add('parlant'); };
       utter.onend = () => { if (btn) btn.classList.remove('parlant'); };
       utter.onerror = () => { if (btn) btn.classList.remove('parlant'); };
@@ -3203,6 +3379,10 @@
     } catch (e) {
       // si el TTS falla per qualsevol motiu, el joc segueix funcionant igualment (el text ja hi és)
     }
+  }
+
+  function dirColorEnVeuAlta(nomColor) {
+    dirEnVeuAlta(nomColor, 'colors-altaveu-btn');
   }
 
   function repetirVeuColors() {
@@ -3657,6 +3837,347 @@
       document.getElementById('geo-der-reintent').textContent = tx.tornarIntent;
       document.getElementById('geo-der-nivells').textContent = tx.nivells;
       mostrar('geo-derrota');
+      sonar('llanto', 5000);
+    }
+  }
+
+  // ===== LLETRES =====
+  const LLETRES_LIMIT = 6; // aciertos o fallos necesarios para acabar la partida
+
+  // Taula CATALÀ: lletra, paraula i imatge que la representa.
+  // Cada idioma té la seva pròpia taula perquè la lletra inicial d'una paraula
+  // pot canviar segons l'idioma (p.ex. "formiga" vs "hormiga").
+  const lletresLlistaCa = [
+    { lletra: 'A', paraula: 'alvocat',        img: 'fruta_aguacate.png' },
+    { lletra: 'C', paraula: 'cocodril',       img: 'animal_cocodrilo.png' },
+    { lletra: 'E', paraula: 'elefant',        img: 'animal_elefante.png' },
+    { lletra: 'F', paraula: 'foca',           img: 'animal_foca.png' },
+    { lletra: 'G', paraula: 'girafa',         img: 'animal_jirafa.png' },
+    { lletra: 'L', paraula: 'lleó',           img: 'animal_leon.png' },
+    { lletra: 'M', paraula: 'mono',           img: 'animal_mono.png' },
+    { lletra: 'O', paraula: 'ós polar',       img: 'animal_oso_polar.png' },
+    { lletra: 'P', paraula: 'pop',            img: 'animal_pulpo.png' },
+    { lletra: 'R', paraula: 'rinoceront',     img: 'animal_rinoceronte.png' },
+    { lletra: 'S', paraula: 'síndria',        img: 'fruta_sandia.png' },
+    { lletra: 'T', paraula: 'tigre',          img: 'animal_tigre.png' },
+    { lletra: 'V', paraula: 'vaca',           img: 'animal_vaca.png' },
+    { lletra: 'Z', paraula: 'zebra',          img: 'animal_zebra.png' },
+  ];
+
+  // Taula CASTELLÀ
+  const lletresLlistaEs = [
+    { lletra: 'A', paraula: 'aguacate',       img: 'fruta_aguacate.png' },
+    { lletra: 'C', paraula: 'cocodrilo',      img: 'animal_cocodrilo.png' },
+    { lletra: 'E', paraula: 'elefante',       img: 'animal_elefante.png' },
+    { lletra: 'F', paraula: 'foca',           img: 'animal_foca.png' },
+    { lletra: 'G', paraula: 'gallina',        img: 'animal_gallina.png' },
+    { lletra: 'H', paraula: 'hormiga',        img: 'animal_hormiga.png' },
+    { lletra: 'J', paraula: 'jirafa',         img: 'animal_jirafa.png' },
+    { lletra: 'L', paraula: 'león',           img: 'animal_leon.png' },
+    { lletra: 'M', paraula: 'mono',           img: 'animal_mono.png' },
+    { lletra: 'N', paraula: 'naranja',        img: 'fruta_naranja.png' },
+    { lletra: 'O', paraula: 'oso polar',      img: 'animal_oso_polar.png' },
+    { lletra: 'P', paraula: 'pulpo',          img: 'animal_pulpo.png' },
+    { lletra: 'R', paraula: 'rinoceronte',    img: 'animal_rinoceronte.png' },
+    { lletra: 'S', paraula: 'sandía',         img: 'fruta_sandia.png' },
+    { lletra: 'T', paraula: 'tigre',          img: 'animal_tigre.png' },
+    { lletra: 'V', paraula: 'vaca',           img: 'animal_vaca.png' },
+    { lletra: 'Z', paraula: 'zebra',          img: 'animal_zebra.png' },
+  ];
+
+  function lletresLlista() {
+    return langActual === 'ca' ? lletresLlistaCa : lletresLlistaEs;
+  }
+
+  const lletresNivells = [
+    { tipus: 'reconeixer', opcions: 3 },
+    { tipus: 'so',         opcions: 3 },
+    { tipus: 'reconeixer', opcions: 5 },
+    { tipus: 'so',         opcions: 5 },
+    { tipus: 'mix',        opcions: 5 },
+  ];
+
+  let lletresNivellActual = 1;
+  let lletresEncerts = 0;
+  let lletresFallos = 0;
+  let lletresBloquejat = false;
+  let lletresMixComptador = 0;
+  let lletresPreguntaActual = null;
+
+  function carregarStatsLletres() {
+    try { return JSON.parse(localStorage.getItem('porquet_lletres_stats')) || {}; } catch { return {}; }
+  }
+  function guardarStatsLletres(stats) {
+    try { localStorage.setItem('porquet_lletres_stats', JSON.stringify(stats)); } catch {}
+  }
+  function incrementStatLletres(nivell, tipus) {
+    const stats = carregarStatsLletres();
+    const key = `n${nivell}`;
+    if (!stats[key]) stats[key] = { g: 0, p: 0 };
+    stats[key][tipus]++;
+    guardarStatsLletres(stats);
+  }
+  function resetStatsLletres() {
+    const tx = t();
+    document.getElementById('dialog-text').textContent = tx.confirmReset;
+    document.getElementById('dialog-ok').textContent = tx.dialogSi;
+    document.getElementById('dialog-cancel').textContent = tx.dialogNo;
+    dialogCallback = () => {
+      localStorage.removeItem('porquet_lletres_stats');
+      renderNivellsLletres();
+    };
+    document.getElementById('dialog-overlay').classList.add('visible');
+  }
+
+  function lletresNomMecanica(tipus, tx) {
+    if (tipus === 'reconeixer') return tx.lletresMecReconeixer;
+    if (tipus === 'so') return tx.lletresMecSo;
+    return tx.lletresMecMix;
+  }
+
+  function renderNivellsLletres() {
+    const tx = t();
+    const stats = carregarStatsLletres();
+    const container = document.getElementById('lletres-nivells-container');
+    container.innerHTML = '';
+    const estreles = ['⭐','⭐⭐','⭐⭐⭐','⭐⭐⭐⭐','⭐⭐⭐⭐⭐'];
+    lletresNivells.forEach((c, i) => {
+      const n = i + 1;
+      const st = stats[`n${n}`] || { g: 0, p: 0 };
+      const div = document.createElement('div');
+      div.className = 'nivell-btn';
+      div.onclick = () => iniciarLletres(n);
+      div.innerHTML = `
+        <div class="nivell-top">
+          <div class="nivell-info">
+            <div class="nivell-nom">${tx.nivellNom(n)}</div>
+            <div class="nivell-desc">${lletresNomMecanica(c.tipus, tx)}</div>
+          </div>
+          <div class="nivell-estreles">${estreles[i]}</div>
+        </div>
+        <div class="nivell-stats">
+          <span class="stat-mini guanyat">${tx.guanyat(st.g)}</span>
+          <span class="stat-mini perdut">${tx.perdut(st.p)}</span>
+        </div>`;
+      container.appendChild(div);
+    });
+    document.getElementById('lletres-reset-btn').textContent = tx.resetBtn;
+    document.getElementById('lletres-nivells-back').textContent = tx.tornar;
+  }
+
+  function anarNivellsLletres() {
+    document.getElementById('lletres-nivells-title').textContent = t().lletresNivellsTitol;
+    renderNivellsLletres();
+    ocultar('pantalla-menu');
+    mostrar('pantalla-lletres-nivells');
+  }
+
+  function tornarMenuDesLletresNivells() {
+    aturarSons();
+    ocultar('pantalla-lletres-nivells');
+    mostrar('pantalla-menu');
+  }
+
+  function tornarNivellsLletres() {
+    aturarSons();
+    if (ttsDisponible()) window.speechSynthesis.cancel();
+    ocultar('pantalla-lletres');
+    document.getElementById('lletres-nivells-title').textContent = t().lletresNivellsTitol;
+    renderNivellsLletres();
+    mostrar('pantalla-lletres-nivells');
+  }
+
+  function sortirLletres() {
+    aturarSons();
+    if (ttsDisponible()) window.speechSynthesis.cancel();
+    incrementStatLletres(lletresNivellActual, 'p');
+    ocultar('pantalla-lletres');
+    renderNivellsLletres();
+    mostrar('pantalla-lletres-nivells');
+  }
+
+  function repetirLletres() {
+    aturarSons();
+    iniciarLletres(lletresNivellActual);
+  }
+
+  // Genera una pregunta del tipus 'reconeixer': es mostra una lletra, cal triar la imatge correcta
+  function generarPreguntaReconeixer(numOpcions) {
+    const pool = lletresLlista();
+    const objectiu = Math.min(numOpcions, pool.length);
+    const correcte = pool[Math.floor(Math.random() * pool.length)];
+    const resta = barrejar(pool.filter(p => p.lletra !== correcte.lletra));
+    const opcions = barrejar([correcte, ...resta.slice(0, objectiu - 1)]);
+    return { tipus: 'reconeixer', correcte, opcions };
+  }
+
+  // Genera una pregunta del tipus 'so': es mostra una imatge (+ TTS), cal triar la lletra correcta
+  function generarPreguntaSo(numOpcions) {
+    const pool = lletresLlista();
+    const objectiu = Math.min(numOpcions, pool.length);
+    const correcte = pool[Math.floor(Math.random() * pool.length)];
+    const resta = barrejar(pool.filter(p => p.lletra !== correcte.lletra));
+    const opcions = barrejar([correcte, ...resta.slice(0, objectiu - 1)]);
+    return { tipus: 'so', correcte, opcions };
+  }
+
+  function generarSeguentPreguntaLletres(cfg) {
+    let tipusReal = cfg.tipus;
+    if (cfg.tipus === 'mix') {
+      tipusReal = ['reconeixer', 'so'][lletresMixComptador % 2];
+      lletresMixComptador++;
+    }
+    if (tipusReal === 'reconeixer') return generarPreguntaReconeixer(cfg.opcions);
+    return generarPreguntaSo(cfg.opcions);
+  }
+
+  function iniciarLletres(nivell) {
+    lletresNivellActual = nivell;
+    lletresEncerts = 0;
+    lletresFallos = 0;
+    lletresBloquejat = false;
+    lletresMixComptador = 0;
+    lletresPreguntaActual = null;
+
+    const tx = t();
+    document.getElementById('lletres-title').textContent = tx.lletresTitle + ' · ' + (langActual === 'ca' ? `Nivell ${nivell}` : `Nivel ${nivell}`);
+    document.getElementById('lletres-vic-reintent').textContent = tx.reintent;
+    document.getElementById('lletres-vic-nivells').textContent = tx.nivells;
+    document.getElementById('lletres-der-reintent').textContent = tx.tornarIntent;
+    document.getElementById('lletres-der-nivells').textContent = tx.nivells;
+
+    document.getElementById('lletres-victoria').classList.remove('visible');
+    document.getElementById('lletres-derrota').classList.remove('visible');
+    document.getElementById('lletres-encerts').textContent = tx.lletresEncertsLabel(0, LLETRES_LIMIT);
+    document.getElementById('lletres-fallos').textContent = tx.lletresFallosLabel(0, LLETRES_LIMIT);
+
+    ocultar('pantalla-lletres-nivells');
+    mostrar('pantalla-lletres');
+
+    mostrarPreguntaLletres();
+  }
+
+  function repetirVeuLletres() {
+    if (!lletresPreguntaActual || lletresPreguntaActual.tipus !== 'so') return;
+    dirEnVeuAlta(lletresPreguntaActual.correcte.paraula, 'lletres-altaveu-btn');
+  }
+
+  function mostrarPreguntaLletres() {
+    const tx = t();
+    const cfg = lletresNivells[lletresNivellActual - 1];
+    const p = generarSeguentPreguntaLletres(cfg);
+    lletresPreguntaActual = p;
+    lletresBloquejat = false;
+
+    document.getElementById('lletres-encerts').textContent = tx.lletresEncertsLabel(lletresEncerts, LLETRES_LIMIT);
+    document.getElementById('lletres-fallos').textContent = tx.lletresFallosLabel(lletresFallos, LLETRES_LIMIT);
+
+    const preguntaEl = document.getElementById('lletres-pregunta');
+    const objectesEl = document.getElementById('lletres-objectes');
+    const opcionsEl = document.getElementById('lletres-opcions');
+    const hintEl = document.getElementById('lletres-hint');
+    const altaveuBtn = document.getElementById('lletres-altaveu-btn');
+    objectesEl.innerHTML = '';
+    opcionsEl.innerHTML = '';
+
+    if (p.tipus === 'reconeixer') {
+      preguntaEl.textContent = tx.lletresPreguntaReconeixer(p.correcte.lletra);
+      hintEl.textContent = tx.lletresHintReconeixer;
+      altaveuBtn.style.display = 'none';
+
+      const span = document.createElement('div');
+      span.className = 'lletres-lletra-gran';
+      span.textContent = p.correcte.lletra;
+      objectesEl.appendChild(span);
+
+      p.opcions.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'lletres-opcio-img';
+        btn.dataset.lletra = item.lletra;
+        btn.innerHTML = `<img src="${IMG + item.img}" alt="${item.paraula}">`;
+        btn.onclick = () => respondreLletres(btn, item.lletra, p.correcte.lletra, 'img');
+        opcionsEl.appendChild(btn);
+      });
+    } else {
+      preguntaEl.textContent = tx.lletresPreguntaSo(p.correcte.paraula);
+      hintEl.textContent = tx.lletresHintSo;
+      altaveuBtn.style.display = 'flex';
+      dirEnVeuAlta(p.correcte.paraula, 'lletres-altaveu-btn');
+
+      const img = document.createElement('img');
+      img.className = 'lletres-imatge-gran';
+      img.src = IMG + p.correcte.img;
+      img.alt = p.correcte.paraula;
+      objectesEl.appendChild(img);
+
+      p.opcions.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'lletres-opcio-lletra';
+        btn.dataset.lletra = item.lletra;
+        btn.textContent = item.lletra;
+        btn.onclick = () => respondreLletres(btn, item.lletra, p.correcte.lletra, 'lletra');
+        opcionsEl.appendChild(btn);
+      });
+    }
+  }
+
+  function respondreLletres(btn, lletraTriada, lletraCorrecta, mode) {
+    if (lletresBloquejat) return;
+    lletresBloquejat = true;
+
+    const tx = t();
+    const claseOpcio = mode === 'img' ? 'lletres-opcio-img' : 'lletres-opcio-lletra';
+    const tots = document.querySelectorAll(`#lletres-opcions .${claseOpcio}`);
+    tots.forEach(b => b.classList.add('deshabilitat'));
+
+    if (lletraTriada === lletraCorrecta) {
+      btn.classList.add('correcta');
+      if (mode === 'img') btn.insertAdjacentHTML('beforeend', '<span class="marca-overlay">✔️</span>');
+      sonar('aplauso_corto', 900);
+      lletresEncerts++;
+      document.getElementById('lletres-encerts').textContent = tx.lletresEncertsLabel(lletresEncerts, LLETRES_LIMIT);
+    } else {
+      btn.classList.add('incorrecta');
+      if (mode === 'img') btn.insertAdjacentHTML('beforeend', '<span class="marca-overlay">❌</span>');
+      sonar('carta_error');
+      tots.forEach(b => {
+        if (b.dataset.lletra === lletraCorrecta) {
+          b.classList.add('correcta');
+          if (mode === 'img') b.insertAdjacentHTML('beforeend', '<span class="marca-overlay">✔️</span>');
+        }
+      });
+      lletresFallos++;
+      document.getElementById('lletres-fallos').textContent = tx.lletresFallosLabel(lletresFallos, LLETRES_LIMIT);
+    }
+
+    setTimeout(() => {
+      if (lletresEncerts >= LLETRES_LIMIT || lletresFallos >= LLETRES_LIMIT) {
+        finalitzarLletres();
+      } else {
+        mostrarPreguntaLletres();
+      }
+    }, 900);
+  }
+
+  function finalitzarLletres() {
+    const tx = t();
+    const victoria = lletresEncerts >= LLETRES_LIMIT;
+
+    if (victoria) {
+      incrementStatLletres(lletresNivellActual, 'g');
+      document.getElementById('lletres-vic-text').textContent = tx.lletresVicText;
+      document.getElementById('lletres-vic-sub').textContent = tx.lletresVicSub + ` (${lletresEncerts}/${LLETRES_LIMIT})`;
+      document.getElementById('lletres-vic-reintent').textContent = tx.reintent;
+      document.getElementById('lletres-vic-nivells').textContent = tx.nivells;
+      mostrar('lletres-victoria');
+      sonar('aplauso_largo', 5000);
+    } else {
+      incrementStatLletres(lletresNivellActual, 'p');
+      document.getElementById('lletres-der-text').textContent = tx.lletresDerText;
+      document.getElementById('lletres-der-sub').textContent = tx.lletresDerSub(lletresEncerts, lletresFallos);
+      document.getElementById('lletres-der-reintent').textContent = tx.tornarIntent;
+      document.getElementById('lletres-der-nivells').textContent = tx.nivells;
+      mostrar('lletres-derrota');
       sonar('llanto', 5000);
     }
   }
